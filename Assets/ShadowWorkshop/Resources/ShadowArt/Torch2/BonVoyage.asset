@@ -1,0 +1,144 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e73ae772b23bb7b4a8f302256c1471b3, type: 3}
+  m_Name: BonVoyage
+  m_EditorClassIdentifier: ShadowWorkshop.Runtime::CloudGarden.ShadowPuzzle.Torch2Level
+  title: B O N   V O Y A G E
+  button: BON VOYAGE
+  riddle: A map, two boarding passes, two luggage tags, sunglasses and a camera.
+    Time to leave.
+  hint: Tip the pile a long way forward. The rolled map is the body, the tickets
+    are wings and the tags are the tail.
+  complete: 'BON VOYAGE
+
+    Window seat, please.'
+  accent: {r: 0.45, g: 0.7, b: 0.98, a: 1}
+  lamps: 01000000
+  pieces:
+  - label: MAP
+    mesh: {fileID: 4300000, guid: 97d9bb52f0fbe034cb6fe885d2d5b19f, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 9a9a684266222624798450207a28fb51, type: 2}
+    - {fileID: 2100000, guid: 660c71905ce3af94f890af02fe1c7d8a, type: 2}
+    position: {x: -0.1159, y: -0.0973, z: 0.0296}
+    euler: {x: -32.798, y: 97.268, z: -40.121}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: TICKET
+    mesh: {fileID: 4300000, guid: 650a23b0f908f484781cd64e212635ca, type: 2}
+    materials:
+    - {fileID: 2100000, guid: e1ea0ce801cb8e84cb2109f599e7531c, type: 2}
+    - {fileID: 2100000, guid: 9e32f84268958884cb8034b82384870e, type: 2}
+    position: {x: 0.0142, y: 0.1042, z: 0.0462}
+    euler: {x: -32.798, y: 97.268, z: -102.121}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: TICKET
+    mesh: {fileID: 4300000, guid: 650a23b0f908f484781cd64e212635ca, type: 2}
+    materials:
+    - {fileID: 2100000, guid: e1ea0ce801cb8e84cb2109f599e7531c, type: 2}
+    - {fileID: 2100000, guid: 9e32f84268958884cb8034b82384870e, type: 2}
+    position: {x: -0.1633, y: -0.1657, z: -0.0137}
+    euler: {x: -32.798, y: 97.268, z: 21.879}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: TAG
+    mesh: {fileID: 4300000, guid: db23625a07465114fae77854c6bf1b21, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 08bd85456a8f4384abbbfd1a72a0e692, type: 2}
+    - {fileID: 2100000, guid: e199482de7b42fb4ebf7c74490240968, type: 2}
+    position: {x: -0.0085, y: -0.0788, z: 0.0968}
+    euler: {x: -32.798, y: 97.268, z: -90.121}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: TAG
+    mesh: {fileID: 4300000, guid: db23625a07465114fae77854c6bf1b21, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 08bd85456a8f4384abbbfd1a72a0e692, type: 2}
+    - {fileID: 2100000, guid: e199482de7b42fb4ebf7c74490240968, type: 2}
+    position: {x: 0.1932, y: -0.003, z: 0.0021}
+    euler: {x: -32.798, y: 97.268, z: 9.879}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: SUNGLASSES
+    mesh: {fileID: 4300000, guid: 2f767487fe58418489f707a95bae0ec2, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 4658f32857219fc479d1d252b3d78235, type: 2}
+    - {fileID: 2100000, guid: ae0ef85f06846fc4fa86d77f1506dad4, type: 2}
+    position: {x: 0.0891, y: 0.1093, z: -0.046}
+    euler: {x: -32.798, y: 97.268, z: -40.121}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: CAMERA
+    mesh: {fileID: 4300000, guid: 85efc824263a89441be16dfec2e6fd2f, type: 2}
+    materials:
+    - {fileID: 2100000, guid: a1c5326ee323acd41819b0e0c41c87ed, type: 2}
+    - {fileID: 2100000, guid: 4658f32857219fc479d1d252b3d78235, type: 2}
+    position: {x: -0.1539, y: -0.1436, z: 0.0491}
+    euler: {x: 32.798, y: 162.732, z: -40.121}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  solution: {x: 0.3971313, y: -0.3099755, z: -0.14454398, w: 0.8516507}
+  start: {x: -0.07547909, y: 0.49809736, z: -0.043577872, w: 0.8627299}
+  tolerance: 1
+  coverMin: 0.9
+  spillMax: 0.1
+  iouMin: 0.62
+  bothFaces: 0
+  flips: 0
+  leftSlide: {fileID: 0}
+  rightSlide: {fileID: 0}
+  layers: []
+  cueVolume: 0.5
+  tiers: {x: 0.35, y: 0.6, z: 0.8}
+  lookalikeAngle: 50
+  cueAngle: 30
+  snapWarmth: 0.9
+  snapAngle: 20
+  heldSnapAngle: 8
+  transitFly: 0.8
+  transitOverlap: 0.3

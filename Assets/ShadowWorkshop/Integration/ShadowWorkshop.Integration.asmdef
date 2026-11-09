@@ -1,0 +1,14 @@
+{
+  "name": "ShadowWorkshop.Integration",
+  "references": [
+    "ShadowWorkshop.Runtime",
+    "PhysicalAssembly.Runtime",
+    "PhysicalAssembly.MetaXR",
+    "Oculus.Interaction",
+    "Oculus.Interaction.OVR",
+    "Oculus.VR",
+    "Unity.TextMeshPro",
+    "Unity.XR.Hands",
+    "Unity.InputSystem"
+  ]
+}

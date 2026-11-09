@@ -1,0 +1,224 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fd3f902ccd676e41a4d0e07384ea926, type: 3}
+  m_Name: Italia
+  m_EditorClassIdentifier: ShadowWorkshop.Runtime::CloudGarden.ShadowPuzzle.SilhouetteLevel
+  title: I T A L I A
+  button: ITALIA
+  subtitle: PARMIGIANO / TOWER / OLIVE OIL / PEPERONCINO / PIZZA / POMODORI
+  intro: Six souvenirs of one country. Fill the map with their shadows.
+  hint: The tower leans down the peninsula. The chili is the toe, the bottle the
+    heel, and a slice of pizza is an island.
+  complete: 'ITALIA
+
+    Cheese in the north, a leaning tower down the middle,
+
+    peperoncino
+    in the toe and pizza by the sea.'
+  accent: {r: 0.45, g: 0.8, b: 0.55, a: 1}
+  pieces:
+  - label: PARMIGIANO
+    mesh: {fileID: 4300000, guid: 4cae11435c6267e42acd8250b6d3d7bf, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 6e7ccb80c99aeec479aef20f1ce3d4a6, type: 2}
+    - {fileID: 2100000, guid: a1a2e17b952191f41b893445d8301bc0, type: 2}
+    solutionPosition: {x: -0.07, y: 0.44, z: 0}
+    solutionEuler: {x: 0, y: 0, z: 15}
+    trayPosition: {x: -0.42, y: 0.118, z: -0.06}
+    trayEuler: {x: 0, y: 0, z: 0}
+  - label: TOWER
+    mesh: {fileID: 4300000, guid: 3e620445108d55340a9cc500bc74c786, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 9ce64ce8ac92de94aaa6cc45fa841df5, type: 2}
+    - {fileID: 2100000, guid: fb274385ca9a5fc4fb758b06e59d22bf, type: 2}
+    solutionPosition: {x: 0.01, y: 0.32, z: 0}
+    solutionEuler: {x: 0, y: 0, z: 45}
+    trayPosition: {x: -0.42, y: 0.157, z: 0.16}
+    trayEuler: {x: 0, y: 0, z: 0}
+  - label: OLIVE OIL
+    mesh: {fileID: 4300000, guid: c3449cc2fde29e440941f511cb3655ec, type: 2}
+    materials:
+    - {fileID: 2100000, guid: ebc4680fcb49ea247a2dec61e70aa387, type: 2}
+    - {fileID: 2100000, guid: 7b00cd4f76539894e89de75a14c57e91, type: 2}
+    solutionPosition: {x: 0.15, y: 0.24, z: 0}
+    solutionEuler: {x: 0, y: 0, z: -135}
+    trayPosition: {x: -0.42, y: 0.128, z: 0.33}
+    trayEuler: {x: 0, y: 0, z: 0}
+  - label: CHILI
+    mesh: {fileID: 4300000, guid: b89e471b5a14a6e41bbc6674e0575708, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 13560d7492f45144e861f7ca7235da83, type: 2}
+    - {fileID: 2100000, guid: 39f3916db450c8c408bac715c62a3de5, type: 2}
+    solutionPosition: {x: 0.115, y: 0.16, z: 0}
+    solutionEuler: {x: 0, y: 180, z: 15}
+    trayPosition: {x: 0.4, y: 0.08, z: -0.08}
+    trayEuler: {x: 90, y: 0, z: 0}
+  - label: PIZZA
+    mesh: {fileID: 4300000, guid: 8b49e5deddb5beb4db3bcf3c7c208533, type: 2}
+    materials:
+    - {fileID: 2100000, guid: d06fa36078583924c8dc94668a51bb72, type: 2}
+    - {fileID: 2100000, guid: 6ccedf3f471d34847bc09ec57ccc872b, type: 2}
+    - {fileID: 2100000, guid: f55d8bfe50788414db6d22ba3cba8d29, type: 2}
+    solutionPosition: {x: 0.04, y: 0.11, z: 0}
+    solutionEuler: {x: 0, y: 0, z: -15}
+    trayPosition: {x: 0.42, y: 0.0706, z: 0.1}
+    trayEuler: {x: 90, y: 0, z: 0}
+  - label: TOMATOES
+    mesh: {fileID: 4300000, guid: 67640b8b517f9c340bed61164e24f630, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 9f4cc35c0ffaf7c4ab497e51af664ca2, type: 2}
+    - {fileID: 2100000, guid: 2e3b48ad469cef2419fda69e763c5d59, type: 2}
+    - {fileID: 2100000, guid: 1b945fa996a61fa4bb3d85699ce9724c, type: 2}
+    solutionPosition: {x: -0.115, y: 0.215, z: 0}
+    solutionEuler: {x: 0, y: 0, z: 0}
+    trayPosition: {x: 0.42, y: 0.11, z: 0.3}
+    trayEuler: {x: 0, y: 0, z: 0}
+  outline:
+  - points:
+    - {x: -0.1603, y: 0.3731}
+    - {x: -0.1558, y: 0.3886}
+    - {x: -0.1788, y: 0.4014}
+    - {x: -0.1756, y: 0.4186}
+    - {x: -0.189, y: 0.4301}
+    - {x: -0.174, y: 0.44}
+    - {x: -0.1829, y: 0.4593}
+    - {x: -0.1718, y: 0.4623}
+    - {x: -0.1561, y: 0.467}
+    - {x: -0.1494, y: 0.4653}
+    - {x: -0.1421, y: 0.4786}
+    - {x: -0.1309, y: 0.4876}
+    - {x: -0.1245, y: 0.47}
+    - {x: -0.1124, y: 0.4606}
+    - {x: -0.1085, y: 0.4743}
+    - {x: -0.1038, y: 0.4893}
+    - {x: -0.0814, y: 0.485}
+    - {x: -0.067, y: 0.5043}
+    - {x: -0.0495, y: 0.5009}
+    - {x: -0.0335, y: 0.5107}
+    - {x: -0.0112, y: 0.5141}
+    - {x: -0.0048, y: 0.4979}
+    - {x: 0.0144, y: 0.4936}
+    - {x: 0.0367, y: 0.4901}
+    - {x: 0.0335, y: 0.4764}
+    - {x: 0.0335, y: 0.4636}
+    - {x: 0.0431, y: 0.4507}
+    - {x: 0.0303, y: 0.4584}
+    - {x: 0.0176, y: 0.4537}
+    - {x: 0.0105, y: 0.4507}
+    - {x: -0.0064, y: 0.4439}
+    - {x: -0.0086, y: 0.4344}
+    - {x: -0.0006, y: 0.4237}
+    - {x: -0.0086, y: 0.4001}
+    - {x: 0.0006, y: 0.3847}
+    - {x: 0.0118, y: 0.3783}
+    - {x: 0.031, y: 0.3659}
+    - {x: 0.0399, y: 0.347}
+    - {x: 0.053, y: 0.3161}
+    - {x: 0.069, y: 0.3011}
+    - {x: 0.0782, y: 0.2964}
+    - {x: 0.0974, y: 0.2934}
+    - {x: 0.1108, y: 0.2943}
+    - {x: 0.1159, y: 0.2913}
+    - {x: 0.1117, y: 0.284}
+    - {x: 0.1076, y: 0.2806}
+    - {x: 0.1149, y: 0.2699}
+    - {x: 0.1379, y: 0.2591}
+    - {x: 0.1516, y: 0.2514}
+    - {x: 0.1724, y: 0.2381}
+    - {x: 0.1804, y: 0.2279}
+    - {x: 0.1896, y: 0.2171}
+    - {x: 0.1855, y: 0.2021}
+    - {x: 0.1737, y: 0.2133}
+    - {x: 0.1708, y: 0.2219}
+    - {x: 0.1497, y: 0.2309}
+    - {x: 0.1363, y: 0.2266}
+    - {x: 0.1261, y: 0.2}
+    - {x: 0.1303, y: 0.1936}
+    - {x: 0.1446, y: 0.1841}
+    - {x: 0.1484, y: 0.1691}
+    - {x: 0.1293, y: 0.1601}
+    - {x: 0.1277, y: 0.1546}
+    - {x: 0.1184, y: 0.1353}
+    - {x: 0.1121, y: 0.1216}
+    - {x: 0.099, y: 0.1293}
+    - {x: 0.1009, y: 0.1357}
+    - {x: 0.1047, y: 0.1516}
+    - {x: 0.1152, y: 0.1563}
+    - {x: 0.1133, y: 0.1636}
+    - {x: 0.1111, y: 0.1833}
+    - {x: 0.1034, y: 0.2026}
+    - {x: 0.0974, y: 0.2137}
+    - {x: 0.0872, y: 0.212}
+    - {x: 0.0779, y: 0.2257}
+    - {x: 0.0709, y: 0.2399}
+    - {x: 0.0568, y: 0.2364}
+    - {x: 0.0543, y: 0.2463}
+    - {x: 0.0485, y: 0.2459}
+    - {x: 0.0326, y: 0.2621}
+    - {x: 0.0223, y: 0.2656}
+    - {x: 0.016, y: 0.2634}
+    - {x: 0.0022, y: 0.2729}
+    - {x: -0.0086, y: 0.2849}
+    - {x: -0.0239, y: 0.3003}
+    - {x: -0.0463, y: 0.3136}
+    - {x: -0.0654, y: 0.3363}
+    - {x: -0.0718, y: 0.3629}
+    - {x: -0.0734, y: 0.3766}
+    - {x: -0.0868, y: 0.3851}
+    - {x: -0.1006, y: 0.3937}
+    - {x: -0.1156, y: 0.3997}
+    - {x: -0.1299, y: 0.395}
+    - {x: -0.1382, y: 0.3843}
+    - {x: -0.1443, y: 0.377}
+  - points:
+    - {x: 0.099, y: 0.1366}
+    - {x: 0.0859, y: 0.1344}
+    - {x: 0.0469, y: 0.1267}
+    - {x: 0.0259, y: 0.1306}
+    - {x: 0.0057, y: 0.1327}
+    - {x: -0.0013, y: 0.1259}
+    - {x: -0.0038, y: 0.1164}
+    - {x: 0.0013, y: 0.11}
+    - {x: 0.0169, y: 0.1036}
+    - {x: 0.0329, y: 0.0937}
+    - {x: 0.0543, y: 0.0847}
+    - {x: 0.0734, y: 0.0701}
+    - {x: 0.0824, y: 0.0689}
+    - {x: 0.0875, y: 0.0851}
+    - {x: 0.0852, y: 0.092}
+    - {x: 0.0811, y: 0.1036}
+    - {x: 0.0875, y: 0.1186}
+  - points:
+    - {x: -0.1073, y: 0.2639}
+    - {x: -0.1012, y: 0.2613}
+    - {x: -0.0958, y: 0.2501}
+    - {x: -0.0868, y: 0.2334}
+    - {x: -0.0903, y: 0.227}
+    - {x: -0.091, y: 0.2077}
+    - {x: -0.0935, y: 0.1803}
+    - {x: -0.1101, y: 0.1764}
+    - {x: -0.1181, y: 0.1627}
+    - {x: -0.1325, y: 0.17}
+    - {x: -0.1318, y: 0.1871}
+    - {x: -0.1283, y: 0.2064}
+    - {x: -0.1331, y: 0.2124}
+    - {x: -0.1299, y: 0.2236}
+    - {x: -0.1354, y: 0.2347}
+    - {x: -0.1401, y: 0.2347}
+    - {x: -0.1373, y: 0.2566}
+    - {x: -0.1325, y: 0.2467}
+    - {x: -0.1229, y: 0.2497}
+  tolerancePixels: 3
+  coverMin: 0.9
+  regionMin: 0.8
+  spillMax: 0.07
+  pieceSpillMax: 0.12

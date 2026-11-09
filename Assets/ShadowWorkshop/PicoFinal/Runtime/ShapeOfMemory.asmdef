@@ -1,0 +1,13 @@
+{
+  "name": "ShapeOfMemory",
+  "references": [
+    "ShadowWorkshop.Runtime",
+    "ShadowWorkshop.Integration",
+    "PhysicalAssembly.Runtime",
+    "PhysicalAssembly.MetaXR",
+    "Oculus.Interaction",
+    "Unity.TextMeshPro",
+    "Unity.InputSystem",
+    "Unity.RenderPipelines.Universal.Runtime"
+  ]
+}

@@ -1,0 +1,74 @@
+# Unity-generated folders
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Ll]ogs/
+/[Bb]uild/
+/[Bb]uilds/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# IDE and OS state
+/.vs/
+/.vscode/
+/.idea/
+/.gradle/
+*.csproj
+*.sln
+*.slnx
+*.user
+*.suo
+*.userprefs
+*.unityproj
+*.pidb
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+*.tmp
+.DS_Store*
+Thumbs.db
+Desktop.ini
+sysinfo.txt
+crashlytics-build.properties
+~UnityDirMonSyncFile~*
+
+# Build output
+*.apk
+*.aab
+*.app
+*.unitypackage
+*_BurstDebugInformation_DoNotShip/
+*_BackUpThisFolder_ButDontShipItWithYourGame/
+
+# Meta writes a developer access token into this asset whenever the editor opens. Never commit it.
+/Assets/Resources/DevAgentSettings.asset
+/Assets/Resources/DevAgentSettings.asset.meta
+
+# Meta XR regenerates these bindings for Play mode and builds.
+/RuntimeActionBindings.json
+/Assets/StreamingAssets/RuntimeActionBindings.json
+/Assets/StreamingAssets/RuntimeActionBindings.json.meta
+
+# Stray test and crash-recovery scenes
+/Assets/InitTestScene*.unity
+/Assets/InitTestScene*.unity.meta
+/Assets/_Recovery/
+/Assets/_Recovery.meta
+
+# Local agent notes and tooling state
+/.agents/local/
+/.claude/
+/.codex/
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.env
+.env.local

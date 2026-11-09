@@ -1,0 +1,11 @@
+{
+  "name": "ShadowWorkshop.Editor",
+  "references": [
+    "ShadowWorkshop.Runtime",
+    "ShadowWorkshop.Integration",
+    "PhysicalAssembly.MetaXR"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ]
+}

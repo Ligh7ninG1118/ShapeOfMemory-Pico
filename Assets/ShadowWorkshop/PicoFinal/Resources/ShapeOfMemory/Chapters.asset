@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eadee00ed22a14e449446b820ab7f2d6, type: 3}
+  m_Name: Chapters
+  m_EditorClassIdentifier: ShapeOfMemory::ShapeOfMemory.MemoryChapters
+  chapters:
+  - {fileID: 11400000, guid: 676d5c6b04e6a56469a1c91c26962b3e, type: 2}
+  - {fileID: 11400000, guid: a4b63da7170f8614d919c909c2d56ace, type: 2}
+  - {fileID: 11400000, guid: ceaffbbdce24ee9458cec9d6a3a6e429, type: 2}
+  - {fileID: 11400000, guid: d22f8a6d4b7af484aa334247669c88cf, type: 2}

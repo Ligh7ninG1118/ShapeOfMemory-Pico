@@ -1,0 +1,203 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fd3f902ccd676e41a4d0e07384ea926, type: 3}
+  m_Name: Nippon
+  m_EditorClassIdentifier: ShadowWorkshop.Runtime::CloudGarden.ShadowPuzzle.SilhouetteLevel
+  title: N I P P O N
+  button: NIPPON
+  subtitle: ONIGIRI / KOKESHI / DARUMA / SHINKANSEN / UDON / MANEKI-NEKO
+  intro: Six things from one country, one for each part of the islands. Fill the
+    map with their shadows.
+  hint: The rice ball is the north island. The bullet train runs west along the coast;
+    the lucky cat waves from the south-west.
+  complete: 'NIPPON
+
+    Rice in the north, dolls and trains through the middle,
+
+    a
+    bowl of udon and a waving cat in the south.'
+  accent: {r: 0.92, g: 0.38, b: 0.36, a: 1}
+  pieces:
+  - label: ONIGIRI
+    mesh: {fileID: 4300000, guid: 40037407495b74343a566b128b7a26b8, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 1ccb8ca55628859418e30a1fab292645, type: 2}
+    - {fileID: 2100000, guid: 881b8bf8bd1ac5b4eb4be3b58cdfe8e7, type: 2}
+    solutionPosition: {x: 0.115, y: 0.47, z: 0}
+    solutionEuler: {x: 0, y: 0, z: 15}
+    trayPosition: {x: -0.42, y: 0.1236, z: -0.08}
+    trayEuler: {x: 0, y: 0, z: 0}
+  - label: KOKESHI
+    mesh: {fileID: 4300000, guid: 354b9189ef469d34fb162e4a8bf1d0d8, type: 2}
+    materials:
+    - {fileID: 2100000, guid: f986109f96cf4444bb2eaba26ebe959a, type: 2}
+    - {fileID: 2100000, guid: 6f1d0207e018d7a488f4c408eba51ce0, type: 2}
+    - {fileID: 2100000, guid: 3192d75a56df20b41a5bd35e430477ed, type: 2}
+    solutionPosition: {x: 0.07, y: 0.31, z: 0}
+    solutionEuler: {x: 0, y: 0, z: -15}
+    trayPosition: {x: -0.42, y: 0.0878, z: 0.32}
+    trayEuler: {x: 0, y: 0, z: 90}
+  - label: DARUMA
+    mesh: {fileID: 4300000, guid: a1fff9c8fcfed9e40be630bf7dc95e18, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 63dd0501e8dbce9459286c9b3e532050, type: 2}
+    - {fileID: 2100000, guid: d641c5842a5c2b3498f2a6b7c2d2433a, type: 2}
+    - {fileID: 2100000, guid: e7943f9242296e44b8d29f15c69680a4, type: 2}
+    solutionPosition: {x: 0.025, y: 0.225, z: 0}
+    solutionEuler: {x: 0, y: 0, z: 0}
+    trayPosition: {x: -0.42, y: 0.1161, z: 0.12}
+    trayEuler: {x: 0, y: 0, z: 0}
+  - label: SHINKANSEN
+    mesh: {fileID: 4300000, guid: 36ab6b107f360a74194101d6f54572a2, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 5221e6ffbd3714a4aaaf06c0bd6e527c, type: 2}
+    - {fileID: 2100000, guid: 06550b27735accd49afd05beebd450df, type: 2}
+    - {fileID: 2100000, guid: 6dd05410e04394b41b87ec6ced58056b, type: 2}
+    solutionPosition: {x: -0.08, y: 0.185, z: 0}
+    solutionEuler: {x: 0, y: 0, z: 0}
+    trayPosition: {x: 0.42, y: 0.083, z: -0.08}
+    trayEuler: {x: 0, y: 90, z: 0}
+  - label: UDON
+    mesh: {fileID: 4300000, guid: f2f8fc0648ee53a4f8c623c63bdfe157, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 9e36f71233c8eb7459aea26692462e93, type: 2}
+    - {fileID: 2100000, guid: 926b1d66c81bb6e4aac79297c78f94ed, type: 2}
+    - {fileID: 2100000, guid: 8bae4e17682621749802f1d2926119f9, type: 2}
+    solutionPosition: {x: -0.105, y: 0.14, z: 0}
+    solutionEuler: {x: 0, y: 0, z: 0}
+    trayPosition: {x: 0.42, y: 0.084, z: 0.12}
+    trayEuler: {x: 0, y: 0, z: 0}
+  - label: MANEKI-NEKO
+    mesh: {fileID: 4300000, guid: 39e7568155bb2df48a7dfc67c285c07b, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 8e179e155a8f2184ea760e8b31d95048, type: 2}
+    - {fileID: 2100000, guid: b4e7b745de33c03498d3745a19e70133, type: 2}
+    - {fileID: 2100000, guid: 9ca40f66801e2ec46a350362b573e36f, type: 2}
+    solutionPosition: {x: -0.17, y: 0.115, z: 0}
+    solutionEuler: {x: 0, y: 0, z: 0}
+    trayPosition: {x: 0.42, y: 0.1116, z: 0.32}
+    trayEuler: {x: 0, y: 0, z: 0}
+  outline:
+  - points:
+    - {x: 0.1042, y: 0.5175}
+    - {x: 0.1204, y: 0.4997}
+    - {x: 0.1376, y: 0.4809}
+    - {x: 0.1622, y: 0.4699}
+    - {x: 0.1868, y: 0.4799}
+    - {x: 0.1819, y: 0.4605}
+    - {x: 0.1995, y: 0.4505}
+    - {x: 0.1843, y: 0.4433}
+    - {x: 0.1622, y: 0.438}
+    - {x: 0.1384, y: 0.4167}
+    - {x: 0.1364, y: 0.4052}
+    - {x: 0.118, y: 0.4152}
+    - {x: 0.0983, y: 0.4261}
+    - {x: 0.0811, y: 0.4167}
+    - {x: 0.0806, y: 0.3995}
+    - {x: 0.0737, y: 0.3995}
+    - {x: 0.0585, y: 0.3892}
+    - {x: 0.0528, y: 0.4136}
+    - {x: 0.0688, y: 0.4261}
+    - {x: 0.0664, y: 0.4449}
+    - {x: 0.0909, y: 0.448}
+    - {x: 0.0958, y: 0.4668}
+    - {x: 0.0971, y: 0.4793}
+    - {x: 0.0995, y: 0.5075}
+  - points:
+    - {x: 0.0786, y: 0.3923}
+    - {x: 0.0926, y: 0.3886}
+    - {x: 0.0914, y: 0.3635}
+    - {x: 0.1044, y: 0.3479}
+    - {x: 0.1069, y: 0.3307}
+    - {x: 0.0971, y: 0.3119}
+    - {x: 0.0934, y: 0.2916}
+    - {x: 0.0811, y: 0.29}
+    - {x: 0.0799, y: 0.2634}
+    - {x: 0.0786, y: 0.2446}
+    - {x: 0.0774, y: 0.2108}
+    - {x: 0.0659, y: 0.1946}
+    - {x: 0.0528, y: 0.1852}
+    - {x: 0.0516, y: 0.1993}
+    - {x: 0.0479, y: 0.1977}
+    - {x: 0.0356, y: 0.1961}
+    - {x: 0.0283, y: 0.1758}
+    - {x: 0.0258, y: 0.1899}
+    - {x: 0.0123, y: 0.1758}
+    - {x: -0.0098, y: 0.1773}
+    - {x: -0.0197, y: 0.1664}
+    - {x: -0.0356, y: 0.1617}
+    - {x: -0.0472, y: 0.1392}
+    - {x: -0.0639, y: 0.1539}
+    - {x: -0.0627, y: 0.1648}
+    - {x: -0.0565, y: 0.1764}
+    - {x: -0.0762, y: 0.1805}
+    - {x: -0.0934, y: 0.1742}
+    - {x: -0.1278, y: 0.1648}
+    - {x: -0.1413, y: 0.1554}
+    - {x: -0.1671, y: 0.1554}
+    - {x: -0.1548, y: 0.1701}
+    - {x: -0.1229, y: 0.2024}
+    - {x: -0.1057, y: 0.2055}
+    - {x: -0.086, y: 0.2055}
+    - {x: -0.059, y: 0.2055}
+    - {x: -0.043, y: 0.2118}
+    - {x: -0.0246, y: 0.2384}
+    - {x: -0.0221, y: 0.2571}
+    - {x: -0.0098, y: 0.2665}
+    - {x: -0.0147, y: 0.2446}
+    - {x: 0, y: 0.2493}
+    - {x: 0.0197, y: 0.2634}
+    - {x: 0.0344, y: 0.2806}
+    - {x: 0.0455, y: 0.301}
+    - {x: 0.0528, y: 0.3229}
+    - {x: 0.0578, y: 0.3369}
+    - {x: 0.0491, y: 0.3432}
+    - {x: 0.0565, y: 0.3588}
+    - {x: 0.0541, y: 0.3667}
+    - {x: 0.0639, y: 0.3807}
+    - {x: 0.0725, y: 0.3745}
+    - {x: 0.0774, y: 0.3823}
+  - points:
+    - {x: -0.1229, y: 0.1523}
+    - {x: -0.1106, y: 0.1601}
+    - {x: -0.0897, y: 0.168}
+    - {x: -0.0762, y: 0.1633}
+    - {x: -0.0725, y: 0.1523}
+    - {x: -0.086, y: 0.1335}
+    - {x: -0.1008, y: 0.1414}
+    - {x: -0.1155, y: 0.117}
+    - {x: -0.1278, y: 0.1226}
+    - {x: -0.1302, y: 0.1382}
+    - {x: -0.1401, y: 0.1367}
+  - points:
+    - {x: -0.1671, y: 0.1539}
+    - {x: -0.1794, y: 0.1451}
+    - {x: -0.1941, y: 0.1382}
+    - {x: -0.1978, y: 0.1288}
+    - {x: -0.1917, y: 0.1179}
+    - {x: -0.1843, y: 0.121}
+    - {x: -0.188, y: 0.1007}
+    - {x: -0.1819, y: 0.071}
+    - {x: -0.172, y: 0.0647}
+    - {x: -0.1659, y: 0.0788}
+    - {x: -0.156, y: 0.0756}
+    - {x: -0.1536, y: 0.0929}
+    - {x: -0.145, y: 0.1116}
+    - {x: -0.1425, y: 0.1288}
+    - {x: -0.1474, y: 0.1351}
+    - {x: -0.1462, y: 0.1445}
+    - {x: -0.1548, y: 0.1445}
+  tolerancePixels: 3
+  coverMin: 0.9
+  regionMin: 0.8
+  spillMax: 0.07
+  pieceSpillMax: 0.12

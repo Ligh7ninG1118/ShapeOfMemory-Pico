@@ -1,0 +1,5 @@
+{
+  "name": "PhysicalAssembly.Runtime",
+  "rootNamespace": "PhysicalAssembly",
+  "references": ["Unity.InputSystem", "Unity.ugui"]
+}

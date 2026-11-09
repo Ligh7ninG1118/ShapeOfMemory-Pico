@@ -1,0 +1,90 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4836adc047517840bc8e73e50126a67, type: 3}
+  m_Name: GoodBoy
+  m_EditorClassIdentifier: ShadowWorkshop.Runtime::CloudGarden.ShadowPuzzle.TorchLevel
+  title: G O O D   B O Y
+  button: GOOD BOY
+  riddle: Kibble, a ball, a treat, a sock, two chews, a rope and a bowl. Someone
+    is waiting by the door.
+  hint: Keep the light low and in front. The bag is the body, the ball the head,
+    two chews are legs and the rope wags.
+  complete: 'GOOD BOY
+
+    Everything he owns, and the one thing he stole.'
+  accent: {r: 0.55, g: 0.8, b: 0.95, a: 1}
+  pieces:
+  - label: KIBBLE
+    mesh: {fileID: 4300000, guid: 2de812b2386f8174c932e255437bdfa0, type: 2}
+    materials:
+    - {fileID: 2100000, guid: ab1aa7c813b40b64cb20ef9a7de37c77, type: 2}
+    - {fileID: 2100000, guid: f55d452b49ad23840bd9b02c087edcd7, type: 2}
+    position: {x: 0.0117, y: 0.3219, z: 0.09}
+    euler: {x: -0, y: 0, z: 90}
+  - label: TENNIS BALL
+    mesh: {fileID: 4300000, guid: cdb663d584eed654080f1dfc02968e04, type: 2}
+    materials:
+    - {fileID: 2100000, guid: f7caadb0894cffc429745a95e8ce8349, type: 2}
+    - {fileID: 2100000, guid: 0459f81070333a3408c8799fb1c288db, type: 2}
+    position: {x: -0.0837, y: 0.366, z: 0.0235}
+    euler: {x: -0, y: 0, z: 0}
+  - label: TREAT
+    mesh: {fileID: 4300000, guid: ef52b0d98a2671a4eb251261e0c50653, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 1d603f3641a524c4ea092436669e7a0b, type: 2}
+    position: {x: -0.1408, y: 0.3794, z: 0.09}
+    euler: {x: -0, y: 0, z: 12}
+  - label: SOCK
+    mesh: {fileID: 4300000, guid: bd760280ba5723b4dafcf399e565135e, type: 2}
+    materials:
+    - {fileID: 2100000, guid: a246d07bc7b30c343a7935080550213f, type: 2}
+    - {fileID: 2100000, guid: d63fe7f300827d944980be2a355688ce, type: 2}
+    position: {x: -0.0764, y: 0.4121, z: 0.1467}
+    euler: {x: -0, y: 0, z: -10}
+  - label: BONE
+    mesh: {fileID: 4300000, guid: 0a2587b25840c5e44a11a14ee6b85086, type: 2}
+    materials:
+    - {fileID: 2100000, guid: e6037cb25eed0f641b7db3171fea03e1, type: 2}
+    position: {x: -0.0498, y: 0.2094, z: 0.1168}
+    euler: {x: -0, y: 0, z: 0}
+  - label: RAWHIDE
+    mesh: {fileID: 4300000, guid: 6dead44f47fd043498e7334272b2f7f8, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 1d603f3641a524c4ea092436669e7a0b, type: 2}
+    position: {x: 0.0634, y: 0.2026, z: 0.0436}
+    euler: {x: -0, y: 0, z: -4}
+  - label: ROPE
+    mesh: {fileID: 4300000, guid: c3109cb54695c564fbe64df13f401a9d, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 225f7d567f448c045a316071960df2fc, type: 2}
+    - {fileID: 2100000, guid: 33b14c7833601ce4b9e9eeda3aca542e, type: 2}
+    position: {x: 0.1265, y: 0.3831, z: 0.1168}
+    euler: {x: -0, y: 0, z: -25}
+  - label: BOWL
+    mesh: {fileID: 4300000, guid: 3e83c4279d8fdfd4c885f1114540dfc9, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 916ad76ac6699794ca9aa4bc6cb88b62, type: 2}
+    position: {x: -0.1603, y: 0.1436, z: 0.1168}
+    euler: {x: -0, y: 0, z: 0}
+  - label: TAG
+    mesh: {fileID: 4300000, guid: 974c8b72a6601844bbf837c072aaec5f, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 855b1d489fe281f47bdd7bfafa1fc716, type: 2}
+    position: {x: -0.0706, y: 0.3234, z: -0.0683}
+    euler: {x: -0, y: 30, z: 0}
+  solutionLight: {x: -0.02, y: 0.16, z: -0.42}
+  solutionYaw: 0
+  startYaw: 75
+  tolerance: 1
+  coverMin: 0.9
+  spillMax: 0.1
+  iouMin: 0.62

@@ -1,0 +1,14 @@
+{
+  "name": "ShadowWorkshop.Tests",
+  "references": [
+    "ShadowWorkshop.Runtime",
+    "ShadowWorkshop.Editor",
+    "PhysicalAssembly.Runtime"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}

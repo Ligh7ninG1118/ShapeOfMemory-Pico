@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4196e53adc8843344bc6b8cf1ce51bc9, type: 3}
+  m_Name: Shape of Memory
+  m_EditorClassIdentifier: PhysicalAssembly.Editor::PhysicalAssembly.Editor.DeployConfig
+  Scenes:
+  - {fileID: 102900000, guid: 94d0532c31de0a949a66ffe1c5b13358, type: 3}
+  PackageId: com.metahackathon2026.shadow
+  ProductName: Shape of Memory
+  ApkName: ShapeOfMemory
+  Icon: {fileID: 2800000, guid: 34d65adf3726dcb4aa7b9ec23b31f7e4, type: 3}
+  Quest: 1
+  Pico: 1
+  PicoEyeGaze: 0
+  LevelFolder: Assets/ShadowWorkshop/Resources/ShadowArt/Torch2
+  Order: 1

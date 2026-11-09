@@ -1,0 +1,8 @@
+{
+  "name": "ShadowWorkshop.Runtime",
+  "references": [
+    "PhysicalAssembly.Runtime",
+    "Unity.InputSystem",
+    "Unity.TextMeshPro"
+  ]
+}

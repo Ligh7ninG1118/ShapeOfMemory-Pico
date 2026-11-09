@@ -1,0 +1,6 @@
+{
+  "name": "PhysicalAssembly.EditTests",
+  "references": ["PhysicalAssembly.Runtime", "PhysicalAssembly.Editor"],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"]
+}

@@ -1,0 +1,4 @@
+{
+  "name": "PhysicalAssembly.MetaXR",
+  "references": ["PhysicalAssembly.Runtime", "Oculus.Interaction", "Oculus.Interaction.OVR", "Oculus.VR", "Unity.XR.Management", "Unity.XR.OpenXR", "Unity.XR.OpenXR.Features.PICOSupport"]
+}

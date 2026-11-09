@@ -1,0 +1,15 @@
+{
+  "_doc": "Import rules for Props/ and Textures/ in this folder (Assets/Scenes/Editor/ScenePropImport.cs). size = longest side in metres after import, 0 keeps the file's own scale. pivot = bottom | center | keep. Saving this file reimports the models; run Tools > Scene Props > Sync for textures and materials. Sizes are real-world estimates: adjust freely.",
+  "defaults": { "pivot": "bottom", "maxTextureSize": 1024, "smoothness": 0.15, "readable": false },
+  "props": [
+    { "model": "SM_BaseballCap_01", "texture": "TX_BaseballCap_01", "material": "MT_BaseballCap_01", "size": 0.28 },
+    { "model": "SM_Camera_01",      "texture": "TX_Camera_01",      "material": "MT_Camera_01",      "size": 0.15 },
+    { "model": "SM_CanvasShoe_01",  "texture": "TX_CanvasShoe_01",  "material": "MT_CanvasShoe_01",  "size": 0.28 },
+    { "model": "SM_Glasses_01",     "texture": "TX_Glasses_01",     "material": "MT_Glasses_01",     "size": 0.14 },
+    { "model": "SM_HandMirror_01",  "texture": "TX_HandMirror_01",  "material": "MT_HandMirror_01",  "size": 0.10 },
+    { "model": "SM_PhotoStack_01",  "texture": "TX_PhotoStack_01",  "material": "MT_PhotoStack_01",  "size": 0.15, "maxTextureSize": 2048 },
+    { "model": "SM_Script_01",      "texture": "TX_Script_01",      "material": "MT_Script_01",      "size": 0.32, "maxTextureSize": 2048 },
+    { "model": "SM_Suitcase_01",    "texture": "TX_Suitcase_01",    "material": "MT_Suitcase_01",    "size": 0.70, "maxTextureSize": 2048 },
+    { "model": "SM_WaterBottle_01", "texture": "TX_WaterBottle_01", "material": "MT_WaterBottle_01", "size": 0.25 }
+  ]
+}

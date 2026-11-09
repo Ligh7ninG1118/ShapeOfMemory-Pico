@@ -1,0 +1,14 @@
+{
+  "name": "ShapeOfMemory.Tests",
+  "references": [
+    "ShapeOfMemory",
+    "ShadowWorkshop.Runtime",
+    "ShadowWorkshop.Integration"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}

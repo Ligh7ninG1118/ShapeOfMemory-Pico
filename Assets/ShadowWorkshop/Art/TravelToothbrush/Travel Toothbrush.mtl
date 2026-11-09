@@ -1,0 +1,4 @@
+newmtl ToothbrushPalette
+Kd 1 1 1
+illum 1
+map_Kd Travel Toothbrush.png

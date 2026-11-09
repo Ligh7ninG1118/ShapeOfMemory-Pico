@@ -1,0 +1,15 @@
+{
+  "name": "ShapeOfMemory.PlayTests",
+  "references": [
+    "ShapeOfMemory",
+    "ShadowWorkshop.Runtime",
+    "ShadowWorkshop.Integration",
+    "PhysicalAssembly.Runtime",
+    "PhysicalAssembly.MetaXR",
+    "Oculus.Interaction",
+    "Unity.TextMeshPro"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}

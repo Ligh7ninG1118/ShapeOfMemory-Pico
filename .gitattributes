@@ -1,0 +1,37 @@
+# Text files: normalise line endings in the repository.
+* text=auto
+
+# Unity YAML: never let git rewrite or text-merge these.
+*.unity    -text merge=unityyamlmerge diff
+*.prefab   -text merge=unityyamlmerge diff
+*.asset    -text merge=unityyamlmerge diff
+*.mat      -text merge=unityyamlmerge diff
+*.anim     -text merge=unityyamlmerge diff
+*.controller -text merge=unityyamlmerge diff
+*.meta     -text merge=unityyamlmerge diff
+*.physicMaterial -text merge=unityyamlmerge diff
+*.lighting -text merge=unityyamlmerge diff
+
+# Binary assets
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.tga  binary
+*.psd  binary
+*.exr  binary
+*.hdr  binary
+*.fbx  binary
+*.FBX  binary
+*.obj  binary
+*.blend binary
+*.wav  binary
+*.mp3  binary
+*.ogg  binary
+*.ttf  binary
+*.otf  binary
+*.pdf  binary
+*.dll  binary
+*.so   binary
+*.aar  binary
+*.jar  binary
+*.ico  binary

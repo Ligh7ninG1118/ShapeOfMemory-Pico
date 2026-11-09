@@ -1,0 +1,156 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e73ae772b23bb7b4a8f302256c1471b3, type: 3}
+  m_Name: Office
+  m_EditorClassIdentifier: ShadowWorkshop.Runtime::CloudGarden.ShadowPuzzle.Torch2Level
+  title: N E W   L E V E L
+  button: NEW LEVEL
+  riddle: What do these things make together?
+  hint: 
+  complete: 
+  accent: {r: 0.95, g: 0.62, b: 0.3, a: 1}
+  lamps: 00000000
+  pieces:
+  - label: wooden_lamp_3d_model
+    mesh: {fileID: -7558997475844575231, guid: 460e90f54a3e1a147b21bae3a3e13ae8, type: 3}
+    materials:
+    - {fileID: 2100000, guid: ce7a5eb483efce14c8f566bdf5b2c078, type: 2}
+    position: {x: -0.13326168, y: -0.047787666, z: 0.15945667}
+    euler: {x: 32.664497, y: 209.3599, z: 66.1544}
+    scale: {x: 0.25000006, y: 0.25, z: 0.25000006}
+    shadowMesh: {fileID: -7558997475844575231, guid: 460e90f54a3e1a147b21bae3a3e13ae8, type: 3}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: pink_stapler_3d_model
+    mesh: {fileID: -3209365381604420223, guid: cc591375ac8c1104d8cb2620f12fb1d1, type: 3}
+    materials:
+    - {fileID: 2100000, guid: 7cdf89366858b7047896f30ccd83f60a, type: 2}
+    position: {x: 0.012717247, y: -0.02108717, z: 0.054015584}
+    euler: {x: 45.428078, y: 147.26901, z: 271.57312}
+    scale: {x: 0.10000002, y: 0.09999998, z: 0.10000001}
+    shadowMesh: {fileID: -3209365381604420223, guid: cc591375ac8c1104d8cb2620f12fb1d1, type: 3}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: notes_notebook_3d_model
+    mesh: {fileID: -4119445558260854074, guid: c5574a266aa8f194daa93f774a300a1f, type: 3}
+    materials:
+    - {fileID: 2100000, guid: 72cb6b5dba6e2b84e95bed8c4080dcea, type: 2}
+    position: {x: 0.09610353, y: 0.035113513, z: 0.08357263}
+    euler: {x: 31.903996, y: 191.56096, z: 333.82275}
+    scale: {x: 0.15000004, y: 0.15000002, z: 0.15000005}
+    shadowMesh: {fileID: -4119445558260854074, guid: c5574a266aa8f194daa93f774a300a1f, type: 3}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: mouse
+    mesh: {fileID: -2007311016148445704, guid: 7a409fe5c29900c4fa9e7bf8d1e9718a, type: 3}
+    materials:
+    - {fileID: 2100000, guid: 259e12bce96400c46a6873bc750680e8, type: 2}
+    position: {x: -0.0167, y: 0.083000004, z: 0.1406}
+    euler: {x: 337.49454, y: 50.049614, z: 183.63832}
+    scale: {x: 0.100000024, y: 0.10000001, z: 0.10000001}
+    shadowMesh: {fileID: -2007311016148445704, guid: 7a409fe5c29900c4fa9e7bf8d1e9718a, type: 3}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: notes_notebook_3d_model (1)
+    mesh: {fileID: -4119445558260854074, guid: c5574a266aa8f194daa93f774a300a1f, type: 3}
+    materials:
+    - {fileID: 2100000, guid: 72cb6b5dba6e2b84e95bed8c4080dcea, type: 2}
+    position: {x: 0.048, y: 0.026648492, z: -0.10324101}
+    euler: {x: 21.219694, y: 123.309135, z: 217.84677}
+    scale: {x: 0.15000004, y: 0.15000005, z: 0.14999999}
+    shadowMesh: {fileID: -4119445558260854074, guid: c5574a266aa8f194daa93f774a300a1f, type: 3}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: potted_plant_3d_model
+    mesh: {fileID: -7249675407758889502, guid: 0c6e7a580e48e104d8a0df69e0c18288, type: 3}
+    materials:
+    - {fileID: 2100000, guid: a707730f41791364c8fb9e2db71652f7, type: 2}
+    position: {x: -0.1757, y: 0.05160001, z: 0.1841}
+    euler: {x: 358.88098, y: 75.91926, z: 195.14775}
+    scale: {x: 0.12500001, y: 0.12500006, z: 0.125}
+    shadowMesh: {fileID: -7249675407758889502, guid: 0c6e7a580e48e104d8a0df69e0c18288, type: 3}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: blue_mug_3d_model
+    mesh: {fileID: 1428173438630129927, guid: 1500f4c040cc102478b59714d2969100, type: 3}
+    materials:
+    - {fileID: 2100000, guid: f1af5124528f973409cd592cb074f5ff, type: 2}
+    position: {x: 0.10098171, y: 0.012359619, z: -0.045814086}
+    euler: {x: 355.50543, y: 210.53836, z: 258.07407}
+    scale: {x: 0.1, y: 0.1, z: 0.099999994}
+    shadowMesh: {fileID: 1428173438630129927, guid: 1500f4c040cc102478b59714d2969100, type: 3}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: retro_keyboard_3d_model
+    mesh: {fileID: 8946006490751360900, guid: c3267693ba8166240a49c066289a9a3f, type: 3}
+    materials:
+    - {fileID: 2100000, guid: 313076e03f3f3144d9f813097a5b7623, type: 2}
+    position: {x: -0.157, y: 0.125, z: 0.064}
+    euler: {x: 6.3842416, y: 136.48027, z: 213.07124}
+    scale: {x: 0.8000001, y: 1.0000001, z: 1}
+    shadowMesh: {fileID: 8946006490751360900, guid: c3267693ba8166240a49c066289a9a3f, type: 3}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: tripo_convert_46c25573-e30e-4ec5-b3ca-1653309da534
+    mesh: {fileID: -1948628189715380065, guid: 7cd3b9d724a350c4499ff78937f44e7c, type: 3}
+    materials:
+    - {fileID: -2243412734450299093, guid: 7cd3b9d724a350c4499ff78937f44e7c, type: 3}
+    position: {x: 0.1068, y: 0.10098055, z: 0.12902912}
+    euler: {x: 314.1017, y: 359.6662, z: 18.032185}
+    scale: {x: 1, y: 1.0000001, z: 1}
+    shadowMesh: {fileID: -1948628189715380065, guid: 7cd3b9d724a350c4499ff78937f44e7c, type: 3}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  solution: {x: 0, y: 0, z: 0, w: 1}
+  start: {x: 0.5515015, y: 0.83321667, z: 0.004371324, w: -0.039711125}
+  tolerance: 1
+  coverMin: 0.9
+  spillMax: 0.1
+  iouMin: 0.62
+  bothFaces: 1
+  leftSlide: {fileID: 0}
+  rightSlide: {fileID: 0}
+  layers: []
+  cueVolume: 0.5
+  tiers: {x: 0.35, y: 0.6, z: 0.8}
+  lookalikeAngle: 50
+  snapWarmth: 0.9
+  snapAngle: 20
+  transitFly: 0.6
+  transitOverlap: 0.3

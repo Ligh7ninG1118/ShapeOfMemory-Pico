@@ -1,0 +1,5 @@
+{
+  "name": "PhysicalAssembly.Editor",
+  "references": ["PhysicalAssembly.Runtime", "PhysicalAssembly.MetaXR", "Oculus.VR", "Oculus.VR.Editor", "Oculus.Interaction", "Oculus.Interaction.Editor", "Oculus.Interaction.Editor.UnityXR", "Oculus.Interaction.OVR", "Oculus.Interaction.OVR.Editor", "Unity.XR.CoreUtils", "Unity.XR.Management", "Unity.XR.Management.Editor", "Unity.XR.OpenXR", "Unity.XR.OpenXR.Editor", "Unity.XR.OpenXR.Features.PICOSupport", "Unity.RenderPipelines.Universal.Runtime"],
+  "includePlatforms": ["Editor"]
+}

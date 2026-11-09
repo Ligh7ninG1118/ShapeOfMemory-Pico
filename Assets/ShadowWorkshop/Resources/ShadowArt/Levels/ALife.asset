@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fd3f902ccd676e41a4d0e07384ea926, type: 3}
+  m_Name: ALife
+  m_EditorClassIdentifier: ShadowWorkshop.Runtime::CloudGarden.ShadowPuzzle.SilhouetteLevel
+  title: A  L I F E
+  button: A LIFE
+  subtitle: BALL / BOOK / SKATEBOARD / LAPTOP / MOUSE / UMBRELLA
+  intro: Six things from one life. Turn them in the light until their shadows stand
+    up as one person.
+  hint: Start with the head. The umbrella becomes something to lean on. Seen from
+    the side, an open laptop bends like an elbow.
+  complete: 'A LIFE
+
+    The ball he chased, the books he carried, the board he rode,
+    the work he did -
+
+    all of it, still holding him up.'
+  accent: {r: 0.94, g: 0.7, b: 0.39, a: 1}
+  pieces:
+  - label: BALL
+    mesh: {fileID: 4300000, guid: b348bbcbe018f4e498a79204f9b6f12b, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 9e4d1726f4266674b96a8daf38ce18a1, type: 2}
+    - {fileID: 2100000, guid: 67dfbcb34c5463e46b45c65e42fa7b20, type: 2}
+    - {fileID: 2100000, guid: c02adbaabc5b6264aa59fad128e333a5, type: 2}
+    solutionPosition: {x: 0.09, y: 0.405, z: 0}
+    solutionEuler: {x: 0, y: 0, z: 0}
+    trayPosition: {x: -0.4, y: 0.093, z: -0.1}
+    trayEuler: {x: 0, y: 0, z: 0}
+  - label: BOOK
+    mesh: {fileID: 4300000, guid: 638e7d501be3e45429e46f0048704ef9, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 9e3ef9e7c35147b4ab4c991a604fe3ad, type: 2}
+    - {fileID: 2100000, guid: 91eb16fc215e46342a764533bea6e193, type: 2}
+    - {fileID: 2100000, guid: d6e466df1c1cb294686f59ae4d720e2b, type: 2}
+    solutionPosition: {x: 0.025, y: 0.33, z: 0}
+    solutionEuler: {x: 0, y: 0, z: -30}
+    trayPosition: {x: -0.42, y: 0.079, z: 0.08}
+    trayEuler: {x: 90, y: 0, z: 0}
+  - label: SKATEBOARD
+    mesh: {fileID: 4300000, guid: 8625465b15d058442ae3a72379ea149d, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 170914cc9b5d2f54db676f5649eea424, type: 2}
+    - {fileID: 2100000, guid: f839a4a77e5519149a2152abb40b140a, type: 2}
+    - {fileID: 2100000, guid: 56f3ff4aef32088469c4d257d30cd09e, type: 2}
+    - {fileID: 2100000, guid: e56baf083b54f3644a5d12a656663744, type: 2}
+    solutionPosition: {x: -0.01, y: 0.18, z: 0}
+    solutionEuler: {x: 0, y: 0, z: 15}
+    trayPosition: {x: -0.42, y: 0.08, z: 0.3}
+    trayEuler: {x: 90, y: 0, z: 0}
+  - label: LAPTOP
+    mesh: {fileID: 4300000, guid: ecab25802900c534f8fb1b28a35c86da, type: 2}
+    materials:
+    - {fileID: 2100000, guid: afd8d6bd7de3c244ebf6b10e5c66322e, type: 2}
+    - {fileID: 2100000, guid: 22a97ddb514bea14b9e7ebed7fdb821e, type: 2}
+    - {fileID: 2100000, guid: 8d887e58722d4394498fb4a6069a5147, type: 2}
+    solutionPosition: {x: 0.095, y: 0.3, z: 0}
+    solutionEuler: {x: 0, y: 0, z: 0}
+    trayPosition: {x: 0.42, y: 0.1102, z: -0.08}
+    trayEuler: {x: 0, y: 90, z: 0}
+  - label: MOUSE
+    mesh: {fileID: 4300000, guid: e00fbdf069c57f54eab8154442989528, type: 2}
+    materials:
+    - {fileID: 2100000, guid: a68f1f3c6c3d11f40b58ce76ae10e394, type: 2}
+    - {fileID: 2100000, guid: 4c85854519e80c147bcefd9514d505c8, type: 2}
+    solutionPosition: {x: 0.03, y: 0.095, z: 0}
+    solutionEuler: {x: 0, y: 0, z: 0}
+    trayPosition: {x: 0.4, y: 0.077, z: 0.1}
+    trayEuler: {x: 0, y: -90, z: 0}
+  - label: UMBRELLA
+    mesh: {fileID: 4300000, guid: cccf2bd1d094492438fcae876d043626, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 51c4d695367d1b6479b9a365ebbaa0f2, type: 2}
+    - {fileID: 2100000, guid: 5673f81cdaf5b254ba83c2899e4babf0, type: 2}
+    - {fileID: 2100000, guid: a1bc34d23a166fd4cbcebd01b6ab85a6, type: 2}
+    solutionPosition: {x: 0.165, y: 0.19, z: 0}
+    solutionEuler: {x: 0, y: 0, z: 0}
+    trayPosition: {x: 0.42, y: 0.0752, z: 0.3}
+    trayEuler: {x: 90, y: 0, z: 0}
+  outline: []
+  tolerancePixels: 3
+  coverMin: 0.9
+  regionMin: 0.8
+  spillMax: 0.07
+  pieceSpillMax: 0.12

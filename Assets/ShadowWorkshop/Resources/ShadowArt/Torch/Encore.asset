@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4836adc047517840bc8e73e50126a67, type: 3}
+  m_Name: Encore
+  m_EditorClassIdentifier: ShadowWorkshop.Runtime::CloudGarden.ShadowPuzzle.TorchLevel
+  title: E N C O R E
+  button: ENCORE
+  riddle: A record, a disc, a microphone, a stick and a harmonica. Find the light
+    that lets them sing.
+  hint: Light from the right and a little below. The two discs become the notes;
+    the microphone and drumstick hold them up.
+  complete: 'ENCORE
+
+    Two notes, played by everything on the shelf.'
+  accent: {r: 0.95, g: 0.62, b: 0.3, a: 1}
+  pieces:
+  - label: RECORD
+    mesh: {fileID: 4300000, guid: d3131232a478d064696fcb29fdae3c02, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 292d4623efe52b14cad95235c8dbc170, type: 2}
+    - {fileID: 2100000, guid: b52b11bea3c22b24b8eababfe17e3b2a, type: 2}
+    position: {x: -0.1179, y: 0.1854, z: 0.1556}
+    euler: {x: -41.641, y: 18.882, z: -27.236}
+  - label: CD
+    mesh: {fileID: 4300000, guid: 996eae1d3ed43f8469ba06a9164036ca, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 822ee4c5909ff1541b9c17267a17f756, type: 2}
+    - {fileID: 2100000, guid: a6f4c824820dd55489f0787c86628953, type: 2}
+    position: {x: 0.0466, y: 0.2237, z: 0.0762}
+    euler: {x: -41.641, y: 18.882, z: -27.236}
+  - label: MICROPHONE
+    mesh: {fileID: 4300000, guid: 288685c28bad02c49931bf37f9826a94, type: 2}
+    materials:
+    - {fileID: 2100000, guid: e521d070595d7df42b94f2c82509bf7f, type: 2}
+    - {fileID: 2100000, guid: ea9037595e7661244b606af931b3f91b, type: 2}
+    position: {x: -0.0008, y: 0.2882, z: -0.0552}
+    euler: {x: -0, y: 0, z: 3}
+  - label: DRUMSTICK
+    mesh: {fileID: 4300000, guid: e7ef7d5784082664cba3310b1ffa4793, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 1053d3c997bd8994d935e71d2ab38cf2, type: 2}
+    position: {x: 0.0949, y: 0.3357, z: 0.0167}
+    euler: {x: -0, y: 0, z: -2}
+  - label: HARMONICA
+    mesh: {fileID: 4300000, guid: 9a058c23d5d04cd46b79ca15175f49d9, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 1ede9c1aa956936489f6e4525a1d0239, type: 2}
+    - {fileID: 2100000, guid: 1053d3c997bd8994d935e71d2ab38cf2, type: 2}
+    position: {x: 0.0446, y: 0.3974, z: -0.0364}
+    euler: {x: -0, y: 0, z: 16}
+  - label: CASSETTE
+    mesh: {fileID: 4300000, guid: 00a54f9e6a5590a43836bfc2c3958d3a, type: 2}
+    materials:
+    - {fileID: 2100000, guid: f9868a1c0f762fe44b0307dfe1e1f052, type: 2}
+    - {fileID: 2100000, guid: 5e7b46233b7a8dd41ba248b153382c5d, type: 2}
+    position: {x: -0.0783, y: 0.1917, z: 0.0545}
+    euler: {x: 15.189, y: 48.237, z: -13.168}
+  - label: PICK
+    mesh: {fileID: 4300000, guid: d7ac7121219d075449080b784aa3c215, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 3a37842806c936e4a8a8565b7e272850, type: 2}
+    position: {x: 0.0568, y: 0.223, z: -0.0154}
+    euler: {x: -80, y: -90, z: 90}
+  solutionLight: {x: 0.1, y: 0.22, z: -0.4}
+  solutionYaw: 0
+  startYaw: 60
+  tolerance: 1
+  coverMin: 0.9
+  spillMax: 0.1
+  iouMin: 0.62

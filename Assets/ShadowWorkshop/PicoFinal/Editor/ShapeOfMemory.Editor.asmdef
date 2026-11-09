@@ -1,0 +1,12 @@
+{
+  "name": "ShapeOfMemory.Editor",
+  "references": [
+    "ShapeOfMemory",
+    "ShadowWorkshop.Runtime",
+    "PhysicalAssembly.Editor",
+    "ShadowWorkshop.Editor"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ]
+}

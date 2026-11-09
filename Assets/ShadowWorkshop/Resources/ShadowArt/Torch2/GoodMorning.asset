@@ -1,0 +1,181 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e73ae772b23bb7b4a8f302256c1471b3, type: 3}
+  m_Name: GoodMorning
+  m_EditorClassIdentifier: ShadowWorkshop.Runtime::CloudGarden.ShadowPuzzle.Torch2Level
+  title: G O O D   M O R N I N G
+  button: GOOD MORNING
+  riddle: A pan, an egg, strawberries, cheese, a spatula, a whisk, a ladle and two
+    forks. Someone is up before you.
+  hint: Lean the pile back and keep turning. The pan is a body, the egg a head, the
+    utensils fan out as a tail and the forks stand like feet.
+  complete: 'GOOD MORNING
+
+    Cock-a-doodle-doo.'
+  accent: {r: 0.98, g: 0.55, b: 0.3, a: 1}
+  lamps: 00000000
+  pieces:
+  - label: FRYING PAN
+    mesh: {fileID: 4300000, guid: 0c8f7fc28b656564e9886a117d268bfd, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 5d299502d32ff30488694fd22d65ff55, type: 2}
+    - {fileID: 2100000, guid: a8f779987738e6a4ca9d870061dfd3c4, type: 2}
+    position: {x: -0.024, y: -0.0397, z: -0.0463}
+    euler: {x: -37.787, y: -167.002, z: 6.549}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: EGG
+    mesh: {fileID: 4300000, guid: 7e4d7e1336457f54bb40d26296fe669a, type: 2}
+    materials:
+    - {fileID: 2100000, guid: c17193e7c07711549bb9acd271305d18, type: 2}
+    position: {x: 0.0927, y: 0.1023, z: 0.1145}
+    euler: {x: 23.927, y: -160.677, z: -1.341}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: STRAWBERRY
+    mesh: {fileID: 4300000, guid: 175f2a6b59b2c154aaa93a3c63b62bc8, type: 2}
+    materials:
+    - {fileID: 2100000, guid: f74c3ff134be574408ee1fe18a4d0b6a, type: 2}
+    - {fileID: 2100000, guid: 28b401b4812aeb746ab337b20a3361b4, type: 2}
+    position: {x: 0.0188, y: 0.1083, z: -0.0684}
+    euler: {x: 23.927, y: -160.677, z: -11.341}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: STRAWBERRY
+    mesh: {fileID: 4300000, guid: 175f2a6b59b2c154aaa93a3c63b62bc8, type: 2}
+    materials:
+    - {fileID: 2100000, guid: f74c3ff134be574408ee1fe18a4d0b6a, type: 2}
+    - {fileID: 2100000, guid: 28b401b4812aeb746ab337b20a3361b4, type: 2}
+    position: {x: 0.0916, y: 0.1389, z: 0.1773}
+    euler: {x: 23.927, y: -160.677, z: -46.341}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: CHEESE
+    mesh: {fileID: 4300000, guid: 4138b82d494affe4bbb203a32ad9f9ef, type: 2}
+    materials:
+    - {fileID: 2100000, guid: d592f8b689caf2a47b8bf2fcb0f69cd1, type: 2}
+    position: {x: 0.1024, y: 0.0963, z: 0.0122}
+    euler: {x: 23.927, y: -160.677, z: -26.341}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: SPATULA
+    mesh: {fileID: 4300000, guid: b6fc157e6be090143950e6682a14f0d3, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 0cab3ae666f8c0346a2e01872a13b0ba, type: 2}
+    - {fileID: 2100000, guid: 1807153c917ade34dbec40b942c31f39, type: 2}
+    position: {x: -0.2049, y: 0.0377, z: -0.0538}
+    euler: {x: 23.927, y: -160.677, z: -51.341}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: WHISK
+    mesh: {fileID: 4300000, guid: 473b603d743c02e41865a6efac4f2e70, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 1807153c917ade34dbec40b942c31f39, type: 2}
+    - {fileID: 2100000, guid: 0cab3ae666f8c0346a2e01872a13b0ba, type: 2}
+    position: {x: -0.0324, y: 0.0611, z: 0.2277}
+    euler: {x: 23.927, y: -160.677, z: -96.341}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: LADLE
+    mesh: {fileID: 4300000, guid: 3da13b7531fd1164fa91b7e3c3ea4725, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 0cab3ae666f8c0346a2e01872a13b0ba, type: 2}
+    position: {x: -0.1546, y: 0.0751, z: 0.0632}
+    euler: {x: 23.927, y: -160.677, z: -18.341}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: FORK
+    mesh: {fileID: 4300000, guid: b6232f542315d814799caaf703f5f6d4, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 0cab3ae666f8c0346a2e01872a13b0ba, type: 2}
+    position: {x: 0.0507, y: -0.1451, z: -0.0944}
+    euler: {x: 23.927, y: -160.677, z: -26.341}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: FORK
+    mesh: {fileID: 4300000, guid: b6232f542315d814799caaf703f5f6d4, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 0cab3ae666f8c0346a2e01872a13b0ba, type: 2}
+    position: {x: 0.1107, y: -0.0307, z: 0.2048}
+    euler: {x: 23.927, y: -160.677, z: -26.341}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  solution: {x: -0.17247778, y: 0.7812392, z: -0.2463238, w: 0.54702955}
+  start: {x: 0.16317593, y: -0.3368241, z: -0.059391182, w: 0.9254165}
+  tolerance: 1
+  coverMin: 0.9
+  spillMax: 0.1
+  iouMin: 0.62
+  bothFaces: 0
+  flips: 0
+  leftSlide: {fileID: 0}
+  rightSlide: {fileID: 0}
+  layers: []
+  cueVolume: 0.5
+  tiers: {x: 0.35, y: 0.6, z: 0.8}
+  lookalikeAngle: 50
+  cueAngle: 30
+  snapWarmth: 0.9
+  snapAngle: 20
+  heldSnapAngle: 8
+  transitFly: 0.8
+  transitOverlap: 0.3

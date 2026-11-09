@@ -1,0 +1,4 @@
+newmtl TravelMapPaper
+Kd 1 1 1
+illum 1
+map_Kd Folded Travel Map.png

@@ -1,0 +1,20 @@
+{
+  "_doc": "Import rules for Props/ and Textures/ in this folder (Assets/Scenes/Editor/ScenePropImport.cs). size = longest side in metres after import, 0 keeps the file's own scale. pivot = bottom | center | keep. Saving this file reimports the models; run Tools > Scene Props > Sync for textures and materials. Sizes are real-world estimates: adjust freely.",
+  "defaults": { "pivot": "bottom", "maxTextureSize": 1024, "smoothness": 0.15, "readable": false },
+  "props": [
+    { "model": "SM_Drill_01",         "texture": "TX_Drill_01",         "material": "MT_Drill_01",         "size": 0.24 },
+    { "model": "SM_Duster_01",        "texture": "TX_Duster_01",        "material": "MT_Duster_01",        "size": 0.22 },
+    { "model": "SM_Glove_01",         "texture": "TX_Glove_01",         "material": "MT_Glove_01",         "size": 0.27 },
+    { "model": "SM_HammerClaw_01",    "texture": "TX_HammerClaw_01",    "material": "MT_HammerClaw_01",    "size": 0.33 },
+    { "model": "SM_HammerSledge_01",  "texture": "TX_HammerSledge_01",  "material": "MT_HammerSledge_01",  "size": 0.32 },
+    { "model": "SM_MeasuringTape_01", "texture": "TX_MeasuringTape_01", "material": "MT_MeasuringTape_01", "size": 0.10 },
+    { "model": "SM_PaintBrush_01",    "texture": "TX_PaintBrush_01",    "material": "MT_PaintBrush_01",    "size": 0.28 },
+    { "model": "SM_PaintRoller_01",   "texture": "TX_PaintRoller_01",   "material": "MT_PaintRoller_01",   "size": 0.40 },
+    { "model": "SM_Rope_01",          "texture": "TX_Rope_01",          "material": "MT_Rope_01",          "size": 0.40 },
+    { "model": "SM_SawArch_01",       "texture": "TX_SawArch_01",       "material": "MT_SawArch_01",       "size": 0.60 },
+    { "model": "SM_SawLarge_01",      "texture": "TX_SawLarge_01",      "material": "MT_SawLarge_01",      "size": 0.65 },
+    { "model": "SM_ScrewDriver_01",   "texture": "TX_ScrewDriver_01",   "material": "MT_ScrewDriver_01",   "size": 0.22 },
+    { "model": "SM_WorkBench_01",     "texture": "TX_WorkBench_01",     "material": "MT_WorkBench_01",     "size": 1.70, "maxTextureSize": 2048, "showcaseYaw": -90 },
+    { "model": "SM_Wrench_01",        "texture": "TX_Wrench_01",        "material": "MT_Wrench_01",        "size": 0.25 }
+  ]
+}

@@ -1,0 +1,157 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e73ae772b23bb7b4a8f302256c1471b3, type: 3}
+  m_Name: Birthday
+  m_EditorClassIdentifier: ShadowWorkshop.Runtime::CloudGarden.ShadowPuzzle.Torch2Level
+  title: H A P P Y   B I R T H D A Y
+  button: BIRTHDAY
+  riddle: A plate, two presents, three candles, a party hat and a balloon. Somebody
+    is a year older.
+  hint: Tip the pile back a little. The presents are the layers, the plate sits underneath
+    and the balloon floats on the right.
+  complete: 'HAPPY BIRTHDAY
+
+    Make a wish.'
+  accent: {r: 0.98, g: 0.62, b: 0.7, a: 1}
+  lamps: 00000000
+  pieces:
+  - label: PLATE
+    mesh: {fileID: 4300000, guid: d14c29006f9005d419c83285117d70fc, type: 2}
+    materials:
+    - {fileID: 2100000, guid: ebe54e99ece655e468ad2ec8ed110e96, type: 2}
+    position: {x: 0.2305, y: -0.0587, z: -0.0944}
+    euler: {x: 13.995, y: -76.781, z: -14.433}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: BIG PRESENT
+    mesh: {fileID: 4300000, guid: 6fa79fc7ed074d24cb08f45e14f2833a, type: 2}
+    materials:
+    - {fileID: 2100000, guid: da47fd94b1b41fa47993ba6a8b83c255, type: 2}
+    - {fileID: 2100000, guid: 734b0987b9c666c4491f55ddb118a880, type: 2}
+    position: {x: -0.0987, y: -0.084, z: -0.0073}
+    euler: {x: 13.995, y: -76.781, z: -14.433}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: SMALL PRESENT
+    mesh: {fileID: 4300000, guid: 57ebb4f0b8ae58c4b8234cf054b7f383, type: 2}
+    materials:
+    - {fileID: 2100000, guid: d11c2613ea6f33c4cb1ecee5c7ea6828, type: 2}
+    - {fileID: 2100000, guid: 734b0987b9c666c4491f55ddb118a880, type: 2}
+    position: {x: 0.1888, y: 0.0244, z: -0.0606}
+    euler: {x: 13.995, y: -76.781, z: -14.433}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: CANDLE
+    mesh: {fileID: 4300000, guid: d03d5917a2e68934fae277dc1d3ef7c1, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 76424a74601df09418dda23c1246ac37, type: 2}
+    - {fileID: 2100000, guid: f4fd2374a4c8c5540a1b0fa9a834cd7b, type: 2}
+    position: {x: -0.1894, y: 0.0845, z: 0.0034}
+    euler: {x: 13.995, y: -76.781, z: -14.433}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: CANDLE
+    mesh: {fileID: 4300000, guid: d03d5917a2e68934fae277dc1d3ef7c1, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 76424a74601df09418dda23c1246ac37, type: 2}
+    - {fileID: 2100000, guid: f4fd2374a4c8c5540a1b0fa9a834cd7b, type: 2}
+    position: {x: 0.2178, y: 0.0791, z: -0.0544}
+    euler: {x: 13.995, y: -76.781, z: -14.433}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: CANDLE
+    mesh: {fileID: 4300000, guid: d03d5917a2e68934fae277dc1d3ef7c1, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 76424a74601df09418dda23c1246ac37, type: 2}
+    - {fileID: 2100000, guid: f4fd2374a4c8c5540a1b0fa9a834cd7b, type: 2}
+    position: {x: 0.0341, y: 0.0624, z: 0.0408}
+    euler: {x: 13.995, y: -76.781, z: -14.433}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: PARTY HAT
+    mesh: {fileID: 4300000, guid: 30444c58a8d4ce74c9d100c3c466cce6, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 4f19230bf3669a54d90c3441e5cc466a, type: 2}
+    - {fileID: 2100000, guid: 734b0987b9c666c4491f55ddb118a880, type: 2}
+    position: {x: 0.1056, y: -0.0259, z: -0.1123}
+    euler: {x: 13.995, y: -76.781, z: 47.567}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  - label: BALLOON
+    mesh: {fileID: 4300000, guid: 945c4d7987fb4b149bd13b4adc3380d6, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 4e7ce464e74116a4aaf45b32f55d2883, type: 2}
+    - {fileID: 2100000, guid: e199482de7b42fb4ebf7c74490240968, type: 2}
+    position: {x: -0.0115, y: 0.038, z: 0.1522}
+    euler: {x: 13.995, y: -76.781, z: -26.433}
+    scale: {x: 1, y: 1, z: 1}
+    shadowMesh: {fileID: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+  solution: {x: -0.16773127, y: 0.25488698, z: -0.04494346, w: 0.9512512}
+  start: {x: 0.1484525, y: -0.7912401, z: -0.21201216, w: 0.5540323}
+  tolerance: 1
+  coverMin: 0.9
+  spillMax: 0.1
+  iouMin: 0.7
+  bothFaces: 0
+  flips: 0
+  leftSlide: {fileID: 0}
+  rightSlide: {fileID: 0}
+  layers: []
+  cueVolume: 0.5
+  tiers: {x: 0.35, y: 0.6, z: 0.8}
+  lookalikeAngle: 50
+  cueAngle: 30
+  snapWarmth: 0.9
+  snapAngle: 20
+  heldSnapAngle: 8
+  transitFly: 0.8
+  transitOverlap: 0.3
