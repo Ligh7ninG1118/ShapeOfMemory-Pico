@@ -78,6 +78,25 @@ namespace ShapeOfMemory.Tests
             marks.Hand(hand,At(degrees),false,false);Assert.IsNull(marks.Held(hand),"let go");
             yield return null;
         }
+        // A hand pinches a ribbon's hanging silk (a centimetre in front of its middle) and lets go the next frame. With
+        // PinchPicks it lifts itself and turns the book (lifts); without, it just hangs again.
+        static IEnumerator Pick(MemoryBookmarks marks,string id,int hand=1,bool lifts=true)
+        {
+            var m=marks.Find(id);Assert.NotNull(m,id+"'s ribbon");
+            float grown=Time.realtimeSinceStartup+2;while(m.Grow<1&&Time.realtimeSinceStartup<grown)yield return null;Assert.AreEqual(1,m.Grow,id+"'s ribbon has grown out");
+            var at=m.Hang.TransformPoint(new Vector3(0,-MemoryBookmarks.Drop*.5f,-.01f));bool lifted=false;
+            void Heard(string line,string trace,LogType type){if(line.StartsWith($"SHAPE_OF_MEMORY_RIBBON {id} lifted"))lifted=true;}
+            Application.logMessageReceived+=Heard;
+            try
+            {
+                marks.Hand(hand,at,true,true);Assert.AreSame(m,marks.Held(hand),"a pinch on its silk takes "+id+"'s ribbon");
+                yield return null;
+                marks.Hand(hand,at,false,false);Assert.IsNull(marks.Held(hand),"let go");
+                float deadline=Time.realtimeSinceStartup+MemoryBookmarks.ClickSeconds+.5f;while(m.Holder>=0&&Time.realtimeSinceStartup<deadline)yield return null;
+            }
+            finally{Application.logMessageReceived-=Heard;}
+            Assert.Less(m.Holder,0,"done with it");Assert.AreEqual(lifts,lifted,lifts?"it lifted itself":"it never lifted");
+        }
         // Until the book stops turning.
         static IEnumerator Settle(MemoryGame game,float seconds=6)
         {
@@ -381,7 +400,8 @@ namespace ShapeOfMemory.Tests
             Assert.IsTrue(game.Found,"the found moment plays over the orb");StringAssert.Contains("MEMORY FOUND",string.Join(" ",game.Found.GetComponentsInChildren<TMP_Text>().Select(t=>t.text)));
             yield return new WaitForSecondsRealtime(MemoryGame.FoundHold-.5f);Assert.AreEqual(MemoryGame.Phase.Solved,game.Current,"it holds");
             yield return WaitFor(game,MemoryGame.Phase.Lowering,8);
-            foreach(var piece in level.world.Pieces){Assert.Less(level.transform.InverseTransformPoint(piece.position).y,.12f,piece.name+" back on the table");Assert.Greater(piece.localScale.x,0,piece.name+" stays");}
+            // Back to their places on the table and gone (2026-11-16: the table is cleared after a memory).
+            foreach(var piece in level.world.Pieces){Assert.Less(level.transform.InverseTransformPoint(piece.position).y,.12f,piece.name+" back on the table");Assert.AreEqual(0,piece.localScale.x,1e-4f,piece.name+" faded away");}
             yield return WaitFor(game,MemoryGame.Phase.Found,MemoryGame.LowerSeconds+1);
             Assert.IsTrue(game.Book.OnStand);StringAssert.Contains("FOUND",game.PageText(true));Assert.AreEqual(1,Plates(game.Book.LeftFace),"its picture");
             var again=game.Tile("found/replay");Assert.NotNull(again,"PLAY AGAIN on the found page");Assert.AreEqual("PLAY AGAIN",again.Label.text);
@@ -670,18 +690,23 @@ namespace ShapeOfMemory.Tests
             Assert.Greater(nearer,.05f,"a far piece is drawn nearer");
             level.Projection.Render(level.Projection.Solution,Torch2Projection.Home);level.Projection.Evaluate();Assert.AreEqual(1,level.Projection.Score.iou,1e-6,"the shadow is the real pile's");
         }
-        // 2026-11-15 (the user: "nerf the snap"): nothing takes the orb out of the hand, and nothing turns it on a release.
-        // Left alone within reach of the answer for LockSeconds, the light on the pages comes up, the orb glides slowly into
-        // the answer, and only as it lands is the memory found. A touch while it waits starts the wait again; once it has
-        // locked, nothing takes it back.
+        // 2026-11-15 (the user: "nerf the snap"): nothing snaps the orb out of a moving hand, and nothing turns it on a
+        // release. Left alone within reach of the answer for LockSeconds, the light on the pages comes up, the orb glides
+        // slowly into the answer, and only as it lands is the memory found. A touch while it waits starts the wait again;
+        // once it has locked, nothing takes it back. 2026-11-16 (the user): a hand holding it still counts as leaving it
+        // alone; the lock then takes it out of the hand. A hand still turning it never locks.
         [UnityTest] public IEnumerator LeftAloneAtTheAnswerTheLightComesUpThenTheOrbGlidesIn()
         {
             MemoryGame game=null;yield return Open(g=>game=g);yield return Play(game,0);var level=game.Level;var answer=level.Projection.Solution;
             Assert.IsTrue(level.HoldToSolve);var near=Quaternion.AngleAxis(4,Vector3.up)*answer;
-            Assert.IsTrue(level.BeginHold(7));level.Hold(7,level.Position,near);
-            yield return new WaitForSecondsRealtime(level.LockSeconds+.5f);
-            Assert.IsTrue(level.InReach,"precondition: 4 degrees off is in reach");
-            Assert.IsTrue(level.Busy,"held at the answer, it stays in the hand");Assert.IsFalse(level.Locking);Assert.IsFalse(level.Completed);
+            // Held and turning to and fro about the answer (3.5 degrees either way, .6 s a swing: more than StillAngle
+            // between the 10 Hz checks), never leaving its reach: no lock.
+            Assert.IsTrue(level.BeginHold(7));
+            float from=Time.realtimeSinceStartup,until=from+level.LockSeconds+.5f;
+            while(Time.realtimeSinceStartup<until){level.Hold(7,level.Position,Quaternion.AngleAxis(3.5f*Mathf.Sin((Time.realtimeSinceStartup-from)*Mathf.PI*2/.6f),Vector3.up)*near);yield return null;}
+            Assert.IsTrue(level.InReach,"precondition: about 4 degrees off is in reach");
+            Assert.IsTrue(level.Busy,"held and turning, it stays in the hand");Assert.IsFalse(level.Locking);Assert.IsFalse(level.Completed);
+            level.Hold(7,level.Position,near);
             level.EndHold(7);Assert.IsFalse(level.Snapping,"no snap on letting go");
             yield return new WaitForSecondsRealtime(level.LockSeconds*.6f);
             Assert.IsFalse(level.Locking,"not yet");Assert.AreEqual(4,Quaternion.Angle(level.Rotation,answer),.2f,"where the hand left it");
@@ -695,6 +720,33 @@ namespace ShapeOfMemory.Tests
             Assert.Greater(Quaternion.Angle(level.Rotation,answer),3,"the glide sets off slowly");
             yield return WaitFor(game,MemoryGame.Phase.Solved,level.LockRemaining+1);
             Assert.IsTrue(level.Completed);Assert.IsFalse(level.Righting);Assert.Less(Quaternion.Angle(level.Rotation,answer),.01f,"exactly the answer as it is found");
+        }
+        // 2026-11-16 (the user): held still in reach (within StillAngle, hand tremor), the memory locks out of the hand: the
+        // hand loses the orb and can't take it back, and it glides in as it does untouched.
+        [UnityTest] public IEnumerator HeldStillAtTheAnswerItLocksOutOfTheHand()
+        {
+            MemoryGame game=null;yield return Open(g=>game=g);yield return Play(game,0);var level=game.Level;var answer=level.Projection.Solution;
+            var near=Quaternion.AngleAxis(4,Vector3.up)*answer;
+            Assert.IsTrue(level.BeginHold(7));
+            float until=Time.realtimeSinceStartup+level.LockSeconds+.6f;int step=0;
+            // A trembling hand: half a degree either way, every frame.
+            while(!level.Locking&&Time.realtimeSinceStartup<until){level.Hold(7,level.Position,Quaternion.AngleAxis((step++%2==0?.5f:-.5f),Vector3.right)*near);yield return null;}
+            Assert.IsTrue(level.Locking,"held still in reach, it locks");Assert.IsFalse(level.Busy,"out of the hand");Assert.IsFalse(level.BeginHold(7),"the hand can't take it back");
+            var before=level.Rotation;level.Hold(7,level.Position,near);Assert.AreEqual(0,Quaternion.Angle(before,level.Rotation),1e-3f,"the old hold moves nothing");
+            yield return WaitFor(game,MemoryGame.Phase.Solved,level.LockRemaining+1);
+            Assert.Less(Quaternion.Angle(level.Rotation,answer),.01f,"exactly the answer as it is found");
+        }
+        // The play strip wakes only while the head looks down at it (headsets; the desktop's never sleeps).
+        [Test] public void TheStripWakesOnlyLookedDownAt()
+        {
+            Vector3 Look(float down,float aside=0)=>Quaternion.Euler(down,aside,0)*Vector3.forward;
+            Assert.IsFalse(MemoryGame.LooksAtStrip(Look(5),false),"at the walls");
+            Assert.IsFalse(MemoryGame.LooksAtStrip(Look(27),false),"at the orb");
+            Assert.IsFalse(MemoryGame.LooksAtStrip(Look(32.7f),false),"at the orb's lowest ring");
+            Assert.IsTrue(MemoryGame.LooksAtStrip(Look(45),false),"down at the strip");
+            Assert.IsTrue(MemoryGame.LooksAtStrip(Look(34),true),"awake, it stays awake a little above where it woke");
+            Assert.IsFalse(MemoryGame.LooksAtStrip(Look(31),true),"and sleeps again looking up at the orb");
+            Assert.IsFalse(MemoryGame.LooksAtStrip(Look(50,60),false),"down, but off to the side");
         }
         // MENU while a lock comes in undoes it, so the found moment never plays with the book down (and the paused orb never
         // locks); back on the walls and left alone in reach, it locks again.
@@ -864,19 +916,31 @@ namespace ShapeOfMemory.Tests
             }
             finally{marks.Tracking=tracking;marks.ReadHand=reader;}
             yield return new WaitForSecondsRealtime(.4f);Assert.Less(credits.Tempt,.01f,"the hand gone, it settles");
-            yield return Lift(marks,"credits",35);Assert.IsFalse(game.Book.Turning,"lifted short: nothing turns");Assert.AreEqual(MemoryGame.BeginSpread,game.Book.Spread);
-            Assert.Greater(credits.Raised,1f,"it falls back from where it was let go");
-            yield return new WaitForSecondsRealtime(1.2f);Assert.AreEqual(0,credits.Raised,.5f,"and hangs again");
-            // One page turns, straight to the credits (not a riffle through every spread between).
+            // Stirred, the silk stays one piece: its hanging part leaves the rail's lip where the span over the rail ends.
+            Assert.Less(Vector3.Distance(credits.Line[0],credits.AcrossTo),1e-4f,"hanging from the lip");
+            // A pinch is the choice (PinchPicks): pinched and let go at once, it lifts itself and one page turns, straight
+            // to the credits (not a riffle through every spread between).
+            Assert.IsTrue(MemoryBookmarks.PinchPicks);
             int landings=0;void Landed(string line,string trace,LogType type){if(line.StartsWith("SHAPE_OF_MEMORY_BOOK landed spread="))landings++;}
             Application.logMessageReceived+=Landed;
-            try{yield return Lift(marks,"credits",80);yield return Settle(game);}
+            try{yield return Pick(marks,"credits");yield return Settle(game);}
             finally{Application.logMessageReceived-=Landed;}
             Assert.AreEqual(1,landings,"one flip");
             Assert.AreEqual(game.CreditsSpread,game.Book.Spread);Assert.AreEqual(MemoryGame.Phase.Credits,game.Current,"the credits before the end");
             yield return Tap(game.Book.Corner(false),"the credits' back edge");yield return Settle(game);Assert.AreEqual(MemoryGame.Phase.Ending,game.Current);
             Assert.IsFalse(game.Book.Corner(false).isActiveAndEnabled,"not back onto a chapter that isn't open");
-            yield return Lift(marks,"begin",80,hand:0);yield return Settle(game);Assert.AreEqual(MemoryGame.Phase.Title,game.Current);Assert.AreEqual(MemoryGame.BeginSpread,game.Book.Spread);
+            yield return Pick(marks,"begin",hand:0);yield return Settle(game);Assert.AreEqual(MemoryGame.Phase.Title,game.Current);Assert.AreEqual(MemoryGame.BeginSpread,game.Book.Spread);
+            // The 2026-11-15 lift (PinchPicks off): lifted short it falls back and nothing turns; lifted past LiftOn it turns.
+            MemoryBookmarks.PinchPicks=false;
+            try
+            {
+                yield return Lift(marks,"credits",35);Assert.IsFalse(game.Book.Turning,"lifted short: nothing turns");Assert.AreEqual(MemoryGame.BeginSpread,game.Book.Spread);
+                Assert.Greater(credits.Raised,1f,"it falls back from where it was let go");
+                yield return new WaitForSecondsRealtime(1.2f);Assert.AreEqual(0,credits.Raised,.5f,"and hangs again");
+                yield return Lift(marks,"credits",80);yield return Settle(game);Assert.AreEqual(game.CreditsSpread,game.Book.Spread,"lifted past LiftOn");
+                yield return Pick(marks,"begin",hand:0,lifts:false);yield return Settle(game);Assert.AreEqual(game.CreditsSpread,game.Book.Spread,"a pinch alone does nothing");
+            }
+            finally{MemoryBookmarks.PinchPicks=true;}
             // The desktop's click: it lifts itself, and the book turns.
             marks.Find("settings").Press.Control.Press();yield return new WaitForSecondsRealtime(MemoryBookmarks.ClickSeconds+.1f);
             yield return Settle(game);Assert.AreEqual(MemoryGame.Phase.Settings,game.Current);

@@ -34,7 +34,7 @@ namespace ShapeOfMemory
     //   QUIT is the back endpaper's ribbon (the user, 2026-11-15: the plaque that stood by the stand for it sat awkwardly).
     // - PAUSE folds the orb away and brings the book down to the stand (Paused): RESUME, the table height, or turn back to
     //   leave the memory. The headset's own menu (focus lost) pauses too.
-    // - Solved: the found moment holds FoundHold, the things go back to the table and stay, the book comes down open at the
+    // - Solved: the found moment holds FoundHold, the things go back to the table and fade, the book comes down open at the
     //   memory, its picture printed (Found); its page beckons, and turning it moves on (or PLAY AGAIN plays it again).
     // A level swaps in place, so the player rig and passthrough are never reloaded. The scene owns its player.
     public sealed class MemoryGame : MonoBehaviour, IShadowHost
@@ -71,6 +71,12 @@ namespace ShapeOfMemory
         // orb's reach; a seated player reaches it with the forearm. It rises out of the table while a memory plays.
         public static Vector3 StripAt=>new Vector3(0,StageBelow-.52f,.30f-StageAhead);
         public static Quaternion StripFacing=>Facing(StripAt);
+        // A hand presses the strip only while the player looks down at it (the user, 2026-11-16: hands rolling the orb
+        // pressed it unseen). The strip sits about 60 degrees under the eyes, the orb about 27 (its lowest ring 33): the
+        // strip wakes with the head turned StripWake degrees down and sleeps again above StripSleep, within StripYaw of
+        // straight ahead; asleep its buttons go dim and take no fingertip. A hand that held the orb in the last
+        // OrbCooldown seconds presses nothing on it either (letting go, it drops onto the strip). Headsets only.
+        public const float StripWake=36,StripSleep=33,StripYaw=45,OrbCooldown=.6f;
         // Turned to the eyes: +y toward them, +z up the panel.
         public static Quaternion Facing(Vector3 at)
         {
@@ -160,6 +166,10 @@ namespace ShapeOfMemory
         int returnSpread=-1;
         // 0 the play strip down in the table .. 1 up.
         float stripUp;
+        // The player looks down at the strip (StripWake), and when a hand last held the orb.
+        bool stripAwake;
+        float orbHeldAt=float.NegativeInfinity;
+        public bool StripAwake=>stripAwake;
         // The toolbar shows from the moment the title's dark lifts (or at once on a launch into a chapter).
         bool toolbarUp=true;
         public bool ToolbarUp=>toolbarUp;
@@ -564,8 +574,10 @@ namespace ShapeOfMemory
                 Current=Phase.Solved;solvedAt=Time.unscaledTime;Progress.Solve(LevelIndex);Show(null);Book.Refill();
                 Found=MemoryFound.Play(Level,Player.ViewCamera.transform,kit,Glow,sounds.Found);
             }
-            // The found moment held, and no hand still on the pile: its things go back to the table, then the book comes down.
-            if(Current==Phase.Solved&&!settling&&!Busy&&Time.unscaledTime>=solvedAt+FoundHold){settling=true;var game=Level;MemoryOutro.Play(Level,sounds,()=>{if(Level==game)Lower();},true);}
+            // The found moment held, and no hand still on the pile: its things go back to their places on the table and fade
+            // away (the user, 2026-11-16: clear the table after a memory; they had stayed until the page was turned), then
+            // the book comes down.
+            if(Current==Phase.Solved&&!settling&&!Busy&&Time.unscaledTime>=solvedAt+FoundHold){settling=true;var game=Level;MemoryOutro.Play(Level,sounds,()=>{if(Level==game)Lower();});}
             if(Level&&foldTime<foldSeconds)
             {
                 foldTime+=dt;float t=Mathf.Clamp01(foldTime/foldSeconds),e=t*t*(3-2*t);
@@ -584,7 +596,9 @@ namespace ShapeOfMemory
             float up=Mathf.Clamp01(Book.Up/StandShare);
             stand.gameObject.SetActive(up<.999f);stand.localScale=new Vector3(standScale.x,standScale.y*Mathf.Max(.001f,1-up),standScale.z);
             coverPrompt.gameObject.SetActive(Current==Phase.Cover&&Book.OnStand&&Book.Closed);
-            // The play strip rises out of the table while a memory is played, and sinks again.
+            // The play strip rises out of the table while a memory is played, and sinks again. It wakes while looked down at.
+            if(Busy)orbHeldAt=Time.unscaledTime;
+            stripAwake=LookingAtStrip(stripAwake);
             float stripTarget=ShownSet=="play"?1:0;
             if(!Mathf.Approximately(stripUp,stripTarget)||strip.gameObject.activeSelf!=stripUp>0)
             {
@@ -1151,8 +1165,9 @@ namespace ShapeOfMemory
                 var spec=specs[i];var position=new Vector3((i-(specs.Length-1)*.5f)*ButtonPitch,.014f,.015f);string id=name+"/"+spec.id;
                 captions[id]=spec.caption;
                 var button=MemoryButton.Create(set.transform,spec.id,T(spec.caption),Icon(spec.icon),position,kit,()=>{Debug.Log("SHAPE_OF_MEMORY_PRESS "+id);audioSource.PlayOneShot(click);spec.action();},
-                    ()=>!Busy&&!Book.Turning&&(spec.enabled==null||spec.enabled()),HandsFree,spec.hold,true);
-                button.Press.Label=id;button.Press.Why=()=>Busy?"orb held":Book.Turning?"book turning":spec.enabled!=null&&!spec.enabled()?$"not now ({Current})":HandsBlocked();
+                    ()=>!Busy&&!Book.Turning&&(spec.enabled==null||spec.enabled()),()=>StripBlocked()==null,spec.hold,true);
+                button.Press.Label=id;button.Press.Why=()=>Busy?"orb held":Book.Turning?"book turning":spec.enabled!=null&&!spec.enabled()?$"not now ({Current})":StripBlocked();
+                button.Awake=()=>stripAwake;
                 buttons[id]=button;
             }
         }
@@ -1165,6 +1180,25 @@ namespace ShapeOfMemory
         }
         public MemoryButton Button(string set,string id)=>buttons.TryGetValue(set+"/"+id,out var button)?button:null;
         Texture2D Icon(string name){foreach(var icon in Icons)if(icon&&icon.name==name)return icon;return null;}
+        // The strip's buttons: as any button (HandsBlocked), and on a headset only while looked down at (StripWake) and not
+        // just after the orb was held (OrbCooldown).
+        string StripBlocked()
+        {
+            var why=HandsBlocked();if(why!=null||!Player||!Player.IsXR)return why;
+            if(!stripAwake)return "not looking at the strip";
+            if(Time.unscaledTime-orbHeldAt<OrbCooldown)return "the orb just let go";
+            return null;
+        }
+        // Whether the head looks down at the strip: turned at least StripWake degrees under the horizon (to wake; awake, it
+        // sleeps above StripSleep), within StripYaw of the stage's straight ahead. The desktop's strip never sleeps.
+        bool LookingAtStrip(bool awake)=>!Player||!Player.IsXR||LooksAtStrip(Stage.InverseTransformDirection(Player.ViewCamera.transform.forward),awake);
+        // The same for a head looking along forward (stage space: +z ahead, +y up).
+        public static bool LooksAtStrip(Vector3 forward,bool awake)
+        {
+            forward.Normalize();
+            float down=Mathf.Asin(Mathf.Clamp(-forward.y,-1,1))*Mathf.Rad2Deg,aside=Mathf.Abs(Mathf.Atan2(forward.x,forward.z)*Mathf.Rad2Deg);
+            return down>=(awake?StripSleep:StripWake)&&aside<=StripYaw;
+        }
         // Hands may press a button unless one of them is pinching at the orb: that pinch belongs to the pile.
         bool HandsFree()=>HandsBlocked()==null;
         // Why hands may not press now (null: they may), for the device log.

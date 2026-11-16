@@ -57,12 +57,17 @@ namespace CloudGarden.ShadowPuzzle
         public static float Glide(float t){t=Mathf.Clamp01(t);return 1-(1-t)*(1-t)*(1+t);}
         public const float RightSeconds=1.4f;
         // Set by a host before play (Shape of Memory, 2026-11-15: "nerf the snap"): no snaps, so the orb never moves by
-        // itself while a hand might want it. Left untouched within reach of an answer (InReach) for LockSeconds, the memory
-        // locks: the lamp light brightens over BrightenSeconds (Torch2World.Brighten), then the orb glides slowly into the
+        // itself while a hand might want it. Left untouched (or held still: StillAngle) within reach of an answer (InReach) for
+        // LockSeconds, the memory locks: the lamp light brightens over BrightenSeconds (Torch2World.Brighten), then the orb glides slowly into the
         // exact design pose (a flipped find is righted on the way, so no Righting follows), and the level is solved as it
         // lands. A locked orb can't be taken back; a host's pause cancels the lock (CancelLock) and the wait starts again.
         [System.NonSerialized] public bool HoldToSolve;
         [System.NonSerialized] public float LockSeconds=1,BrightenSeconds=.6f;
+        // A hand still on the orb counts as leaving it alone while it barely moves it (the user, 2026-11-16, walking back
+        // "hands-off only"): no more than StillAngle degrees of turn and StillDrift metres of carry from where the wait
+        // started. Past either, the wait starts again from there. Locked, the orb leaves the hand (Owner -1; Torch2Input lets
+        // go of it) and glides in as it does untouched.
+        [System.NonSerialized] public float StillAngle=2.5f,StillDrift=.01f;
         // The glide after the light: angle/GlideSpeed seconds (degrees per second), kept within GlideSeconds.
         [System.NonSerialized] public float GlideSpeed=70;
         [System.NonSerialized] public Vector2 GlideSeconds=new Vector2(1.2f,2.6f);
@@ -83,7 +88,8 @@ namespace CloudGarden.ShadowPuzzle
             }
         }
         float nextWall,nextScore,hintUntil,snapTime,snapLength,rightTime,rightLength,lockTime,lockLength;
-        Quaternion snapFrom,snapTo,rightFrom,lockFrom;
+        Quaternion snapFrom,snapTo,rightFrom,lockFrom,stillFrom=Quaternion.identity;
+        Vector3 stillAt;
         bool solveOnLanding;
         void Awake()
         {
@@ -121,19 +127,31 @@ namespace CloudGarden.ShadowPuzzle
         public void Evaluate(float dt)
         {
             if(Completed||Locking)return;
-            // Left alone counts only while hands could take it (a host's intro, pause or outro switches the input off).
-            StableTime=(HoldToSolve?InReach&&input&&input.enabled:Projection.Score.Ready)&&!Busy&&!Snapping?StableTime+dt:0;
+            // Left alone counts only while hands could take it (a host's intro, pause or outro switches the input off). Under
+            // HoldToSolve a hand holding it still counts as alone (HeldStill).
+            bool alone=HoldToSolve?HeldStill():!Busy;
+            StableTime=(HoldToSolve?InReach&&input&&input.enabled:Projection.Score.Ready)&&alone&&!Snapping?StableTime+dt:0;
             if(HoldToSolve&&StableTime>=LockSeconds)Lock();
             else if(!HoldToSolve&&StableTime>=SettleSeconds)Solve();
             else UpdateMessage();
         }
-        // Left in reach for LockSeconds (HoldToSolve): the light comes up, then the orb glides into the design pose.
+        // Untouched, or held within StillAngle / StillDrift of where the hold's wait started (which moves on, and restarts the
+        // wait, whenever the hand moves it further).
+        bool HeldStill()
+        {
+            if(!Busy){stillFrom=Rotation;stillAt=Position;return true;}
+            if(Quaternion.Angle(Rotation,stillFrom)<=StillAngle&&(Position-stillAt).sqrMagnitude<=StillDrift*StillDrift)return true;
+            stillFrom=Rotation;stillAt=Position;return false;
+        }
+        // Left in reach for LockSeconds (HoldToSolve): the light comes up, then the orb glides into the design pose. A hand
+        // holding it still lets go of it here.
         void Lock()
         {
             var s=Projection.Score;float off=Projection.AngleToAnswer(Rotation),design=Quaternion.Angle(Rotation,Projection.Solution);
+            int held=Owner;Owner=-1;
             StableTime=0;hintUntil=0;lockFrom=Rotation;lockTime=0;
             lockLength=BrightenSeconds+Mathf.Clamp(design/Mathf.Max(1,GlideSpeed),GlideSeconds.x,GlideSeconds.y);
-            Debug.Log($"TORCH2_LOCK: {level.name} left alone {LockSeconds:0.0} s in reach ({(s.Ready?"passing":$"warmth {s.warmth:0.00}")}, {off:0.0} degrees from an answer); gliding {design:0} degrees into the design pose, landing in {lockLength:0.0} s");
+            Debug.Log($"TORCH2_LOCK: {level.name} {(held>=0?$"held still by {held}":"left alone")} {LockSeconds:0.0} s in reach ({(s.Ready?"passing":$"warmth {s.warmth:0.00}")}, {off:0.0} degrees from an answer); gliding {design:0} degrees into the design pose, landing in {lockLength:0.0} s");
         }
         // A host's pause (Shape of Memory's MENU): the lock comes undone where the glide got to; left alone in reach again,
         // it locks again.
@@ -168,7 +186,7 @@ namespace CloudGarden.ShadowPuzzle
         // Grabbing stops a release snap where it is: the hand wins. A snap out of the hand (SnapWhileHeld) is already a
         // solve, so nothing takes it back.
         public bool CanHold(int owner)=>!(Completed||solveOnLanding||Locking||owner<0||(Owner>=0&&Owner!=owner));
-        public bool BeginHold(int owner){if(!CanHold(owner))return false;Owner=owner;StableTime=0;snapLength=0;return true;}
+        public bool BeginHold(int owner){if(!CanHold(owner))return false;Owner=owner;StableTime=0;snapLength=0;stillFrom=Rotation;stillAt=Position;return true;}
         // A hold handed from one holder to another without letting go (Torch2Input: of two hands holding, the first lets go).
         public void PassHold(int from,int to){if(Owner==from&&to>=0)Owner=to;}
         // The owner can lose the orb here (SnapWhileHeld): a holder checks Owner after each Hold.

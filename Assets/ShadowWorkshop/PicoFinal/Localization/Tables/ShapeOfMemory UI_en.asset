@@ -329,11 +329,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1378742795223040
-    m_Localized: LIFT A RIBBON
+    m_Localized: PINCH A RIBBON
     m_Metadata:
       m_Items: []
   - m_Id: 1378742824583168
-    m_Localized: Pinch a ribbon and lift it to turn to its page.
+    m_Localized: Pinch a ribbon to turn to its page.
     m_Metadata:
       m_Items: []
   - m_Id: 1378742824583169

@@ -7,7 +7,8 @@ namespace ShapeOfMemory
     // Leaving a level, the intro played backwards: the lamps go out, the orb opens (rings and hub shrink, wires draw in),
     // the pile's things go back to their places on the table one at a time, the last in first out, faster than they came
     // (Torch2Transit in reverse), and shrink away; the next level's things then grow in where they lie (MemoryIntro).
-    // keep: they stay on the table instead (a found memory, until its page is turned); Vanish then shrinks them away.
+    // keep: they stay on the table instead (Shrink's own outro); Vanish then shrinks them away. A found memory's things go
+    // back and fade too (2026-11-16; they used to stay until its page was turned).
     // Input and the level's own updates are off throughout; done runs at the end.
     public sealed class MemoryOutro : MonoBehaviour
     {

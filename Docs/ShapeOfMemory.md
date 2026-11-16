@@ -261,7 +261,7 @@ Spreads:
 | Spread | Left page | Right page |
 | --- | --- | --- |
 | 0, Settings (`SettingsSpread`) | SETTINGS: table height (LOWER / RAISE), language (each by its own name, in its own face) | MUSIC ON / OFF, HOLD TO START OVER (2 s) |
-| 1, Begin (`BeginSpread`; the cover opens here) | TO THE READER (读者须知): turn a page, press, lift a ribbon, turn the objects | How many memories are found, "Turn the page to begin", table height, "Settings: turn back a page" |
+| 1, Begin (`BeginSpread`; the cover opens here) | TO THE READER (读者须知): turn a page, press, pinch a ribbon, turn the objects | How many memories are found, "Turn the page to begin", table height, "Settings: turn back a page" |
 | 2–5, one chapter per memory (`SpreadOf`) | CHAPTER n, the name, its picture (found), ? (open) or a padlock (locked) | The riddle and PLAY under it (found: PLAY AGAIN) |
 | 6, the end | THANK YOU (once Home is found) | The four memories' pictures |
 | 7, credits | "Made with love by", then the team in two columns | "With thanks to", then music, art and tools by section ([Credits](#credits)) |
@@ -347,14 +347,15 @@ Home → turn the page → the end → the credits. Plan and its reasoning: the 
   (`SHAPE_OF_MEMORY_PAGE next`). Let go short and it falls back, and nothing else happens. The next chapter's PLAY
   waits for the outro.
 
-- **Outro (`MemoryOutro`):** this plays whenever a memory is left: the page turn after solving, or the page turned back
-  from a pause.
+- **Outro (`MemoryOutro`):** this plays once a found memory has held its moment (then the book comes down), and whenever
+  a memory is left from a pause. Since 2026-11-16 a found memory's things go back and fade as well (they used to stay
+  on the table until its page was turned), so the table is clear when the book comes down.
   1. The lamps fade out with the cue.
   2. The orb opens: the rings and hub shrink and the wires draw in.
   3. The things go back to their places on the table one at a time, the last in first out (the intro's transit in
      reverse, 1.8× as fast), then shrink away.
   4. The next level's things grow in where they lie, which is the intro's first 0.35 s.
-- **Ribbons**, lifted, turn one page straight to their spread (`MemoryBook.TurnStraight`: its front the open page, its
+- **Ribbons**, pinched, turn one page straight to their spread (`MemoryBook.TurnStraight`: its front the open page, its
   back the arriving one; no riffle through the spreads between).
 - **Ending:** after Home, the book turns to the ending's spread with a rising arpeggio. Its page beckons on to the
   credits, the last spread; turning back from them to the ending doesn't play the arpeggio again.
@@ -399,7 +400,9 @@ Home → turn the page → the end → the credits. Plan and its reasoning: the 
   0.25–0.5 s ease-out set off at three times that and read as a jerk. A generated harp run swells under the glide so its
   top lands with the orb (`MemorySounds.Swell`), then the shared bells and MEMORY FOUND plaque play (`MemoryFound`).
 - **The lock** (`Torch2Workshop.HoldToSolve`, the snap-nerf session's): left alone within reach of an answer for a
-  second, the light comes up and the orb glides into the answer. Within reach means passing, or warm within `snapAngle`;
+  second, the light comes up and the orb glides into the answer. A hand still on the orb counts as leaving it alone
+  while it moves it less than `StillAngle` (2.5°) and `StillDrift` (1 cm) from where the wait started (2026-11-16, the
+  user: a still hand at the answer should lock too); the lock then takes the orb out of the hand. Within reach means passing, or warm within `snapAngle`;
   a level's `lockAngle` (above 0) caps it, however the shadow scores. Birthday (10°) and GoodMorning (6°) have one
   (2026-11-15: the user found their snap too wide; measured, Birthday locked up to about 25° off, GoodMorning up to 16°).
   Home locks up to about 20° off and BonVoyage about 8° (no cap).
@@ -551,6 +554,14 @@ while pressed, an aqua collar on hover, hint pips, a hold's square ring of dots 
 | The play strip, lying across the table's front under the orb (`MemoryGame.StripAt`: 30 cm ahead, 52 cm under the eyes, tilted to them; 53 cm wide) | While playing: it rises out of the table (0.35 s) and sinks again | HINT (two pips) · HOLD TO RESET (1 s) · PAUSE · HOLD TO QUIT (1.5 s), in a row, names under the caps |
 | QUIT's ribbon (ember, the right-hand one; [Ribbons](#ribbons-memorybookmarks)) | Whenever the book lies open on its stand: browsing, paused or found | Turns to the back endpaper, which asks: KEEP READING or QUIT |
 
+**Mistouch guard** (2026-11-16, the user: hands rolling the orb pressed it, unseen): on a headset the strip takes a
+fingertip only while the player looks down at it, the head at least 36° under the horizon (it sleeps again above 33°)
+and within 45° of straight ahead (`MemoryGame.StripWake/StripSleep/StripYaw`, `LooksAtStrip`). The strip is about 60°
+under the eyes, the orb about 27° (its lowest ring 33°), so looking at the orb never wakes it. Asleep, its buttons dim
+and a finger doesn't light them (`MemoryButton.Awake`); the device log says `refused=not looking at the strip`. A hand
+that held the orb in the last 0.6 s presses nothing on it either (`OrbCooldown`: letting go, the hand drops onto it).
+The desktop's strip never sleeps.
+
 Why there (2026-11-15 device round): the upright post by the right hand stood in front of the right lamp, and a post on
 either side would, since the lamps sit about 57 cm out, level with the head. Under the orb in view, the strip hides no
 lamp, ring or shadow, is about 28 cm from the lamps' beams and outside the orb's reach, and a seated player reaches it
@@ -587,23 +598,31 @@ of it; no ribbon per chapter (2026-11-15). The rail runs 1.5–4.5 cm in front o
 and hangs just past its front. Those points are measured from the Book Rest (`MemoryBookmarks.BookHeight` gives the book's
 height on it), so a book of another thickness doesn't push them into the rail (our own book lies 2 cm lower than the
 artist's, and the ribbons went through the rail when it came back). The silk is a generated woven texture (fine ribs, a sheen, stitched hems, a crease over the rail, a
-swallowtail end), tinted per ribbon, the mark embroidered in a deeper shade of its own colour; the ribbons sway slowly,
+swallowtail end), tinted per ribbon, one strip of silk from the pages to its foot (a mesh rebuilt as it moves,
+2026-11-16: it was a hanging quad hinged to the span over the rail, and stirred, its twist opened a gap either side of
+its middle). It rolls over the rail's front edge (`Roll`, 3 mm of silk), and a lift, the sway and the stir bend it along
+its length and twist it more toward the foot, the mark embroidered in a deeper shade of its own colour; the ribbons sway slowly,
 never while a hand or a look is on one; the open spread's ribbon hangs longer. They show whenever the book lies open on
 the stand: browsing, and with a memory paused or found (a ribbon then leaves the memory, as turning the page away does).
 
-**Lifting** (2026-11-15: the user found the poke unintuitive and asked to lift them). A pinch within 3.5 cm of a ribbon's
+**Picking** (2026-11-16, the user: lifting was hard to work; `MemoryBookmarks.PinchPicks`, on). A pinch on a ribbon is
+the choice: within 4.5 cm of its hanging silk, a pinch takes it, it lifts itself over the rail in about 0.25 s (as the
+desktop's click lifts it) and one page turns to its spread, whether the hand lets go or not; a hand rising with it only
+lifts it sooner. The Begin page says how: PINCH A RIBBON (捏住书签). Turn `PinchPicks` off for the lift below.
+
+**Lifting** (2026-11-15: the user found the poke unintuitive and asked to lift them; off since 2026-11-16). A pinch within 3.5 cm of a ribbon's
 hanging silk takes it (a pinch that closed up to 0.4 s before reaching it counts, as at the page edges); its border
 lights aqua while a pinch would take it and while it is held. Held, the silk points at the fingers, swinging about the
 rail; lifted 60° from hanging (toward the reader and up: raising its foot to the rail, or drawing it out about 10 cm)
 the book riffles to its spread and the ribbon falls back with a little swing. Let go short of that and it falls back and
 nothing happens. A look and a pinch takes it too: the hand's rise lifts it (12 cm for all the way). The desktop's click
 lifts it by itself (0.3 s). Fingertip and ray presses do nothing (a hand passing by turned the book). The Begin page
-says how: LIFT A RIBBON. Device log: `SHAPE_OF_MEMORY_RIBBON` (taken, let go at, lifted -> spread).
+said how: LIFT A RIBBON. Device log: `SHAPE_OF_MEMORY_RIBBON` (taken, let go at, lifted -> spread).
 
 They grow out of the book when they appear, one after another (0.5 s each, 0.08 s apart): the silk slides out from
 between the pages, over the rail and down; they draw back in (0.25 s) when hidden. A hand within 9 cm of one stirs it as
-a breeze does a beckoning page (it lifts about 12° and flutters and twists a little); the aqua border comes at 3.5 cm,
-where a pinch would take it. Lifted, one page turns straight to its spread.
+a breeze does a beckoning page (it lifts about 12°, more toward its foot, and flutters and twists along its length); the
+aqua border comes at 4.5 cm, where a pinch would take it. Picked, one page turns straight to its spread.
 
 ### The wall tone (`MemoryGame.WallTone`)
 

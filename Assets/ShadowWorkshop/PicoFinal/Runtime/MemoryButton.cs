@@ -21,6 +21,11 @@ namespace ShapeOfMemory
         public Pressable Press{get;private set;}
         public string Caption{get=>label.text;set{label.text=value;MemoryText.Apply(label);}}
         public int PipsLit;
+        // Awake (unset: always): asleep, an available button shows dimmed and no fingertip lights it (MemoryGame's strip
+        // sleeps while the player isn't looking down at it). It wakes and sleeps over WakeSeconds.
+        public Func<bool> Awake;
+        public const float WakeSeconds=.15f;
+        float wake=1;
         Transform cap;
         Renderer collar,body,icon;
         TMP_Text label;
@@ -73,12 +78,14 @@ namespace ShapeOfMemory
         }
         void Update()
         {
-            bool available=Press.Available,down=available&&Press.Down,hover=available&&Press.Hover;
+            bool awake=Awake==null||Awake(),available=Press.Available,down=available&&Press.Down,hover=available&&awake&&Press.Hover;
+            wake=Mathf.MoveTowards(wake,awake?1:0,Time.unscaledDeltaTime/WakeSeconds);
             sink=Mathf.MoveTowards(sink,down?Travel:0,Time.unscaledDeltaTime*.15f);cap.localPosition=new Vector3(0,-sink,0);
-            // The face stays Leather; the collar shows the state, and a button that can't be pressed now goes quiet.
-            MemoryUi.Tint(collar,!available?MemoryPalette.Ink500:down?MemoryPalette.AquaGrab:hover?MemoryPalette.AquaHover:MemoryPalette.Faint);
-            if(icon)MemoryUi.Tint(icon,available?MemoryPalette.Gold:MemoryPalette.Faint);
-            label.color=available?MemoryPalette.Moonlight:MemoryPalette.Faint;
+            // The face stays Leather; the collar shows the state, and a button that can't be pressed now goes quiet. Asleep,
+            // it dims toward quiet.
+            MemoryUi.Tint(collar,!available?MemoryPalette.Ink500:down?MemoryPalette.AquaGrab:hover?MemoryPalette.AquaHover:Color.Lerp(MemoryPalette.Ink500,MemoryPalette.Faint,wake));
+            if(icon)MemoryUi.Tint(icon,available?Color.Lerp(Color.Lerp(MemoryPalette.Gold,MemoryPalette.Faint,.7f),MemoryPalette.Gold,wake):MemoryPalette.Faint);
+            label.color=available?Color.Lerp(MemoryPalette.Faint,MemoryPalette.Moonlight,wake):MemoryPalette.Faint;
             int lit=Mathf.FloorToInt(Press.Held*dots.Length+.001f);
             for(int i=0;i<dots.Length;i++)MemoryUi.Tint(dots[i],i<lit?MemoryPalette.Ember:MemoryPalette.Ink600);
             for(int i=0;i<pips.Length;i++)MemoryUi.Tint(pips[i],i<PipsLit?MemoryPalette.Gold:MemoryPalette.Ink500);
