@@ -17,6 +17,15 @@ namespace CloudGarden.ShadowPuzzle
         // Where loose things lie when a level has no table layout (x, z in level space): inside the table (x +-.7,
         // z -.46 to .54), clear of the lamps at the front corners and of the game's riddle card and console at the front.
         public static readonly Rect Area=Rect.MinMaxRect(-.58f,-.15f,.58f,.48f);
+        // Every loose thing also lies WallClear (metres) in front of both walls: the area's back corners reach past them
+        // (in Shape of Memory the walls are the book's pages, and things came up through them, 2026-11-15). And a host may
+        // keep them out of places on the table (KeepOut, level space x and z; Shape of Memory: its reading stand, which
+        // comes up out of the table under the book while a found memory's things stay).
+        public const float WallClear=.025f;
+        public static Rect[] KeepOut=Array.Empty<Rect>();
+        // A host whose table reaches further may scatter over more of it than Area (Shape of Memory: back to the walls'
+        // corner, since its stand keeps the front middle clear).
+        public static Rect? HostArea;
         // The table box's top in level space (Torch2Room: centre -.035, height .06).
         public const float TableTop=-.005f;
 
@@ -51,13 +60,14 @@ namespace CloudGarden.ShadowPuzzle
             }
         }
 
-        // drawn: where a piece's place in the pile is drawn (Torch2Workshop.Drawn; null = its own place).
-        public Torch2Transit(Torch2Level level,Quaternion pileRotation,Vector3 pilePosition,Func<Vector3,Vector3> drawn=null):this(level,pileRotation,pilePosition,level.transitFly,level.transitOverlap,drawn){}
+        // drawn: where a piece's place in the pile is drawn (Torch2Workshop.Drawn, per piece, since each may have its own
+        // gather; null = its own place).
+        public Torch2Transit(Torch2Level level,Quaternion pileRotation,Vector3 pilePosition,Func<Torch2Piece,Vector3> drawn=null):this(level,pileRotation,pilePosition,level.transitFly,level.transitOverlap,drawn){}
         // fly: seconds per mover; overlap: how much of one flight the next may share (0 = strictly one at a time).
-        public Torch2Transit(Torch2Level level,Quaternion pileRotation,Vector3 pilePosition,float fly,float overlap,Func<Vector3,Vector3> drawn=null)
+        public Torch2Transit(Torch2Level level,Quaternion pileRotation,Vector3 pilePosition,float fly,float overlap,Func<Torch2Piece,Vector3> drawn=null)
         {
             int n=level.pieces.Length;hub=pilePosition;table=TablePoses(level,out var groups);slot=new Pose[n];moverOf=new int[n];
-            for(int i=0;i<n;i++){var at=level.pieces[i].position;if(drawn!=null)at=drawn(at);slot[i]=new Pose(pilePosition+pileRotation*at,pileRotation*Quaternion.Euler(level.pieces[i].euler));}
+            for(int i=0;i<n;i++){var at=drawn!=null?drawn(level.pieces[i]):level.pieces[i].position;slot[i]=new Pose(pilePosition+pileRotation*at,pileRotation*Quaternion.Euler(level.pieces[i].euler));}
             // One mover per group, framed on its first member.
             var byGroup=new SortedDictionary<int,List<int>>();for(int i=0;i<n;i++){if(!byGroup.TryGetValue(groups[i],out var list))byGroup[groups[i]]=list=new List<int>();list.Add(i);}
             var all=new List<Mover>();
@@ -249,8 +259,17 @@ namespace CloudGarden.ShadowPuzzle
         // per level, so a level always scatters the same way).
         public static Pose[] Scatter(Torch2Level level)
         {
-            int n=level.pieces.Length;var poses=new Pose[n];var boxes=new Rect[n];var flats=new Quaternion[n];var areas=new float[n];
-            var random=new System.Random(Seed(level.name));
+            // Where a host keeps places clear, a layout that still overlaps is laid again from another seed (up to Relays
+            // times; the least overlapping wins): placing the largest first can leave a later thing nowhere clear.
+            var best=ScatterOnce(level,0,out float least);
+            for(int salt=1;salt<Relays&&least>0&&KeepOut.Length>0;salt++){var poses=ScatterOnce(level,salt,out float left);if(left<least){least=left;best=poses;}}
+            return best;
+        }
+        const int Relays=8;
+        static Pose[] ScatterOnce(Torch2Level level,int salt,out float penalty)
+        {
+            int n=level.pieces.Length;var poses=new Pose[n];var boxes=new Rect[n];var flats=new Quaternion[n];var areas=new float[n];penalty=0;
+            var random=new System.Random(Seed(level.name)+salt*7919);
             for(int i=0;i<n;i++)
             {
                 var piece=level.pieces[i];var size=Vector3.Scale(Bounds(piece).size,piece.Scale);
@@ -262,20 +281,26 @@ namespace CloudGarden.ShadowPuzzle
             foreach(int i in order)
             {
                 var piece=level.pieces[i];float bestOverlap=float.PositiveInfinity;
-                for(int attempt=0;attempt<300&&bestOverlap>0;attempt++)
+                // More tries where a host keeps places clear (the room left is smaller and oddly shaped).
+                int attempts=KeepOut.Length>0?900:300;
+                for(int attempt=0;attempt<attempts&&bestOverlap>0;attempt++)
                 {
                     var rotation=Quaternion.Euler(0,90*random.Next(4)+((float)random.NextDouble()*2-1)*12,0)*flats[i];
                     Footprint(piece,rotation,out var min,out var max);
-                    float w=Mathf.Min(max.x-min.x,Area.width),d=Mathf.Min(max.z-min.z,Area.height);
-                    var c=new Vector2(Mathf.Lerp(Area.xMin+w*.5f,Area.xMax-w*.5f,(float)random.NextDouble()),Mathf.Lerp(Area.yMin+d*.5f,Area.yMax-d*.5f,(float)random.NextDouble()));
+                    var area=HostArea??Area;
+                    float w=Mathf.Min(max.x-min.x,area.width),d=Mathf.Min(max.z-min.z,area.height);
+                    var c=new Vector2(Mathf.Lerp(area.xMin+w*.5f,area.xMax-w*.5f,(float)random.NextDouble()),Mathf.Lerp(area.yMin+d*.5f,area.yMax-d*.5f,(float)random.NextDouble()));
                     var box=new Rect(c.x-(max.x-min.x)*.5f,c.y-(max.z-min.z)*.5f,max.x-min.x,max.z-min.z);
                     float overlap=0;foreach(int j in placed)overlap+=Overlap(box,boxes[j],Gap);
+                    // The walls weigh most: through a page is worse than on the stand's footprint.
+                    foreach(var k in KeepOut)overlap+=Overlap(box,k,0)*4;
+                    overlap+=Behind(box)*16;
                     if(overlap>=bestOverlap)continue;
                     bestOverlap=overlap;boxes[i]=box;
                     // Pivot such that the bottom touches the table top and the footprint's centre sits at c.
                     poses[i]=new Pose(new Vector3(c.x-(min.x+max.x)*.5f,TableTop-min.y+.0005f,c.y-(min.z+max.z)*.5f),rotation);
                 }
-                placed.Add(i);
+                placed.Add(i);penalty+=bestOverlap;
             }
             return poses;
         }
@@ -287,6 +312,19 @@ namespace CloudGarden.ShadowPuzzle
         {
             var bounds=Bounds(piece);min=Vector3.positiveInfinity;max=Vector3.negativeInfinity;
             for(int c=0;c<8;c++){var p=rotation*Vector3.Scale(Corner(bounds,c),piece.Scale);min=Vector3.Min(min,p);max=Vector3.Max(max,p);}
+        }
+        // How far a footprint (x, z) reaches behind either wall's WallClear line, times its size (so it weighs as an area).
+        static float Behind(Rect box)
+        {
+            float worst=0;
+            for(int w=0;w<2;w++)
+            {
+                var o=Torch2Projection.WallOrigin[w];var n=Torch2Projection.WallNormal[w];float least=float.MaxValue;
+                foreach(var c in new[]{new Vector2(box.xMin,box.yMin),new Vector2(box.xMax,box.yMin),new Vector2(box.xMin,box.yMax),new Vector2(box.xMax,box.yMax)})
+                    least=Mathf.Min(least,(c.x-o.x)*n.x+(c.y-o.z)*n.z);
+                worst+=Mathf.Max(0,WallClear-least);
+            }
+            return worst*(box.width+box.height);
         }
         // Overlapping area of two boxes, each grown by half the gap.
         static float Overlap(Rect a,Rect b,float gap)

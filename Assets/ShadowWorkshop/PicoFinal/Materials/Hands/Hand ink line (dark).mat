@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Hand ink line (dark)
+  m_Shader: {fileID: 4800000, guid: e2e2d625112a254419bffb4cf37b2d4d, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 2992
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Ints: []
+    m_Floats:
+    - _Boil: 0.0008
+    - _BoilRate: 8
+    - _FadeCut: 0.9
+    - _Seed: 5.3
+    - _Width: 0.001
+    m_Colors:
+    - _Color: {r: 0.16862746, g: 0.11764706, b: 0.13333334, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

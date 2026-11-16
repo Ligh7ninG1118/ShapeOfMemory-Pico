@@ -2,6 +2,9 @@
   "name": "ShapeOfMemory.Tests",
   "references": [
     "ShapeOfMemory",
+    "Unity.Localization",
+    "Unity.ResourceManager",
+    "Unity.TextMeshPro",
     "ShadowWorkshop.Runtime",
     "ShadowWorkshop.Integration"
   ],

@@ -56,8 +56,10 @@ namespace ShadowWorkshopIntegration.Editor
             {
                 string path=materialFolder+"/"+swatch.name+".mat";var material=AssetDatabase.LoadAssetAtPath<Material>(path);
                 if(!material){material=new Material(shader);AssetDatabase.CreateAsset(material,path);}
-                var color=new Color(swatch.color[0],swatch.color[1],swatch.color[2]);
-                material.SetColor("_BaseColor",color);material.SetFloat("_Smoothness",swatch.smoothness);EditorUtility.SetDirty(material);materials[swatch.name]=material;
+                // A material given a printed texture in Unity (e.g. ticket / ticket band) keeps its own tint and smoothness.
+                if(!material.GetTexture("_BaseMap")){var color=new Color(swatch.color[0],swatch.color[1],swatch.color[2]);
+                    material.SetColor("_BaseColor",color);material.SetFloat("_Smoothness",swatch.smoothness);EditorUtility.SetDirty(material);}
+                materials[swatch.name]=material;
             }
             var meshes=new Dictionary<string,(Mesh mesh,Material[] materials)>();
             foreach(var item in objects)
@@ -66,10 +68,24 @@ namespace ShadowWorkshopIntegration.Editor
                 if(!mesh){mesh=new Mesh();AssetDatabase.CreateAsset(mesh,path);}else mesh.Clear();
                 mesh.name=item.name;var v=new Vector3[item.vertices.Length/3];for(int i=0;i<v.Length;i++)v[i]=new Vector3(item.vertices[i*3],item.vertices[i*3+1],item.vertices[i*3+2]);
                 mesh.vertices=v;mesh.subMeshCount=item.submeshes.Length;for(int s=0;s<item.submeshes.Length;s++)mesh.SetTriangles(item.submeshes[s].triangles,s);
-                mesh.RecalculateNormals();mesh.RecalculateBounds();EditorUtility.SetDirty(mesh);
+                mesh.RecalculateNormals();mesh.RecalculateBounds();mesh.uv=PlanarUVs(mesh);EditorUtility.SetDirty(mesh);
                 meshes[item.name]=(mesh,item.submeshes.Select(s=>materials[s.material]).ToArray());
             }
             return meshes;
+        }
+        // Front-on UVs across the mesh's thinnest axis, 0..1 over its outline, so flat props (the boarding pass) can take a
+        // printed texture: the back face is mirrored to read the right way round, and edges pick up the outline's border pixels.
+        public static Vector2[] PlanarUVs(Mesh mesh)
+        {
+            var b=mesh.bounds;var size=b.size;int a=size.x<=size.y&&size.x<=size.z?0:size.y<=size.z?1:2;
+            int u=a==0?2:0,w=a==1?2:1;float mirror=a==2?1:-1; // (z,y) for x-thin, (x,z) for y-thin, (x,y) for z-thin
+            var v=mesh.vertices;var n=mesh.normals;var uv=new Vector2[v.Length];
+            for(int i=0;i<v.Length;i++)
+            {
+                float s=size[u]>0?(v[i][u]-b.min[u])/size[u]:0,t=size[w]>0?(v[i][w]-b.min[w])/size[w]:0;
+                uv[i]=new Vector2(n[i][a]*mirror>.5f?1-s:s,t);
+            }
+            return uv;
         }
 
         public const string TorchSource="Assets/ShadowWorkshop/Art/Torch/TorchObjects.json";

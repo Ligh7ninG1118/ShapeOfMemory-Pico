@@ -7,6 +7,8 @@
     "PhysicalAssembly.MetaXR",
     "Oculus.Interaction",
     "Unity.TextMeshPro",
+    "Unity.Localization",
+    "Unity.ResourceManager",
     "Unity.InputSystem",
     "Unity.RenderPipelines.Universal.Runtime"
   ]

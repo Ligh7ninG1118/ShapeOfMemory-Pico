@@ -14,6 +14,7 @@ Shader "ShadowWorkshop/Projected Slide"
         _SlideSaturation("Saturation",Range(0,1))=1
         _SlideMix("Slide strength",Range(0,1))=0
         _SlideFloor("Darkest slide value",Range(0,1))=.55
+        _Bright("Brighter (a found memory locking in)",Range(1,2))=1
         [Enum(UnityEngine.Rendering.CullMode)] _Cull("Cull",Float)=0
     }
     SubShader
@@ -31,7 +32,7 @@ Shader "ShadowWorkshop/Projected Slide"
             TEXTURE2D(_Slide); SAMPLER(sampler_Slide);
             CBUFFER_START(UnityPerMaterial)
                 float4 _BaseMap_ST; half4 _BaseColor; float4 _Slide_TexelSize; float4 _SlideRect;
-                half _SlideBlur, _SlideSaturation, _SlideMix, _SlideFloor, _Cull;
+                half _SlideBlur, _SlideSaturation, _SlideMix, _SlideFloor, _Bright, _Cull;
             CBUFFER_END
             struct Attributes { float4 positionOS : POSITION; float2 uv : TEXCOORD0; UNITY_VERTEX_INPUT_INSTANCE_ID };
             struct Varyings { float4 positionCS : SV_POSITION; float2 uv : TEXCOORD0; UNITY_VERTEX_OUTPUT_STEREO };
@@ -53,7 +54,7 @@ Shader "ShadowWorkshop/Projected Slide"
             half4 frag(Varyings input) : SV_Target
             {
                 half4 light=SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,input.uv)*_BaseColor;
-                if(_SlideMix<=0) return half4(light.rgb,1);
+                if(_SlideMix<=0) return half4(light.rgb*_Bright,1);
                 float2 uv=input.uv*_SlideRect.xy+_SlideRect.zw;
                 float lod=log2(max(1.0,_SlideBlur*_Slide_TexelSize.z));
                 half3 slide;
@@ -62,7 +63,7 @@ Shader "ShadowWorkshop/Projected Slide"
                 half grey=dot(slide,half3(.299,.587,.114));
                 slide=lerp(grey.xxx,slide,_SlideSaturation);
                 slide=_SlideFloor+(1-_SlideFloor)*slide;
-                return half4(light.rgb*lerp(half3(1,1,1),slide,_SlideMix),1);
+                return half4(light.rgb*lerp(half3(1,1,1),slide,_SlideMix)*_Bright,1);
             }
             ENDHLSL
         }

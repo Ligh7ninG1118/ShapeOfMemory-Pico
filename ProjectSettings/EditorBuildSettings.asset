@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/ShadowWorkshop/PicoFinal/Scenes/PicoFinal.unity
     guid: 94d0532c31de0a949a66ffe1c5b13358
   - enabled: 1
+    path: Assets/ShadowWorkshop/PicoFinal/Scenes/PicoFinal_Environment.unity
+    guid: 09b35998751dbe647955c9eb46518f2c
+  - enabled: 1
     path: Assets/ShadowWorkshop/Scenes/ThreeWishes.unity
     guid: 62ceea7395ffd5544b29b2a5324bbcd0
   - enabled: 1
@@ -21,7 +24,9 @@ EditorBuildSettings:
     path: Assets/ShadowWorkshop/Scenes/EverydayObjects.unity
     guid: 30f7a948ea02c384181a7a4ccf9d0915
   m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: 8a2c858117495b84fbce8e758cbec8be, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    com.unity.localization.settings: {fileID: 11400000, guid: 907f4716f5df6ea44bfa49d4dde78d7b, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: b449ff60c64ee8c4da00cce5f7936c25, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: e86c3d9ad332b444f90b6e8955393f38, type: 2}
   m_UseUCBPForAssetBundles: 0

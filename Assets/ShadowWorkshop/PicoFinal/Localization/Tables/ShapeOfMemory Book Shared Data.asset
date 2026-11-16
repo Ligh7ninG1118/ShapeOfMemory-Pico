@@ -1,0 +1,238 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: ShapeOfMemory Book Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: ShapeOfMemory Book
+  m_TableCollectionNameGuidString: c22bfd1e0a0cde349bf6738217324e8f
+  m_Entries:
+  - m_Id: 61409574912
+    m_Key: Birthday_NEW/button
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396828
+  - m_Id: 61468295168
+    m_Key: Birthday_NEW/riddle
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396829
+  - m_Id: 61468295169
+    m_Key: Birthday_NEW/hint
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396830
+  - m_Id: 61468295170
+    m_Key: Birthday_NEW/complete
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396831
+  - m_Id: 61468295171
+    m_Key: BonVoyage_NEW/button
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396832
+  - m_Id: 61468295172
+    m_Key: BonVoyage_NEW/riddle
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396833
+  - m_Id: 61468295173
+    m_Key: BonVoyage_NEW/hint
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396834
+  - m_Id: 61472489472
+    m_Key: BonVoyage_NEW/complete
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396835
+  - m_Id: 61472489473
+    m_Key: GoodMorning_NEW/button
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396836
+  - m_Id: 61472489474
+    m_Key: GoodMorning_NEW/riddle
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396837
+  - m_Id: 61472489475
+    m_Key: GoodMorning_NEW/hint
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396838
+  - m_Id: 61472489476
+    m_Key: GoodMorning_NEW/complete
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396839
+  - m_Id: 61472489477
+    m_Key: Home_NEW/button
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396840
+  - m_Id: 61476683776
+    m_Key: Home_NEW/riddle
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396841
+  - m_Id: 61476683777
+    m_Key: Home_NEW/hint
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396842
+  - m_Id: 61476683778
+    m_Key: Home_NEW/complete
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396843
+  - m_Id: 61476683779
+    m_Key: credits/made-by
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396844
+  - m_Id: 61476683780
+    m_Key: credits/thanks-to
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396845
+  - m_Id: 61476683781
+    m_Key: credits/section/Music & Sound
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396846
+  - m_Id: 61476683782
+    m_Key: credits/section/Art & Assets
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396847
+  - m_Id: 61476683783
+    m_Key: credits/section/Tools
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396848
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 714218833402396765
+  references:
+    version: 2
+    RefIds:
+    - rid: 714218833402396765
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1794474446297
+    - rid: 714218833402396828
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'From the level asset Birthday_NEW (button). English: Copy
+          asset text into tables after a gym edit.'
+    - rid: 714218833402396829
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'From the level asset Birthday_NEW (riddle). English: Copy
+          asset text into tables after a gym edit.'
+    - rid: 714218833402396830
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'From the level asset Birthday_NEW (hint). English: Copy asset
+          text into tables after a gym edit.'
+    - rid: 714218833402396831
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'From the level asset Birthday_NEW (complete). English: Copy
+          asset text into tables after a gym edit.'
+    - rid: 714218833402396832
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'From the level asset BonVoyage_NEW (button). English: Copy
+          asset text into tables after a gym edit.'
+    - rid: 714218833402396833
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'From the level asset BonVoyage_NEW (riddle). English: Copy
+          asset text into tables after a gym edit.'
+    - rid: 714218833402396834
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'From the level asset BonVoyage_NEW (hint). English: Copy
+          asset text into tables after a gym edit.'
+    - rid: 714218833402396835
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'From the level asset BonVoyage_NEW (complete). English: Copy
+          asset text into tables after a gym edit.'
+    - rid: 714218833402396836
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'From the level asset GoodMorning_NEW (button). English: Copy
+          asset text into tables after a gym edit.'
+    - rid: 714218833402396837
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'From the level asset GoodMorning_NEW (riddle). English: Copy
+          asset text into tables after a gym edit.'
+    - rid: 714218833402396838
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'From the level asset GoodMorning_NEW (hint). English: Copy
+          asset text into tables after a gym edit.'
+    - rid: 714218833402396839
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'From the level asset GoodMorning_NEW (complete). English:
+          Copy asset text into tables after a gym edit.'
+    - rid: 714218833402396840
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'From the level asset Home_NEW (button). English: Copy asset
+          text into tables after a gym edit.'
+    - rid: 714218833402396841
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'From the level asset Home_NEW (riddle). English: Copy asset
+          text into tables after a gym edit.'
+    - rid: 714218833402396842
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'From the level asset Home_NEW (hint). English: Copy asset
+          text into tables after a gym edit.'
+    - rid: 714218833402396843
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'From the level asset Home_NEW (complete). English: Copy asset
+          text into tables after a gym edit.'
+    - rid: 714218833402396844
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'From the Credits asset (Pico Final > Credits). English: Copy
+          asset text into tables.'
+    - rid: 714218833402396845
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'From the Credits asset (Pico Final > Credits). English: Copy
+          asset text into tables.'
+    - rid: 714218833402396846
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'From the Credits asset (Pico Final > Credits). English: Copy
+          asset text into tables.'
+    - rid: 714218833402396847
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'From the Credits asset (Pico Final > Credits). English: Copy
+          asset text into tables.'
+    - rid: 714218833402396848
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'From the Credits asset (Pico Final > Credits). English: Copy
+          asset text into tables.'

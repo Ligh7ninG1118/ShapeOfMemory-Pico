@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Localization-Assets-Shared
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Localization-Assets-Shared
+  m_GUID: 4544a1d1bdeb70647a925587e4741d83
+  m_SerializeEntries:
+  - m_GUID: c22bfd1e0a0cde349bf6738217324e8f
+    m_Address: Assets/ShadowWorkshop/PicoFinal/Localization/Tables/ShapeOfMemory
+      Book Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ceb2f0f2cb84deb41b749761abf4f821
+    m_Address: Assets/ShadowWorkshop/PicoFinal/Localization/Tables/ShapeOfMemory
+      UI Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 1
+  m_Settings: {fileID: 11400000, guid: 143be83b4b154d44f86da6fe44168600, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 4193337ebaaf953458c2ae610b740f76, type: 2}
+    - {fileID: 11400000, guid: af9d48a4d2e12ec4787fe4d6dd5ad469, type: 2}
+    - {fileID: 11400000, guid: 7535f5e60492434428c79cac0191ecc0, type: 2}

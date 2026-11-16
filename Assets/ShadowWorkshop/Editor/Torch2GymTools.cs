@@ -423,6 +423,8 @@ namespace ShadowWorkshopIntegration.Editor
                 return copies[mesh]=saved;
             }
             var made=gym.MakeLevel(gym.Pieces,ShadowOf);var levelPath=$"{LevelFolder}/{gym.id}.asset";
+            // A gathered pile is drawn tighter than the gym shows it: keep its drawn pieces out of each other.
+            if(made.drawGather<1){var clearance=new System.Text.StringBuilder();Torch2DrawnClearance.Solve(made,clearance);Debug.Log($"TORCH2_GYM_DRAWN {gym.id}: {clearance}");}
             var level=AssetDatabase.LoadAssetAtPath<Torch2Level>(levelPath);
             if(level){EditorUtility.CopySerialized(made,level);Object.DestroyImmediate(made);}else{AssetDatabase.CreateAsset(made,levelPath);level=made;}
             level.name=gym.id;EditorUtility.SetDirty(level);AssetDatabase.SaveAssets();
@@ -471,7 +473,8 @@ namespace ShadowWorkshopIntegration.Editor
                 if(table)Make(piece.label,tableParent,gym.transform,tablePose,piece);
             }
             // A level without a table layout scatters its things; an old layout stays in the scene, unhooked.
-            Undo.RecordObject(gym,"Open level in gym");gym.tableLayout=table?layout:null;gym.transitFly=level.transitFly;gym.transitOverlap=level.transitOverlap;
+            // The orb is at the new pile's answer now, so there is no view to come back from (saved views stay).
+            Undo.RecordObject(gym,"Open level in gym");gym.showingView=false;gym.tableLayout=table?layout:null;gym.transitFly=level.transitFly;gym.transitOverlap=level.transitOverlap;
             gym.id=ScriptLevels().Contains(level.name)?level.name+"Gym":level.name;
             gym.title=level.title;gym.button=level.button;gym.riddle=level.riddle;gym.hint=level.hint;gym.complete=level.complete;gym.accent=level.accent;
             gym.walls=level.lamps.Length>1?Torch2Gym.Walls.Both:level.lamps.Length==1&&level.lamps[0]==1?Torch2Gym.Walls.Right:Torch2Gym.Walls.Left;
@@ -481,6 +484,7 @@ namespace ShadowWorkshopIntegration.Editor
             gym.leftSlide=level.leftSlide;gym.rightSlide=level.rightSlide;gym.layers=level.layers!=null?(AudioClip[])level.layers.Clone():new AudioClip[0];gym.cueVolume=level.cueVolume;
             gym.tiers=level.tiers;gym.lookalikeAngle=level.lookalikeAngle;gym.snapWarmth=level.snapWarmth;gym.snapAngle=level.snapAngle;
             gym.flips=level.flips;gym.cueAngle=level.cueAngle;gym.heldSnapAngle=level.heldSnapAngle;gym.drawGather=level.drawGather;gym.drawGatherFrom=level.drawGatherFrom;
+            gym.anyTurn=level.anyTurn;gym.lockAngle=level.lockAngle;
             gym.report=$"Opened {level.name}. Auto Threshold is on: Check level sets it for this pile (the level had {level.iouMin:0.00}).";EditorUtility.SetDirty(gym);gym.Refresh(true);
         }
 
@@ -492,6 +496,84 @@ namespace ShadowWorkshopIntegration.Editor
             if(piece is Torch2Piece p){go.transform.localScale=p.Scale;go.AddComponent<MeshFilter>().sharedMesh=p.mesh;go.AddComponent<MeshRenderer>().sharedMaterials=p.materials;}
             return go;
         }
+        // ---- Saved views: orb rotations to come back to. Only the cluster turns; the pieces under it (the answer) never
+        // move. Everything here is undoable.
+        public static void SaveView(Torch2Gym gym)
+        {
+            if(!gym.cluster)return;Undo.RecordObject(gym,"Save view");int i=gym.SaveView();Dirty(gym);
+            Debug.Log($"TORCH2_GYM_VIEW saved {gym.views[i].name}, {gym.AngleFromAnswer(gym.views[i].rotation):0} degrees from the answer",gym);
+        }
+        public static void ShowView(Torch2Gym gym,int i)
+        {
+            if(!gym.cluster||i<0||i>=gym.views.Count)return;
+            Undo.RecordObjects(new Object[]{gym,gym.cluster},"Show saved view");gym.ShowView(i);Dirty(gym);
+        }
+        public static void BackToOriginal(Torch2Gym gym)
+        {
+            if(!gym.cluster||!gym.showingView)return;
+            Undo.RecordObjects(new Object[]{gym,gym.cluster},"Back to original rotation");gym.BackToOriginal();Dirty(gym);
+        }
+        // Keeps the orb where a view turned it and forgets the rotation before.
+        public static void KeepRotation(Torch2Gym gym){Undo.RecordObject(gym,"Keep orb rotation");gym.showingView=false;Dirty(gym);}
+        public static void RenameView(Torch2Gym gym,int i,string name)
+        {
+            if(i<0||i>=gym.views.Count)return;Undo.RecordObject(gym,"Rename view");var view=gym.views[i];view.name=name;gym.views[i]=view;Dirty(gym);
+        }
+        public static void DeleteView(Torch2Gym gym,int i){if(i<0||i>=gym.views.Count)return;Undo.RecordObject(gym,"Delete view");gym.views.RemoveAt(i);Dirty(gym);}
+        // Deletes every saved view; the orb's rotation, the way back to the original and the pieces stay as they are.
+        public static bool ClearViews(Torch2Gym gym,bool ask=true)
+        {
+            if(gym.views.Count==0)return false;
+            if(ask&&!EditorUtility.DisplayDialog("Clear saved views",$"Delete all {gym.views.Count} saved views on {gym.name}?\n\nThe orb stays where it is and the pieces are not touched{(gym.showingView?"; Back to original rotation still works":"")}. Edit > Undo brings the views back.","Clear","Cancel"))return false;
+            Undo.RecordObject(gym,"Clear saved views");gym.views.Clear();Dirty(gym);return true;
+        }
+        // The gym's views become these (undoable, as one step); false when they already were.
+        public static bool KeepViews(Torch2Gym gym,List<Torch2Gym.View> views)
+        {
+            if(SameViews(gym.views,views))return false;
+            int before=gym.views.Count;Undo.RecordObject(gym,"Keep views from Play mode");gym.views=new List<Torch2Gym.View>(views);Dirty(gym);
+            Debug.Log($"TORCH2_GYM_VIEW kept the views from Play mode on {gym.name}: {before} before, {views.Count} now",gym);return true;
+        }
+        static bool SameViews(List<Torch2Gym.View> a,List<Torch2Gym.View> b)
+        {
+            if(a.Count!=b.Count)return false;
+            for(int i=0;i<a.Count;i++){if(a[i].name!=b[i].name)return false;for(int c=0;c<4;c++)if(Mathf.Abs(a[i].rotation[c]-b[i].rotation[c])>1e-6f)return false;}
+            return true;
+        }
+        static void Dirty(Torch2Gym gym)
+        {
+            EditorUtility.SetDirty(gym);if(!Application.isPlaying&&gym.gameObject.scene.IsValid())EditorSceneManager.MarkSceneDirty(gym.gameObject.scene);
+            EditorApplication.QueuePlayerLoopUpdate();SceneView.RepaintAll();
+        }
+        // Play mode throws away what changed on scene objects, the gym's views included. So as Play mode ends every gym's
+        // list goes into the session, and once edit mode is back it lands on the gym at the same place (scene, hierarchy).
+        public const string ViewsKey="Torch2Gym.Views";
+        [Serializable] sealed class KeptViews{public List<KeptGym> gyms=new List<KeptGym>();}
+        [Serializable] sealed class KeptGym{public string key;public List<Torch2Gym.View> views;}
+        public static string ViewKey(Torch2Gym gym)
+        {
+            var path="";for(var t=gym.transform;t;t=t.parent)path="/"+t.GetSiblingIndex()+" "+t.name+path;
+            return gym.gameObject.scene.path+path;
+        }
+        public static void RememberViews()
+        {
+            var kept=new KeptViews();
+            foreach(var gym in Object.FindObjectsByType<Torch2Gym>(FindObjectsInactive.Include,FindObjectsSortMode.None))
+                if(gym.gameObject.scene.IsValid())kept.gyms.Add(new KeptGym{key=ViewKey(gym),views=new List<Torch2Gym.View>(gym.views)});
+            if(kept.gyms.Count>0)SessionState.SetString(ViewsKey,JsonUtility.ToJson(kept));else SessionState.EraseString(ViewsKey);
+        }
+        public static void RestoreViews()
+        {
+            var json=SessionState.GetString(ViewsKey,"");SessionState.EraseString(ViewsKey);if(json=="")return;
+            var gyms=Object.FindObjectsByType<Torch2Gym>(FindObjectsInactive.Include,FindObjectsSortMode.None);
+            foreach(var entry in JsonUtility.FromJson<KeptViews>(json).gyms)
+            {
+                var gym=Array.Find(gyms,g=>ViewKey(g)==entry.key);
+                if(gym)KeepViews(gym,entry.views??new List<Torch2Gym.View>());
+                else if(entry.views!=null&&entry.views.Count>0)Debug.LogWarning($"TORCH2_GYM_VIEW no gym at {entry.key} after Play mode, so its {entry.views.Count} views were not kept: {JsonUtility.ToJson(new KeptGym{key=entry.key,views=entry.views})}");
+            }
+        }
+
         // Exports, then plays the level alone in the torch-levels-2 scene; leaving Play comes back to the gym.
         public static void Play(Torch2Gym gym)
         {
@@ -520,7 +602,9 @@ namespace ShadowWorkshopIntegration.Editor
         static void RefreshGyms(){if(EditorApplication.isPlayingOrWillChangePlaymode)return;foreach(var gym in Object.FindObjectsByType<Torch2Gym>(FindObjectsSortMode.None))if(gym.isActiveAndEnabled)gym.Refresh();}
         static void Changed(PlayModeStateChange state)
         {
+            if(state==PlayModeStateChange.ExitingPlayMode){Torch2GymTools.RememberViews();return;}
             if(state!=PlayModeStateChange.EnteredEditMode)return;
+            Torch2GymTools.RestoreViews();
             var back=SessionState.GetString(Torch2GymTools.ReturnKey,"");SessionState.EraseString(Torch2GymTools.PlayKey);SessionState.EraseString(Torch2GymTools.ReturnKey);
             if(back!=""&&File.Exists(back))EditorSceneManager.OpenScene(back);
         }

@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: PhysicalAssembly.Editor::PhysicalAssembly.Editor.DeployConfig
   Scenes:
   - {fileID: 102900000, guid: 94d0532c31de0a949a66ffe1c5b13358, type: 3}
+  - {fileID: 102900000, guid: 09b35998751dbe647955c9eb46518f2c, type: 3}
   PackageId: com.metahackathon2026.shadow
   ProductName: Shape of Memory
   ApkName: ShapeOfMemory

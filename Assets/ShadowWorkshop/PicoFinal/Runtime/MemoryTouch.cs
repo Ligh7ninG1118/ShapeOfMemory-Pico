@@ -11,12 +11,25 @@ namespace ShapeOfMemory
     // within Margin of it) is hovered; the tip coming from in front to within Radius of the face presses it, once, held
     // while the tip stays in (HOLD TO RESET); backing out Release past that, or sliding off the face, lets go. A tip
     // that jumps further than MaxJump in a frame (tracking) never presses. Device log: SHAPE_OF_MEMORY_POINTER ... touch.
+    // The push must come at the face, not along it (the user, 2026-11-12: a hand sweeping by shouldn't press, but keep it
+    // easy): at the crossing, the tip's last ApproachLength of travel (within ApproachWindow) may lean at most MaxApproach
+    // degrees off the face's normal. 55: the stand tilts the pages 30 degrees, so a level reach forward meets them 60 off
+    // their normal and stays out, while a press well off square still takes. A tip that moved under MinApproach in the
+    // window (resting just over the face) is not judged.
     [DefaultExecutionOrder(50)]
     public sealed class MemoryTouch : MonoBehaviour
     {
         public const float HoverDepth=.08f,Radius=.006f,Release=.015f,Margin=.008f,MaxJump=.08f;
+        public const float MaxApproach=55,ApproachLength=.012f,ApproachWindow=.5f,MinApproach=.004f;
+        const int Samples=128;
         MetaShadowPlayer xr;
-        sealed class Finger{public Pressable hover,down;public float depth=float.PositiveInfinity,closest=float.PositiveInfinity,beside;public Vector3 last;public bool seen;}
+        sealed class Finger
+        {
+            public Pressable hover,down;public float depth=float.PositiveInfinity,closest=float.PositiveInfinity,beside;public Vector3 last;public bool seen;
+            // The tip's recent positions and their times (a ring, newest at head).
+            public readonly Vector3[] path=new Vector3[Samples];public readonly float[] at=new float[Samples];public int head,count;
+            public void Record(Vector3 tip){head=(head+1)%Samples;path[head]=tip;at[head]=Time.unscaledTime;count=Mathf.Min(count+1,Samples);}
+        }
         readonly Finger[] fingers={new Finger(),new Finger()};
 
         public static MemoryTouch Add(GameObject host,MetaShadowPlayer xr){var touch=host.AddComponent<MemoryTouch>();touch.xr=xr;return touch;}
@@ -31,8 +44,9 @@ namespace ShapeOfMemory
         {
             {
                 var f=fingers[hand];
-                if(!tracked){Let(f,hand,"hand lost");Leave(f,hand);f.seen=false;return;}
+                if(!tracked){Let(f,hand,"hand lost");Leave(f,hand);f.seen=false;f.count=0;return;}
                 bool jump=f.seen&&(tip-f.last).sqrMagnitude>MaxJump*MaxJump;f.last=tip;f.seen=true;
+                if(jump)f.count=0;f.Record(tip);
                 if(f.down)
                 {
                     if(!f.down.isActiveAndEnabled){Let(f,hand,"gone");return;}
@@ -54,10 +68,31 @@ namespace ShapeOfMemory
                 if(fresh){Leave(f,hand);if(best){f.hover=best;best.TouchOn=true;f.closest=float.PositiveInfinity;Debug.Log($"SHAPE_OF_MEMORY_POINTER {best.Name} touch hover by={Side(hand)}");}}
                 if(!best){f.depth=float.PositiveInfinity;return;}
                 if(bestDepth<f.closest){f.closest=bestDepth;f.beside=bestAside;}
-                // Through the face from in front of it (seen there last frame, not arriving from the side): a press.
-                if(!fresh&&f.depth>Radius&&bestDepth<=Radius&&!jump){if(best.Touch(true,Side(hand)))f.down=best;f.closest=float.PositiveInfinity;}
+                // Through the face from in front of it (seen there last frame, not arriving from the side), coming at it: a
+                // press. Swept along it: nothing, until the tip backs out past Radius and comes in again.
+                if(!fresh&&f.depth>Radius&&bestDepth<=Radius&&!jump)
+                {
+                    float angle=Approach(f,best.Face,tip,out float travel);
+                    string how=$"by={Side(hand)} angle={angle:0} deg over {travel*1000:0} mm";
+                    if(travel>=MinApproach&&angle>MaxApproach)Debug.Log($"SHAPE_OF_MEMORY_POINTER {best.Name} touch sweep {how} (no press)");
+                    else{Debug.Log($"SHAPE_OF_MEMORY_POINTER {best.Name} touch approach {how}");if(best.Touch(true,Side(hand)))f.down=best;}
+                    f.closest=float.PositiveInfinity;
+                }
                 f.depth=bestDepth;
             }
+        }
+        // How far (degrees) the tip's way in leans off the face's normal (0: square on; 90: along the face), over its last
+        // ApproachLength of travel within ApproachWindow, and how far that was (metres).
+        static float Approach(Finger f,Transform face,Vector3 tip,out float travel)
+        {
+            var start=tip;float now=Time.unscaledTime;
+            for(int k=1;k<f.count;k++)
+            {
+                int i=(f.head-k+Samples)%Samples;if(now-f.at[i]>ApproachWindow)break;
+                start=f.path[i];if((tip-start).sqrMagnitude>=ApproachLength*ApproachLength)break;
+            }
+            var way=tip-start;travel=way.magnitude;var outward=-face.forward;float along=Vector3.Dot(way,outward);
+            return Mathf.Atan2((way-outward*along).magnitude,-along)*Mathf.Rad2Deg;
         }
         // Signed distance (metres) from the face out to the tip, less Radius's worth of fingertip (negative: through it), and
         // how far beside the face's rectangle the tip is.

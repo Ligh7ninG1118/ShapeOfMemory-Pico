@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b8d8878e05cfe347928d1b7b6694ce6, type: 3}
+  m_Name: Lantern
+  m_EditorClassIdentifier: ShapeOfMemory::ShapeOfMemory.MemoryHandLook
+  Right: {fileID: 4300000, guid: 1f198f234a31ff34d8d32c6f26fab68c, type: 2}
+  Left: {fileID: 4300000, guid: 4c32395b7ddd33d4c92c31a7c12c5dc4, type: 2}
+  RightModel: {fileID: 919132149155446097, guid: 54cea660932d8b6448a1e6b266e77d46, type: 3}
+  LeftModel: {fileID: 919132149155446097, guid: 0947fa883fe5f1f449efba4a5a8a1f90, type: 3}
+  WristFade: {x: -0.019543044, y: -0.0025430452}
+  Materials:
+  - {fileID: 2100000, guid: c9c413fc483ece14faf21586dbf52d97, type: 2}
+  - {fileID: 2100000, guid: 835ddac7e518e9945b1597dfbb2377eb, type: 2}
+  Motes: 1
+  MoteMaterial: {fileID: 2100000, guid: 2d298a137f35a3e43adabdf0f1f7c4fd, type: 2}
+  MoteRate: 22
+  MoteLife: 1.6
+  MoteSize: {x: 0.002, y: 0.0055}
+  MoteRise: {x: 0.012, y: 0.04}
+  MoteColor: {r: 1, g: 0.82, b: 0.55, a: 1}

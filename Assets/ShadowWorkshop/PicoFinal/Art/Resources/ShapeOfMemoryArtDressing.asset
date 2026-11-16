@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e2986b0770cd294b8b30bc1dd79c0e0, type: 3}
+  m_Name: ShapeOfMemoryArtDressing
+  m_EditorClassIdentifier: Assembly-CSharp::ShapeOfMemory.ArtDressing.PicoFinalArtDressingSet
+  Table: {fileID: 0}
+  Stand: {fileID: 0}
+  Lamp: {fileID: 3128033320874900669, guid: 221ee83b21d458b44a23ce9d94ae14fe, type: 3}
+  Book: {fileID: 0}

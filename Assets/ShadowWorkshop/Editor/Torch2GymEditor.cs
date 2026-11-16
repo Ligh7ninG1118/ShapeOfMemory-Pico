@@ -69,14 +69,22 @@ namespace ShadowWorkshopIntegration.Editor
                 }
             }
 
+            Header("Saved views (orb rotations to come back to)");
+            Views(gym);
+
             Header("Table to orb");
-            if(!gym.tableLayout)EditorGUILayout.LabelField("No table layout: the game scatters the things on the table by itself.",EditorStyles.wordWrappedMiniLabel);
-            else if(Application.isPlaying)
+            if(!gym.tableLayout)EditorGUILayout.LabelField("No table layout: the things are scattered on the table, as the game does by itself.",EditorStyles.wordWrappedMiniLabel);
+            if(Application.isPlaying)
             {
-                using(new EditorGUI.DisabledScope(gym.Transiting))if(GUILayout.Button("Replay table to orb"))gym.PlayTransit();
-                if(gym.Transiting)EditorGUILayout.LabelField($"Playing, {gym.TransitLength:0.0} s.",EditorStyles.miniLabel);
+                using(new EditorGUILayout.HorizontalScope())
+                {
+                    using(new EditorGUI.DisabledScope(gym.Transiting))if(GUILayout.Button("Replay table to orb"))gym.PlayTransit();
+                    using(new EditorGUI.DisabledScope(!gym.Transiting))if(GUILayout.Button("Skip intro"))gym.SkipTransit();
+                }
+                if(gym.Transiting)EditorGUILayout.LabelField($"Playing, {gym.TransitLength:0.0} s (Skip intro here, in the Game view or Space skips; untick Play Intro to never see it).",EditorStyles.wordWrappedMiniLabel);
+                else EditorGUILayout.LabelField("In the Game view: drag rolls the orb, A/D W/S Z/C turn it, the wheel moves the camera nearer or further, right-drag pans it, V saves the view.",EditorStyles.wordWrappedMiniLabel);
             }
-            else EditorGUILayout.LabelField("Enter Play mode to watch the things lift from the table layout into the orb, as the game's intro does. Check level looks for clashes on the way.",EditorStyles.wordWrappedMiniLabel);
+            else EditorGUILayout.LabelField("Enter Play mode to watch the things lift from the table into the orb, the rings close and the lamps come on, as in the game's intro; then roll the orb with the mouse. Check level looks for clashes on the way.",EditorStyles.wordWrappedMiniLabel);
 
             Header("Level");
             Row(("Check level",()=>Torch2GymTools.Check(gym)),("Export",()=>Torch2GymTools.Export(gym)),("Play this level",()=>Torch2GymTools.Play(gym)));
@@ -87,6 +95,38 @@ namespace ShadowWorkshopIntegration.Editor
                 using(new EditorGUI.DisabledScope(!open))if(GUILayout.Button("Open in gym",GUILayout.Width(100))){var level=open;EditorApplication.delayCall+=()=>Torch2GymTools.Load(gym,level);}
             }
             if(!string.IsNullOrEmpty(gym.report))EditorGUILayout.HelpBox(gym.report,MessageType.None);
+        }
+        // One row per saved view (name, how far from the answer, Show, Delete), Save and Clear; while a view turns the orb
+        // in edit mode, the way back to the rotation it had before.
+        static void Views(Torch2Gym gym)
+        {
+            var before=Torch2Gym.Rotation(gym.beforeViews);
+            if(gym.showingView&&!Application.isPlaying&&Quaternion.Angle(gym.cluster.localRotation,before)>.01f)
+            {
+                string was=Quaternion.Angle(before,Quaternion.identity)<.01f?"the answer":$"{gym.AngleFromAnswer(before):0} degrees from the answer";
+                EditorGUILayout.HelpBox($"The orb is turned to preview views; before, it was at {was}. Only the orb turned: the pieces, which are the answer, did not move, so nothing of the level is lost. The walls show this view, not the answer.",MessageType.Info);
+                Row(("Back to original rotation",()=>Torch2GymTools.BackToOriginal(gym)),("Keep this rotation",()=>Torch2GymTools.KeepRotation(gym)));
+            }
+            int shown=gym.ShownView();
+            for(int i=0;i<gym.views.Count;i++)
+            {
+                int k=i;var view=gym.views[i];
+                using(new EditorGUILayout.HorizontalScope())
+                {
+                    EditorGUI.BeginChangeCheck();var name=EditorGUILayout.DelayedTextField(view.name,GUILayout.MinWidth(60));
+                    if(EditorGUI.EndChangeCheck())EditorApplication.delayCall+=()=>Torch2GymTools.RenameView(gym,k,name);
+                    EditorGUILayout.LabelField($"{gym.AngleFromAnswer(view.rotation):0} deg from answer{(k==shown?", shown":"")}",EditorStyles.miniLabel,GUILayout.Width(150));
+                    using(new EditorGUI.DisabledScope(gym.Transiting||k==shown))if(GUILayout.Button("Show",GUILayout.Width(48)))EditorApplication.delayCall+=()=>Torch2GymTools.ShowView(gym,k);
+                    if(GUILayout.Button("Delete",GUILayout.Width(52)))EditorApplication.delayCall+=()=>Torch2GymTools.DeleteView(gym,k);
+                }
+            }
+            if(gym.views.Count==0)EditorGUILayout.LabelField(Application.isPlaying?"None yet: roll the orb in the Game view and press V, or press Save below.":"None yet: in Play mode roll the orb and press V, or save the orb's rotation here.",EditorStyles.wordWrappedMiniLabel);
+            using(new EditorGUILayout.HorizontalScope())
+            {
+                using(new EditorGUI.DisabledScope(gym.Transiting))if(GUILayout.Button("Save orb rotation as a view"))EditorApplication.delayCall+=()=>Torch2GymTools.SaveView(gym);
+                using(new EditorGUI.DisabledScope(gym.views.Count==0))if(GUILayout.Button("Clear saved views..."))EditorApplication.delayCall+=()=>Torch2GymTools.ClearViews(gym);
+            }
+            if(Application.isPlaying)EditorGUILayout.LabelField("Views saved, renamed or deleted in Play mode stay when it ends. The orb itself goes back to its edit-mode rotation.",EditorStyles.wordWrappedMiniLabel);
         }
         static void Header(string text){EditorGUILayout.Space();EditorGUILayout.LabelField(text,EditorStyles.boldLabel);}
         // Buttons run after the inspector has drawn, since they may open dialogs, progress bars or other scenes.

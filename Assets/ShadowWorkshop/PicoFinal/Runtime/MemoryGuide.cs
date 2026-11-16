@@ -8,36 +8,34 @@ namespace ShapeOfMemory
     // 1. The goal is printed on the book's dark page (MemoryGame.StagePage).
     // 2. Until the player has rolled the orb about TaughtAngle once: a glowing ghost pinch reaches the ring, closes, drags
     //    it round and lets go, with the gesture beside the orb in the player's own input (hands, look-and-pinch, mouse).
-    // 3. Stuck for StuckSeconds without a hint: where HINT is.
+    // (A third step, "STUCK? Press HINT" after a minute without a hint, was removed 2026-11-15 at the user's request.)
     // The orb never moves (Torch2Input.FixedInPlace), so there is nothing to say about bringing it back into the light.
     public sealed class MemoryGuide : MonoBehaviour
     {
         public enum Input{Hands,Gaze,Desktop}
-        public const float TaughtAngle=30,Loop=3.4f,StuckSeconds=60;
+        public const float TaughtAngle=30,Loop=3.4f;
         // Beside the orb, on the side of the page the lamps leave dark (never between the eye and the shadow), turned
         // toward the player.
         static Vector3 Beside(Torch2Workshop game,float side)=>new Vector3(side*(game.input.Radius+.14f),.04f,-.06f);
         static Quaternion Facing(float side)=>Quaternion.Euler(0,35*side,0);
         static float DarkSide(Torch2Level level)=>System.Array.IndexOf(level.lamps,0)>=0&&System.Array.IndexOf(level.lamps,1)<0?1:-1;
         public bool Teaching{get;private set;}
-        public bool Stuck=>stuckLabel&&stuckLabel.gameObject.activeSelf;
         Torch2Workshop game;
         System.Action taught;
-        System.Func<bool> hinted;
         Transform ghost;
         Transform[] fingers=new Transform[2],tips=new Transform[2];
-        TMP_Text teachLabel,stuckLabel;
-        float clock,playing;
+        TMP_Text teachLabel;
+        float clock;
 
-        // teach: the first level, not yet taught. hinted: whether the player has asked for a hint on this level.
-        public static MemoryGuide Add(Torch2Workshop game,bool teach,Input input,Material glow,System.Action taught,System.Func<bool> hinted=null)
+        // teach: the first level, not yet taught.
+        public static MemoryGuide Add(Torch2Workshop game,bool teach,Input input,Material glow,System.Action taught)
         {
-            var guide=game.gameObject.AddComponent<MemoryGuide>();guide.game=game;guide.taught=taught;guide.hinted=hinted;guide.Teaching=teach;
+            var guide=game.gameObject.AddComponent<MemoryGuide>();guide.game=game;guide.taught=taught;guide.Teaching=teach;
             if(!teach)return guide;
             // Said with what the player can see: the objects, and the rings around them (no "orb" yet).
             // Main line Moonlight, its smaller second line Haze.
-            guide.teachLabel=Label(game,input==Input.Gaze?"LOOK AT THE OBJECTS, PINCH AND DRAG\n"+Second("or pinch a ring around them"):input==Input.Hands?"PINCH A RING AND DRAG\n"+Second("to turn the objects inside"):"DRAG THE RINGS\n"+Second("to turn the objects inside"),MemoryPalette.Moonlight);
-            guide.stuckLabel=Label(game,"STUCK?\n"+Second("Press HINT, by your right hand"),MemoryPalette.Moonlight);
+            guide.input=input;
+            guide.teachLabel=Label(game,Teach(input),MemoryPalette.Moonlight);
             // The ghost hand Haze, its pinching tips aqua (the pinch is what to do).
             guide.ghost=new GameObject("Ghost pinch").transform;guide.ghost.SetParent(game.transform,false);
             for(int i=0;i<2;i++)
@@ -48,6 +46,14 @@ namespace ShapeOfMemory
             return guide;
         }
         static string Second(string words)=>"<size=70%>"+MemoryPalette.Colored(words,MemoryPalette.Haze)+"</size>";
+        static string Teach(Input input)=>input==Input.Gaze?MemoryText.Get("guide/teach/gaze")+"\n"+Second(MemoryText.Get("guide/teach/gaze/more")):
+            (input==Input.Hands?MemoryText.Get("guide/teach/hands"):MemoryText.Get("guide/teach/desktop"))+"\n"+Second(MemoryText.Get("guide/teach/more"));
+        Input input;
+        // The language changed: the same words in the new one, in its font.
+        public void Relabel()
+        {
+            if(teachLabel){teachLabel.text=Teach(input);MemoryText.Apply(teachLabel);}
+        }
         static TMP_Text Label(Torch2Workshop game,string text,Color color)
         {
             float side=DarkSide(game.level);
@@ -57,10 +63,8 @@ namespace ShapeOfMemory
         void Update()
         {
             if(!teachLabel)return;
-            var centre=game.Position;bool live=game.input.enabled&&!game.Completed;
-            if(live)playing+=Time.unscaledDeltaTime;
+            var centre=game.Position;bool live=game.input.enabled&&!game.Completed&&!game.Locking;
             if(Teaching&&Quaternion.Angle(game.Projection.Start,game.Rotation)>=TaughtAngle){Stop();taught?.Invoke();}
-            stuckLabel.gameObject.SetActive(live&&!Teaching&&playing>=StuckSeconds&&!(hinted?.Invoke()??false));
             if(!Teaching)return;
             bool show=live&&!game.Busy;
             ghost.gameObject.SetActive(show);teachLabel.gameObject.SetActive(show);if(!show){clock=0;return;}

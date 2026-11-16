@@ -1,0 +1,352 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: ShapeOfMemory UI_en
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: ceb2f0f2cb84deb41b749761abf4f821, type: 2}
+  m_Metadata:
+    m_Items:
+    - rid: 714218833402396768
+  m_TableData:
+  - m_Id: 2450243584
+    m_Localized: SHAPE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2454437888
+    m_Localized: of
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2454437889
+    m_Localized: MEMORY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2454437890
+    m_Localized: SHAPE OF MEMORY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2454437891
+    m_Localized: LOOK AT THE BOOK, PINCH AND SWEEP
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2454437892
+    m_Localized: or pinch its cover's edge and flip it open
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2454437893
+    m_Localized: PINCH THE COVER'S <em>GLOWING EDGE</em>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2454437894
+    m_Localized: and flip it open
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2454437895
+    m_Localized: CLICK THE COVER TO FLIP IT OPEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2454437896
+    m_Localized: TO THE READER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2454437897
+    m_Localized: TURN A PAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2454437898
+    m_Localized: Click its <em>glowing edge</em>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2454437899
+    m_Localized: Pinch its <em>glowing edge</em> and carry it over.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2454437900
+    m_Localized: PRESS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2454437901
+    m_Localized: Click a tile or a button.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2454437902
+    m_Localized: Touch a tile or a button with a fingertip.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2454437903
+    m_Localized: TURN THE OBJECTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2454437904
+    m_Localized: Drag the rings around them, any way.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2454437905
+    m_Localized: Pinch a ring around them and drag, any way.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2454437906
+    m_Localized: Or look at any of them and pinch, wherever your hand is.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2454437907
+    m_Localized: Every pile on this table hides a picture in its shadow.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2454437908
+    m_Localized: Every memory is found.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2454437909
+    m_Localized: '{0} of {1} memories found.'
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396768
+  - m_Id: 2458632192
+    m_Localized: Turn the page to begin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826496
+    m_Localized: LOWER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826497
+    m_Localized: RAISE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826498
+    m_Localized: 'Table
+
+      height'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826499
+    m_Localized: CHAPTER {0}
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396768
+  - m_Id: 2462826500
+    m_Localized: LOCKED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826501
+    m_Localized: Found.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826502
+    m_Localized: Find the memory before it first.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826503
+    m_Localized: Not found yet.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826504
+    m_Localized: This page is still blank.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826505
+    m_Localized: 'Hold still: the memory opens.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826506
+    m_Localized: PLAY AGAIN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826507
+    m_Localized: FOUND
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826508
+    m_Localized: The objects in the rings cast a shadow on the lit page. <em>Turn
+      them</em> until it shows a picture.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826509
+    m_Localized: The answer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826510
+    m_Localized: Turn this page back to leave the memory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826511
+    m_Localized: Turn the page
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826512
+    m_Localized: PAUSED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826513
+    m_Localized: RESUME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826515
+    m_Localized: Find the last memory to finish the book.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826516
+    m_Localized: THANK YOU
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826517
+    m_Localized: for playing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826518
+    m_Localized: to come
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826519
+    m_Localized: HINT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826520
+    m_Localized: HOLD TO RESET
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826522
+    m_Localized: LOOK AT THE OBJECTS, PINCH AND DRAG
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826523
+    m_Localized: or pinch a ring around them
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826524
+    m_Localized: PINCH A RING AND DRAG
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826525
+    m_Localized: DRAG THE RINGS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826526
+    m_Localized: to turn the objects inside
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2462826529
+    m_Localized: MEMORY FOUND
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533670805504
+    m_Localized: PAUSE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533704359936
+    m_Localized: HOLD TO QUIT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533704359937
+    m_Localized: PULL THE DRAWER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533704359938
+    m_Localized: Pinch the <em>knob</em> under the book and pull it toward you.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533704359939
+    m_Localized: Click the <em>knob</em> under the book.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748544
+    m_Localized: 'Settings: turn back a page.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748545
+    m_Localized: The memory waits in the drawer below.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748546
+    m_Localized: Pull the drawer to play it again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748547
+    m_Localized: SETTINGS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748548
+    m_Localized: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748549
+    m_Localized: MUSIC ON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748550
+    m_Localized: MUSIC OFF
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748551
+    m_Localized: Buttons
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748552
+    m_Localized: LEFT HAND
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748553
+    m_Localized: RIGHT HAND
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748554
+    m_Localized: HOLD TO START OVER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748555
+    m_Localized: English
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1366626096889856
+    m_Localized: PLAY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1374265795133440
+    m_Localized: CLOSE THE BOOK?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1374265828687872
+    m_Localized: The book keeps every memory you find.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1374265828687873
+    m_Localized: KEEP READING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1374265828687874
+    m_Localized: QUIT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1378742795223040
+    m_Localized: LIFT A RIBBON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1378742824583168
+    m_Localized: Pinch a ribbon and lift it to turn to its page.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1378742824583169
+    m_Localized: Click a ribbon to turn to its page.
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 714218833402396768
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 
+        m_SharedEntries:
+        - id: 2454437909
+        - id: 2462826499

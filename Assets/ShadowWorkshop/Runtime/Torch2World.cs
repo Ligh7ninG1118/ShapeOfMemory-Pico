@@ -34,6 +34,9 @@ namespace CloudGarden.ShadowPuzzle
         public void RingColors(Color rest,Color hover,Color grab){ringRest=rest;ringHover=hover;ringGrab=grab;shownHighlight=(Torch2Input.Grip)(-1);Highlight();}
         // The hub's colour at rest (a host can make it see-through, with a transparent material on Hub).
         public Color HubColor=new Color(.16f,.16f,.17f);
+        // The pieces brighten while the orb is held. A host can keep their own colours (Shape of Memory: the grip shows on
+        // the rings and a dot instead, MemoryGrip).
+        public bool LightHeldPieces=true;
         public Renderer Hub=>hub;
         Renderer[] pieceRenderers;
         Color[][] baseColors;
@@ -52,8 +55,12 @@ namespace CloudGarden.ShadowPuzzle
         public void RemoveWires(){for(int i=0;i<Wires.Length;i++)if(Wires[i]){Torch2Room.Kill(Wires[i].gameObject);Wires[i]=null;}}
         public Torch2Room Room=>room;
         // 0 = lamps off: dark walls, so no shadow shows, and a silent cue. 1 = on.
-        public float LampLevel{get=>lampLevel;set{lampLevel=Mathf.Clamp01(value);room.Lamps(lampLevel);Cue.Level=lampLevel;RefreshWalls();}}
+        public float LampLevel{get=>lampLevel;set{lampLevel=Mathf.Clamp01(value);room.Lamps(lampLevel);Cue.Level=lampLevel;RefreshWalls();room.Bright(brighten*lampLevel);}}
         float lampLevel=1;
+        // A lock coming in (Torch2Workshop.HoldToSolve): 0..1, how much brighter the lit walls are (Torch2Room.Bright),
+        // going out with the lamps. Back to 0 with ResetReveal.
+        public float Brighten{get=>brighten;set{float b=Mathf.Clamp01(value);if(b==brighten)return;brighten=b;room.Bright(brighten*lampLevel);}}
+        float brighten;
         public Torch2Cue Cue{get;private set;}
 
         public void Build()
@@ -70,7 +77,7 @@ namespace CloudGarden.ShadowPuzzle
             for(int i=0;i<level.pieces.Length;i++)
             {
                 var piece=level.pieces[i];var go=new GameObject(piece.label,typeof(MeshFilter),typeof(MeshRenderer));go.transform.SetParent(pile,false);Pieces[i]=go.transform;
-                var at=game.Drawn(piece.position);
+                var at=game.Drawn(piece);
                 go.transform.localPosition=at;go.transform.localRotation=Quaternion.Euler(piece.euler);go.transform.localScale=piece.Scale;
                 go.GetComponent<MeshFilter>().sharedMesh=piece.mesh;var renderer=go.GetComponent<MeshRenderer>();renderer.sharedMaterials=piece.materials;renderer.shadowCastingMode=ShadowCastingMode.Off;
                 pieceRenderers[i]=renderer;baseColors[i]=new Color[piece.materials.Length];
@@ -122,12 +129,31 @@ namespace CloudGarden.ShadowPuzzle
         }
         // After input has moved the pile this frame, so the pile and its shadows never lag each other.
         void LateUpdate(){Sync();Highlight();}
+        // Rolled by hand, the ring nearest each grip shows Grab and the others go back to rest, so the pinched ring stands
+        // out (all three lit at once read the same as a hand near them). Rolled from the desktop, all three show Grab.
         void Highlight()
         {
             var grabbed=game.input?game.input.Grabbed:Torch2Input.Grip.None;var active=grabbed!=Torch2Input.Grip.None?grabbed:Hover;bool held=grabbed!=Torch2Input.Grip.None;
-            if(active==shownHighlight&&held==shownHeld)return;shownHighlight=active;shownHeld=held;
-            foreach(var r in rings)room.Tint(r,active==Torch2Input.Grip.Roll?held?ringGrab:ringHover:ringRest);
+            int lit=grabbed==Torch2Input.Grip.Roll?HeldRings():0;
+            if(active==shownHighlight&&held==shownHeld&&lit==shownRings)return;shownHighlight=active;shownHeld=held;shownRings=lit;
+            for(int i=0;i<rings.Length;i++)room.Tint(rings[i],active==Torch2Input.Grip.Roll?held?((lit>>i)&1)!=0?ringGrab:ringRest:ringHover:ringRest);
             room.Tint(hub,active==Torch2Input.Grip.Carry?gold:HubColor);
+        }
+        int shownRings=-1;
+        // A bit per ring: the ring whose circle passes nearest each holding hand's grip (the least tilt between the
+        // grip's spoke and the ring's plane). No hand holding (the desktop rolls it): every ring.
+        public int HeldRings()
+        {
+            int mask=0,hands=0;
+            for(int h=0;h<2;h++)
+            {
+                if(!game.input.Holding(h,out var at,out _))continue;hands++;
+                var spoke=at-game.Position;if(spoke.sqrMagnitude<1e-8f)continue;spoke.Normalize();
+                int best=0;float least=float.MaxValue;
+                for(int i=0;i<rings.Length;i++){float off=Mathf.Abs(Vector3.Dot(spoke,game.Rotation*(rings[i].transform.localRotation*Vector3.up)));if(off<least){least=off;best=i;}}
+                mask|=1<<best;
+            }
+            return hands==0?(1<<rings.Length)-1:mask;
         }
         void Sync()
         {
@@ -160,7 +186,7 @@ namespace CloudGarden.ShadowPuzzle
                 room.Tint(room.frames[k],game.Completed&&used?Color.Lerp(Torch2Room.FrameColor,game.level.accent,.6f):used&&ws.Ready&&game.TwoLamps?Color.Lerp(Torch2Room.FrameColor,mint,.5f):Torch2Room.FrameColor);
             }
             foreach(var card in cards)card.SetActive(game.HintActive||game.Completed||game.CardsShown);
-            bool lit=game.Busy;
+            bool lit=game.Busy&&LightHeldPieces;
             for(int i=0;i<pieceRenderers.Length;i++)for(int m=0;m<baseColors[i].Length;m++){property.Clear();property.SetColor("_BaseColor",lit?Color.Lerp(baseColors[i][m],Color.white,.30f):baseColors[i][m]);pieceRenderers[i].SetPropertyBlock(property,m);}
             foreach(var control in controls)
             {
@@ -170,7 +196,7 @@ namespace CloudGarden.ShadowPuzzle
             if(message){message.text=game.Message;resetLabel.text=Time.unscaledTime<resetUntil?"PRESS AGAIN":"RESET x2";}
         }
         public void Reveal(){revealTime=Time.unscaledTime;audioSource.PlayOneShot(chime);if(message){message.fontSize=.18f;message.color=Color.white;}Refresh();}
-        public void ResetReveal(){revealTime=-1;if(message){message.fontSize=.16f;message.color=new Color(.76f,.84f,.83f);}Cue.ResetTiers();RefreshWalls();Refresh();}
+        public void ResetReveal(){revealTime=-1;Brighten=0;if(message){message.fontSize=.16f;message.color=new Color(.76f,.84f,.83f);}Cue.ResetTiers();RefreshWalls();Refresh();}
         void OnDestroy(){foreach(var item in owned)if(item)Destroy(item);}
     }
 }

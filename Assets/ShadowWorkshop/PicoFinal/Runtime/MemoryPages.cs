@@ -25,10 +25,12 @@ namespace ShapeOfMemory
 
         public static Vector3 At(float u,float v,float z=Front)=>new Vector3(u-MemoryBook.Width*.5f,v-MemoryBook.Height*.5f,z);
         public static float Middle=>MemoryBook.Width*.5f;
-        public TMP_Text Text(Transform face,string text,float u,float v,float size,float width,float height,Color color,FontStyles style=FontStyles.Normal,float spacing=0,TextAlignmentOptions align=TextAlignmentOptions.Center)
+        // role picks the face (MemoryText.Role; Auto: a Bold label is set in the caps face, the rest in the text face).
+        public TMP_Text Text(Transform face,string text,float u,float v,float size,float width,float height,Color color,FontStyles style=FontStyles.Normal,float spacing=0,TextAlignmentOptions align=TextAlignmentOptions.Center,MemoryText.Role role=MemoryText.Role.Auto)
         {
             var label=MemoryUi.Label(text,face,At(u,v),Quaternion.identity,size,new Vector2(width,height),color,align);
-            label.fontStyle=style;label.characterSpacing=spacing;label.enableAutoSizing=true;label.fontSizeMin=size*4;label.fontSizeMax=size*10;return label;
+            label.fontStyle=MemoryText.Style(style);MemoryText.Apply(label,role);
+            label.characterSpacing=spacing;label.enableAutoSizing=true;label.fontSizeMin=size*4;label.fontSizeMax=size*10;return label;
         }
         public Renderer Quad(Transform face,string name,float u,float v,Vector2 size,Material material,Texture texture,Color color,float z=Front,float turn=0)
         {
@@ -127,7 +129,6 @@ namespace ShapeOfMemory
         public void TitlePage(Transform face,string progress)
         {
             float m=Middle;
-            Text(face,"A  BOOK  OF  SHADOWS",m,.90f,.024f,.8f,.05f,Faded,FontStyles.Normal,14);
             foreach(var (word,v) in new[]{("SHAPE",.70f),("MEMORY",.44f)})
             {
                 // A gilt shadow a little down and right, as if stamped into the paper; drawn before the ink whatever the
@@ -156,25 +157,43 @@ namespace ShapeOfMemory
         public static Action HoverTick;
         public Pressable Press{get;private set;}
         public string Caption{get;private set;}
+        // Its name under it (a caller may give it another face: the Settings page names each language in its own).
+        public TMP_Text Label{get;private set;}
         Transform body;
         Renderer rim,outline;
+        Renderer[] dots=Array.Empty<Renderer>();
         float rise,pop;
         bool hovered;
 
         public static MemoryTile Create(MemoryPages pages,Transform face,string name,string caption,Texture2D iconTexture,float u,float v,float size,MemoryKit kit,
-            Action action,Func<bool> enabled,Func<bool> handsAllowed,bool live)
+            Action action,Func<bool> enabled,Func<bool> handsAllowed,bool live,float hold=0,bool selected=false)
         {
             var root=new GameObject("Tile "+name).transform;root.SetParent(face,false);root.localPosition=MemoryPages.At(u,v,0);
             var tile=root.gameObject.AddComponent<MemoryTile>();tile.Caption=caption;
             tile.body=new GameObject("Body").transform;tile.body.SetParent(root,false);
             MemoryUi.Shape(PrimitiveType.Cube,"Leather",tile.body,new Vector3(0,0,-Depth*.5f-.002f),Quaternion.identity,new Vector3(size,size,Depth),kit.Surface,Leather);
             if(iconTexture)pages.Quad(tile.body,"Icon",MemoryPages.Middle,MemoryBook.Height*.5f,Vector2.one*size*.55f,kit.Icon,iconTexture,MemoryPalette.Gold,-Depth-.0035f);
-            pages.Text(face,caption,u,v-size*.5f-.045f,.032f,size+.16f,.06f,MemoryPages.Ink,FontStyles.Bold,6);
+            // A hold's ring of dots runs between the tile and its name, so the name sits a little lower.
+            tile.Label=pages.Text(face,caption,u,v-size*.5f-.045f-(hold>0?.025f:0),.032f,size+.16f,.06f,MemoryPages.Ink,FontStyles.Bold,6,role:MemoryText.Role.Text);
+            // The option now chosen (Settings): a gilt frame round it, just off the paper and behind the tile, so only its border
+            // shows: a tile pressed flat for a turning page (Flat) stays in front of it (in front, the frame covered it).
+            if(selected)pages.Quad(face,"Tile chosen",u,v,Vector2.one*(size*1.26f),kit.Screen,null,MemoryPages.Gilt,-MemoryPages.Layer*.5f);
             tile.body.localScale=new Vector3(1,1,Flat);
             if(live)
             {
                 var hit=new GameObject("Press",typeof(BoxCollider));hit.transform.SetParent(root,false);hit.transform.localPosition=new Vector3(0,0,-Depth*.5f-.002f);hit.transform.localScale=new Vector3(size,size,Depth);
-                tile.Press=Pressable.Add(hit,action,enabled,handsAllowed,new Vector3(0,0,-.51f),Quaternion.identity);
+                tile.Press=Pressable.Add(hit,action,enabled,handsAllowed,new Vector3(0,0,-.51f),Quaternion.identity,hold);
+                // A hold: a square of dots round it that fills Ember, clockwise from twelve o'clock, as on the toolbar's.
+                if(hold>0)
+                {
+                    tile.dots=new Renderer[20];float a=size*.5f+.014f,perimeter=8*a;
+                    for(int i=0;i<tile.dots.Length;i++)
+                    {
+                        float s=(i*perimeter/tile.dots.Length+a)%perimeter;Vector2 p;
+                        if(s<2*a)p=new Vector2(-a+s,a);else if(s<4*a)p=new Vector2(a,a-(s-2*a));else if(s<6*a)p=new Vector2(a-(s-4*a),-a);else p=new Vector2(-a,-a+(s-6*a));
+                        tile.dots[i]=pages.Quad(face,"Hold dot",u+p.x,v+p.y,Vector2.one*.016f,kit.Screen,null,MemoryPages.Faded);
+                    }
+                }
                 tile.rim=pages.Quad(face,"Tile rim",u,v,Vector2.one*(size*1.2f),kit.Screen,null,MemoryPalette.Ink800,MemoryPages.Front+MemoryPages.Layer);tile.rim.enabled=false;
                 tile.outline=pages.Quad(face,"Tile outline",u,v,Vector2.one*(size*1.32f),kit.Screen,null,MemoryPalette.AquaHover,MemoryPages.Front+MemoryPages.Layer*2);tile.outline.enabled=false;
             }
@@ -190,6 +209,8 @@ namespace ShapeOfMemory
             bool ring=available&&(hover||down);
             if(rim)rim.enabled=ring;
             if(outline){outline.enabled=ring;if(ring)MemoryUi.Tint(outline,down?MemoryPalette.AquaGrab:MemoryPalette.AquaHover);}
+            int lit=Mathf.FloorToInt(Press.Held*dots.Length+.001f);
+            for(int i=0;i<dots.Length;i++)if(dots[i])MemoryUi.Tint(dots[i],i<lit?MemoryPalette.Ember:MemoryPages.Faded);
         }
         void OnDestroy(){if(rim)Destroy(rim.gameObject);if(outline)Destroy(outline.gameObject);}
     }

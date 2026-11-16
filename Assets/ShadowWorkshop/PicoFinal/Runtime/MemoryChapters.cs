@@ -55,12 +55,13 @@ namespace ShapeOfMemory
                 var lamps=level.lamps??Array.Empty<int>();
                 if(lamps.Length<1||lamps.Length>2||lamps.Any(w=>w<0||w>1)||lamps.Distinct().Count()!=lamps.Length)Error($"{at} lamps must be 0 (left wall), 1 (right wall) or both; it has [{string.Join(", ",lamps)}].");
                 else if(i==0&&lamps.Length>1)Warn(at+" lights both walls: chapter I teaches on the dark page, so its goal line would not show. Put a one-wall level first.");
-                // A start near an answer (an accepted flip counts) is all but solved before the first turn.
+                // A start near an answer (an accepted flip, or any turn of the picture where it counts) is all but solved
+                // before the first turn.
                 if(level.pieces!=null&&level.pieces.Length>0)
                 {
-                    float nearest=Torch2Projection.AnswersFor(level).Min(a=>Quaternion.Angle(level.start,a));
-                    if(nearest<30)Error($"{at} starts {nearest:0} degrees from an answer (accepted flips count): it is solved at once. The gym's Check level with Auto Start picks a start.");
-                    else if(nearest<70)Warn($"{at} starts {nearest:0} degrees from an answer (accepted flips count); 70 or more keeps it cold.");
+                    float nearest=Torch2Projection.AngleToAnswers(level,level.start);
+                    if(nearest<30)Error($"{at} starts {nearest:0} degrees from an answer (accepted flips and turns count): it is solved at once. The gym's Check level with Auto Start picks a start.");
+                    else if(nearest<70)Warn($"{at} starts {nearest:0} degrees from an answer (accepted flips and turns count); 70 or more keeps it cold.");
                 }
                 if(Torch2Level.Load(level.name)!=level)Warn($"{at} is not in Resources/{Torch2Level.ResourceFolder}: it plays, but Build and Run cannot start at it.");
                 if(string.IsNullOrWhiteSpace(level.button)||level.button==Torch2Gym.PlaceholderButton)Warn(at+" has no name yet (button): the pages and the found plaque show it.");

@@ -67,9 +67,10 @@ namespace CloudGarden.Tests
         // solution.
         [TestCaseSource(nameof(Ids))] public void FlippedPicturesAreAnswersToo(string id)
         {
-            // These script levels ship without flips (build_torch2.py knows none); a copy takes both.
+            // These script levels ship without flips (build_torch2.py knows none); a copy takes both, as exact answers
+            // (any turn off: with it, upside down is one of the turns, TurnsAreOneAnswerWithTheirFlips).
             Assert.AreEqual(1,Load(id).Answers.Length);
-            var level=Object.Instantiate(Torch2Level.Load(id));level.flips=Torch2Flips.UpsideDown|Torch2Flips.Mirrored;
+            var level=Object.Instantiate(Torch2Level.Load(id));level.flips=Torch2Flips.UpsideDown|Torch2Flips.Mirrored;level.anyTurn=false;
             try
             {
                 var p=new Torch2Projection(level);
@@ -93,12 +94,91 @@ namespace CloudGarden.Tests
             var upside=Torch2Projection.Turns(new[]{0},Torch2Flips.UpsideDown)[0];var sight=Torch2Projection.Sight(0);
             Assert.Less(Vector3.Angle(upside*sight,sight),.01f);
         }
+        // Any turn counts (2026-11-15, the user's defaults): on the one-lamp chapters the picture counts turned any way on its
+        // wall, angles are to the nearest pose of that turn, and mirrored still does not count.
+        static readonly string[] Turning={"Birthday_NEW","BonVoyage_NEW","GoodMorning_NEW"};
+        [TestCaseSource(nameof(Turning))] public void AnyTurnOfThePictureCounts(string id)
+        {
+            var p=Load(id);Assert.IsTrue(p.AnyTurn,"one lamp, upside down accepted, not opted out");
+            Assert.Less(Vector3.Angle(p.TurnAxis,Torch2Projection.Sight(p.walls[0])),.01f,"turning about the lamp's line of sight");
+            // Square to the line of sight: a tip about it is all off the turn (any share along the line would be turn).
+            var across=Vector3.Cross(p.TurnAxis,Vector3.up).normalized;
+            foreach(float a in new[]{-150f,-90f,-37f,22f,65f,90f,128f,180f})
+            {
+                var turned=Quaternion.AngleAxis(a,p.TurnAxis)*p.Solution;
+                Assert.IsTrue(At(p,Quaternion.AngleAxis(a,p.TurnAxis)).Ready,$"turned {a:+0;-0}");Assert.AreEqual(0,p.Matched);
+                Assert.Less(Mathf.Abs(Mathf.DeltaAngle(p.scores[0].tilt,-a)),7.5f,$"turned {a:+0;-0}: matched at the tilt the turn predicts, not {p.scores[0].tilt}");
+                Assert.Less(p.AngleToAnswer(turned,out _,out var nearest),.1f,$"turned {a:+0;-0} is on the answer's turn");Assert.Less(Quaternion.Angle(nearest,turned),.1f);
+                Assert.Less(Quaternion.Angle(p.NearestAnswer(Quaternion.AngleAxis(6,across)*turned,out float off),turned),6.01f);Assert.AreEqual(6,off,1);
+            }
+            Assert.IsTrue(At(p,Quaternion.AngleAxis(4,Vector3.right)*Quaternion.AngleAxis(90,p.TurnAxis)).Ready,"a hand's error off a quarter turn");
+            Assert.IsTrue(At(p,Quaternion.AngleAxis(90,p.TurnAxis),new Vector3(.04f,-.03f,.03f)).Ready,"a quarter turn carried 5 cm off the rest position");
+        }
+        [TestCaseSource(nameof(Turning))] public void TurnsAreOneAnswerWithTheirFlips(string id)
+        {
+            var level=Torch2Level.Load(id);Assert.IsTrue(Torch2Projection.TurnsCount(level));
+            Assert.AreEqual(1,Load(id).Answers.Length,"upside down is one of the turns, not an answer of its own");
+            var copy=Object.Instantiate(level);copy.flips=Torch2Flips.UpsideDown|Torch2Flips.Mirrored;
+            try{var p=new Torch2Projection(copy);Assert.AreEqual(2,p.Answers.Length,"mirrored (ticked) is its own answer, with all its turns");Assert.IsTrue(p.AnyTurn);}
+            finally{Object.DestroyImmediate(copy);}
+        }
+        [TestCaseSource(nameof(Turning))] public void StartsAreFarFromEveryTurn(string id)
+        {
+            var p=Load(id);float far=Torch2Projection.AngleToAnswers(p.level,p.Start);
+            Assert.AreEqual(p.AngleToAnswer(p.Start),far,.01f,"the static check measures what the game does");Assert.GreaterOrEqual(far,70,"MemoryChapters warns under 70");
+            p.Render(p.Start,Torch2Projection.Home);p.Evaluate();Assert.IsFalse(p.Score.Ready);
+        }
+        [TestCaseSource(nameof(Turning))] public void OnlyTheTurnCounts(string id)
+        {
+            // Uniformly random orientations at least 30 degrees from every turn of the answer never match; nor does mirrored.
+            var p=Load(id);var random=new System.Random(11);int tried=0;
+            while(tried<150)
+            {
+                var q=new Vector4((float)random.NextDouble()*2-1,(float)random.NextDouble()*2-1,(float)random.NextDouble()*2-1,(float)random.NextDouble()*2-1);
+                if(q.sqrMagnitude>1||q.sqrMagnitude<.01f)continue;q=q.normalized;var rotation=new Quaternion(q.x,q.y,q.z,q.w);
+                if(p.AngleToAnswer(rotation)<30)continue;tried++;
+                p.Render(rotation,Torch2Projection.Home);p.Evaluate();Assert.IsFalse(p.Score.Ready,$"{rotation.eulerAngles} matches, {p.AngleToAnswer(rotation):0} degrees off the turn");
+            }
+            var mirrored=Quaternion.AngleAxis(180,Vector3.ProjectOnPlane(Vector3.up,p.TurnAxis).normalized)*p.Solution;
+            p.Render(mirrored,Torch2Projection.Home);p.Evaluate();Assert.IsFalse(p.Score.Ready,"mirrored");Assert.Greater(p.AngleToAnswer(mirrored),90);
+        }
+        [Test] public void TwoLampsAndOptedOutLevelsKeepExactAnswers()
+        {
+            Assert.IsFalse(Torch2Projection.TurnsCount(Torch2Level.Load("Home_NEW")),"two lamps: a turn rights one wall and scrambles the other");
+            Assert.IsFalse(Load("Home_NEW").AnyTurn);
+            var level=Object.Instantiate(Torch2Level.Load("Birthday_NEW"));level.anyTurn=false;
+            try
+            {
+                var p=new Torch2Projection(level);var sight=Torch2Projection.Sight(level.lamps[0]);
+                Assert.IsFalse(p.AnyTurn);Assert.AreEqual(2,p.Answers.Length,"the solution and its upside-down half turn");
+                Assert.IsFalse(At(p,Quaternion.AngleAxis(90,sight)).Ready,"a quarter turn");Assert.IsTrue(At(p,Quaternion.AngleAxis(180,sight)).Ready,"upside down");
+                Assert.AreEqual(90,p.AngleToAnswer(Quaternion.AngleAxis(90,sight)*p.Solution),.1f);
+            }
+            finally{Object.DestroyImmediate(level);}
+        }
+        [Test] public void AngleToTheTurnIsWhatIsLeftOffIt()
+        {
+            var axis=Torch2Projection.Sight(0);var across=Vector3.Cross(axis,Vector3.up).normalized;var answer=Quaternion.Euler(10,40,-20);
+            var on=Quaternion.AngleAxis(73,axis)*answer;var off=Quaternion.AngleAxis(20,across)*on;
+            Assert.AreEqual(20,Torch2Projection.AngleToFamily(off,answer,axis,out var nearest),.05f);Assert.Less(Quaternion.Angle(nearest,on),.05f);
+            Assert.Less(Torch2Projection.AngleToFamily(on,answer,axis,out _),.05f);
+            Assert.AreEqual(180,Torch2Projection.AngleToFamily(Quaternion.AngleAxis(180,across)*answer,answer,axis,out _),.05f,"half round off the line: no turn is nearer");
+        }
         [Test] public void GatheringPullsOnlyFarPiecesAndKeepsTheirDirection()
         {
             var near=new Vector3(.05f,.03f,0);Assert.AreEqual(near,Torch2Level.Gathered(near,.4f,.12f),"within reach of the hub: as placed");
             var far=new Vector3(.2f,-.1f,.2f);var drawn=Torch2Level.Gathered(far,.4f,.12f);
             Assert.AreEqual(.12f+(far.magnitude-.12f)*.4f,drawn.magnitude,1e-5f);Assert.Less((far.normalized-drawn.normalized).magnitude,1e-5f,"same direction");
             Assert.AreEqual(far,Torch2Level.Gathered(far,1,.12f),"1 draws everything as placed");
+        }
+        [Test] public void APieceWithItsOwnDrawGatherIsGatheredByThatInstead()
+        {
+            var level=ScriptableObject.CreateInstance<Torch2Level>();level.drawGather=.4f;level.drawGatherFrom=.12f;
+            var far=new Vector3(.2f,-.1f,.2f);
+            Assert.AreEqual(Torch2Level.Gathered(far,.4f,.12f),level.Drawn(new Torch2Piece{position=far}),"0: the level's");
+            Assert.AreEqual(Torch2Level.Gathered(far,.7f,.12f),level.Drawn(new Torch2Piece{position=far,drawGather=.7f}),"its own");
+            Assert.AreEqual(far,level.Drawn(new Torch2Piece{position=far,drawGather=1}),"1: as placed");
+            Object.DestroyImmediate(level);
         }
         [Test] public void HomeNeedsBothWallsAtOnce()
         {

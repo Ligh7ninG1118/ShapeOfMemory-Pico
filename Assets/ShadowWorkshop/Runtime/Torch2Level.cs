@@ -18,6 +18,8 @@ namespace CloudGarden.ShadowPuzzle
         public bool onTable;
         public Vector3 tablePosition,tableEuler;
         [Tooltip("Pieces with the same group travel between the table and the orb as one thing.")] public int tableGroup;
+        [Tooltip("Drawn gathered by this instead of the level's drawGather (0 = the level's). The gym's export sets it where the level's would draw this piece into another (Torch2DrawnClearance); the shadow keeps the real place either way.")]
+        public float drawGather;
         public Vector3 Scale=>scale==Vector3.zero?Vector3.one:scale;
         public Mesh ShadowMesh=>shadowMesh?shadowMesh:mesh;
     }
@@ -51,6 +53,8 @@ namespace CloudGarden.ShadowPuzzle
         public bool bothFaces;
         [Tooltip("The picture also counts upside down (exact) and, if ticked, mirrored (only close: perspective swaps near and far). Two-wall levels: mirrored on both, or with both ticked each wall's own upside-down turn; upside down alone has no turn there.")]
         public Torch2Flips flips=Torch2Flips.UpsideDown;
+        [Tooltip("One-lamp levels that accept upside down: the picture counts turned any way at all on the wall (the pile turned about the lamp's line of sight: Torch2Projection.TurnsCount). Untick where a turned picture reads as something else. Two-lamp levels never: a turn rights one wall and scrambles the other.")]
+        public bool anyTurn=true;
         [Header("Closeness cue (Torch2Cue; empty slides or layers use generated placeholders)")]
         [Tooltip("Picture the left lamp projects, blurred and grey until the pile nears the answer. Any size, mipmaps on; it is cropped to fill the wall.")]
         public Texture2D leftSlide;
@@ -67,12 +71,16 @@ namespace CloudGarden.ShadowPuzzle
         public float snapWarmth=.90f,snapAngle=20;
         [Tooltip("Where the host allows it (Torch2Workshop.SnapWhileHeld): turned within this many degrees of an answer while still held, the orb leaves the hand, turns into the answer and the level is solved.")]
         public float heldSnapAngle=8;
+        [Tooltip("Above 0: a host's lock (Torch2Workshop.HoldToSolve) only takes the orb within this many degrees of an answer (any turn counted as the answer's), however the shadow scores. For a picture that passes far from its pose: Birthday passed and locked up to about 25 degrees off (2026-11-15).")]
+        public float lockAngle=0;
         [Header("Drawn closer (Shape of Memory only; the shadow and the score keep the real places)")]
         [Tooltip("Pieces further than drawGatherFrom from the hub are drawn with that extra distance times this (1 = as placed). Two-wall piles spread wide, since each piece's two shadows pin where it is; this tightens the look without touching either picture. Their shadows then swing a little more than the drawn pieces as the orb turns.")]
         [Range(.2f,1)] public float drawGather=1;
         [Tooltip("Metres from the hub within which pieces are drawn where they are.")] public float drawGatherFrom=.12f;
         // Where a piece at position (pile space) is drawn when the host draws the pile gathered.
         public Vector3 Drawn(Vector3 position)=>Gathered(position,drawGather,drawGatherFrom);
+        // Where a piece is drawn gathered: by its own drawGather where it has one (so it stays clear of the others).
+        public Vector3 Drawn(Torch2Piece piece)=>Gathered(piece.position,piece.drawGather>0?piece.drawGather:drawGather,drawGatherFrom);
         public static Vector3 Gathered(Vector3 position,float gather,float from)
         {
             float d=position.magnitude;return gather>=1||d<=from?position:position*((from+(d-from)*gather)/d);

@@ -13,148 +13,227 @@ MonoBehaviour:
   m_Name: Home_NEW
   m_EditorClassIdentifier: ShadowWorkshop.Runtime::CloudGarden.ShadowPuzzle.Torch2Level
   title: H O M E
-  button: HOME
-  riddle: 'A book, a jar, a cup, a plate, a picture frame, a vase of flowers and
-    three boxes. Two pictures at once: somebody is in trouble.'
-  hint: On the left wall a dog sits up, ears pricked, as the flower pot tumbles off
-    the table beside it. On the right wall, the man who saw it all.
-  complete: 'HOME
+  button: BEST FRIEND
+  riddle: 'One of us walks on four feet, one on two;
 
-    Home is where the heart is, broken pots and all.'
+    one of us broke it, and
+    guess who?
+
+    One wall for each, a crash in between,
+
+    and one wag of a
+    tail wipes the slate clean.'
+  hint: 'Left wall: a dog sitting up, ears pricked, as a flower pot tumbles off the
+    table beside it. Right wall: its owner, who saw it all.'
+  complete: 'GOOD BOY
+
+    It was only a flower pot.'
   accent: {r: 0.95, g: 0.45, b: 0.45, a: 1}
   lamps: 0000000001000000
   pieces:
-  - label: Open book
-    mesh: {fileID: 4300000, guid: 1b35c8bdcfb12214dad219143e1b96ee, type: 2}
+  - label: Dog training book
+    mesh: {fileID: 4300000, guid: 03d5961e1dd2a07409f7261bab6c76c8, type: 2}
     materials:
-    - {fileID: 2100000, guid: 5d680297452603849963f6b13a544b94, type: 2}
-    - {fileID: 2100000, guid: 30b35052c47241f4e8d68129f272a435, type: 2}
-    position: {x: 0.052690867, y: -0.037, z: 0.047}
-    euler: {x: 327.7127, y: 99.55296, z: 255.02872}
-    scale: {x: -1, y: 1.0000001, z: 0.8748502}
+    - {fileID: 2100000, guid: 21f8f8d4b87bbd840b7671940db12c73, type: 2}
+    position: {x: 0.067, y: -0.04100001, z: 0.04500001}
+    euler: {x: 324.3206, y: 94.37874, z: 271.70352}
+    scale: {x: -1.0000002, y: 1.0000005, z: 0.8748505}
     shadowMesh: {fileID: 4300000, guid: 1b35c8bdcfb12214dad219143e1b96ee, type: 2}
     visualOnly: 0
     onTable: 0
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
-  - label: SM_CozyShops_Jar_Medium_Body
-    mesh: {fileID: -950837912215633405, guid: 18a711711efb0f84d8bf0c9563404124, type: 3}
+    drawGather: 0
+  - label: Broken jar
+    mesh: {fileID: 4300000, guid: be2682dfcb12be2458480796f2b85234, type: 2}
     materials:
     - {fileID: 2100000, guid: bfa6803c4aeab7c4ca1af2451b4efcbb, type: 2}
-    position: {x: 0.15529087, y: -0.16071403, z: -0.020500004}
-    euler: {x: 30.838718, y: 335.95068, z: 25.338503}
-    scale: {x: -0.9999998, y: 0.9999998, z: 0.9999998}
+    position: {x: 0.155, y: -0.1611, z: -0.0282}
+    euler: {x: 30.838718, y: 335.95068, z: 25.338495}
+    scale: {x: -0.84443986, y: 0.8444399, z: 0.84444}
     shadowMesh: {fileID: -950837912215633405, guid: 18a711711efb0f84d8bf0c9563404124, type: 3}
     visualOnly: 0
     onTable: 0
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
+    drawGather: 1
+  - label: Dog biscuits
+    mesh: {fileID: 4300000, guid: 6efc988a7dd185344aa98073ed48d509, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 6383d500010461949805086252717044, type: 2}
+    - {fileID: 2100000, guid: b7bb9f54cae1b524faa51753c44be5a9, type: 2}
+    - {fileID: 2100000, guid: 42e18f27002400c49bf361f216909aa3, type: 2}
+    position: {x: 0.155, y: -0.1611, z: -0.0282}
+    euler: {x: 30.838718, y: 335.95068, z: 25.338495}
+    scale: {x: -0.84443986, y: 0.8444399, z: 0.84444}
+    shadowMesh: {fileID: 0}
+    visualOnly: 1
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+    drawGather: 1
   - label: SM_CozyShops_Jar_Medium_Lid
     mesh: {fileID: 133143011255663166, guid: 18a711711efb0f84d8bf0c9563404124, type: 3}
     materials:
     - {fileID: 2100000, guid: f72b1178ce872444dbeb75dd4336ab9a, type: 2}
-    position: {x: 0.15529087, y: -0.16071403, z: -0.020500004}
-    euler: {x: 30.838718, y: 335.95068, z: 25.338503}
-    scale: {x: -0.9999998, y: 0.9999998, z: 0.9999998}
+    position: {x: 0.155, y: -0.1611, z: -0.0282}
+    euler: {x: 30.838718, y: 335.95068, z: 25.338495}
+    scale: {x: -0.84443986, y: 0.8444399, z: 0.84444}
     shadowMesh: {fileID: 133143011255663166, guid: 18a711711efb0f84d8bf0c9563404124, type: 3}
     visualOnly: 0
     onTable: 0
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
-  - label: SM_CozyShops_Espresso_Cup_Saucer
-    mesh: {fileID: 5895649992611318644, guid: 7a6aad12856c6c24cb8b488b29253e7e, type: 3}
+    drawGather: 1
+  - label: Espresso cup
+    mesh: {fileID: 4300000, guid: 110088947562615409051aaa087dff28, type: 2}
     materials:
     - {fileID: 2100000, guid: f72b1178ce872444dbeb75dd4336ab9a, type: 2}
-    position: {x: 0.166, y: -0.08000001, z: -0.08337004}
+    position: {x: 0.1646, y: -0.0765, z: -0.0825}
     euler: {x: 7.5208025, y: 16.857552, z: 24.362846}
-    scale: {x: -0.99999994, y: 0.99999994, z: 1}
-    shadowMesh: {fileID: 5895649992611318644, guid: 7a6aad12856c6c24cb8b488b29253e7e, type: 3}
+    scale: {x: -1.0000002, y: 1, z: 1}
+    shadowMesh: {fileID: 4300000, guid: a54f9bc585c2e6841ae3ba20253d1a05, type: 2}
     visualOnly: 0
     onTable: 0
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
-  - label: default
-    mesh: {fileID: -2432090755550338912, guid: 924a536d00fe29a48bf62b350de11c34, type: 3}
+    drawGather: 1
+  - label: Espresso saucer
+    mesh: {fileID: 4300000, guid: cecfd4444300f1d44ac8bb18f0fc20f5, type: 2}
     materials:
-    - {fileID: -3033667219593020291, guid: 924a536d00fe29a48bf62b350de11c34, type: 3}
-    position: {x: 0.044690866, y: -0.008214027, z: 0.117000006}
-    euler: {x: 3.5094724, y: 224.43367, z: 81.845406}
-    scale: {x: -1.0000004, y: 1.0000002, z: 1.0000005}
-    shadowMesh: {fileID: -2432090755550338912, guid: 924a536d00fe29a48bf62b350de11c34, type: 3}
+    - {fileID: 2100000, guid: f72b1178ce872444dbeb75dd4336ab9a, type: 2}
+    position: {x: 0.1639, y: -0.08140001, z: -0.0853}
+    euler: {x: 7.5208015, y: 16.857552, z: 11.40558}
+    scale: {x: -0.8727201, y: 0.87272, z: 0.8727201}
+    shadowMesh: {fileID: 4300000, guid: da6fe0a12fce6794e8394027a696306b, type: 2}
     visualOnly: 0
     onTable: 0
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
+    drawGather: 1
+  - label: Dog treat bag
+    mesh: {fileID: 4300000, guid: 740e161c7e3c8c44fb34c1dae6c670ed, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 6756d78f1c4faf941a4121124ec9b378, type: 2}
+    position: {x: 0.0692, y: -0.023200005, z: 0.09440001}
+    euler: {x: 359.5182, y: 216.10405, z: 90.85968}
+    scale: {x: -0.86221087, y: 1.0000006, z: 1.0000014}
+    shadowMesh: {fileID: 4300000, guid: 740e161c7e3c8c44fb34c1dae6c670ed, type: 2}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+    drawGather: 0
   - label: SM_CozyShops_Plate
-    mesh: {fileID: 5678330086227972187, guid: 373470c9ff9cdd0498521934bfb9c31f, type: 3}
+    mesh: {fileID: 4300000, guid: 2a05e92868fb50e488ccadc63b284228, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 519d13a09f7d69b48886f50ed8f51d07, type: 2}
+    - {fileID: 2100000, guid: 36ebc572150ae0c44bf26af5565f101d, type: 2}
+    position: {x: 0.1819, y: -0.1076, z: -0.0613}
+    euler: {x: 339.97208, y: 332.40164, z: 32.99903}
+    scale: {x: -0.5312647, y: 0.5312648, z: 0.5312648}
+    shadowMesh: {fileID: 4300000, guid: 2a05e92868fb50e488ccadc63b284228, type: 2}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+    drawGather: 1
+  - label: Oval photo frame
+    mesh: {fileID: 4300000, guid: e3395dd58f6adaa4390033fbf3a938e4, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 58a396d6811f551428b32462727485ec, type: 2}
+    - {fileID: 2100000, guid: 3f9b71fb104eb5047980cb3d07cf49e5, type: 2}
+    position: {x: -0.1506, y: -0.029000014, z: -0.2268}
+    euler: {x: 5.873897, y: 224.20534, z: 323.5951}
+    scale: {x: 0.10823591, y: 0.15762171, z: 0.0029674007}
+    shadowMesh: {fileID: 4300000, guid: e3395dd58f6adaa4390033fbf3a938e4, type: 2}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+    drawGather: 0.8
+  - label: Home sign
+    mesh: {fileID: 4300000, guid: ff616dcd541ba9a42b3e4b3953540ca4, type: 2}
+    materials:
+    - {fileID: 2100000, guid: cfc15467a9c765447861c3a43bc326b2, type: 2}
+    position: {x: 0.1794, y: -0.2043, z: 0.0198}
+    euler: {x: 16.558008, y: 340.52112, z: 29.338549}
+    scale: {x: 0.13810535, y: 0.13679026, z: 0.00527698}
+    shadowMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+    drawGather: 1
+  - label: Pet brush
+    mesh: {fileID: 4300000, guid: 5b744063b4080c94fbb9a69df8c2f624, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 1b9c81bad79c0da4d8ce8ea562fd4db0, type: 2}
+    - {fileID: 2100000, guid: 0ec2a1b91d51bd547a37b4301ee4963e, type: 2}
+    position: {x: -0.104, y: 0.023999989, z: -0.101}
+    euler: {x: 340.0166, y: 124.3463, z: 179.14877}
+    scale: {x: 0.99999994, y: 0.99999946, z: 0.99999964}
+    shadowMesh: {fileID: 4300000, guid: f0918d39c0e542c499220126f8cf13a6, type: 2}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+    drawGather: 0
+  - label: Dog food box
+    mesh: {fileID: 4300000, guid: 638eb416fc2217c4bb004da4d605e218, type: 2}
+    materials:
+    - {fileID: 2100000, guid: 5beec3e93a1b5f044b93655fb124d342, type: 2}
+    position: {x: 0.05, y: -0.062000006, z: -0.239}
+    euler: {x: 284.93936, y: 267.62607, z: 153.73512}
+    scale: {x: 0.11298834, y: 0.19265792, z: 0.111218415}
+    shadowMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+    visualOnly: 0
+    onTable: 0
+    tablePosition: {x: 0, y: 0, z: 0}
+    tableEuler: {x: 0, y: 0, z: 0}
+    tableGroup: 0
+    drawGather: 0.8
+  - label: Broken vase
+    mesh: {fileID: 4300000, guid: 8235d77a73679ec47bf4199afb45e55e, type: 2}
     materials:
     - {fileID: 2100000, guid: f72b1178ce872444dbeb75dd4336ab9a, type: 2}
-    position: {x: 0.1738, y: -0.11121401, z: -0.06352034}
-    euler: {x: 0.63717717, y: 345.31964, z: 30.77853}
-    scale: {x: -0.6, y: 0.6, z: 0.6}
-    shadowMesh: {fileID: 5678330086227972187, guid: 373470c9ff9cdd0498521934bfb9c31f, type: 3}
+    position: {x: -0.06312395, y: -0.20223482, z: -0.2006971}
+    euler: {x: 20.704025, y: 324.6807, z: 304.68585}
+    scale: {x: 0.78787005, y: 0.78787017, z: 0.78787005}
+    shadowMesh: {fileID: 4300000, guid: 8235d77a73679ec47bf4199afb45e55e, type: 2}
     visualOnly: 0
     onTable: 0
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
-  - label: Cube
-    mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+    drawGather: 0.5
+  - label: Collar
+    mesh: {fileID: 4300000, guid: 575b3eb3089df314b8696a361363e551, type: 2}
     materials:
-    - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
-    position: {x: -0.148, y: -0.032000005, z: -0.231}
-    euler: {x: 6.924113, y: 225.85094, z: 327.3856}
-    scale: {x: 0.089557566, y: 0.1618653, z: 0.0022754373}
-    shadowMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+    - {fileID: 2100000, guid: 36b05944818cb764abc80260ab9dad76, type: 2}
+    - {fileID: 2100000, guid: 72b701dff662d01409923fd9d4c89593, type: 2}
+    - {fileID: 2100000, guid: 9a1b74ba2be26ec408539c3fa9f990da, type: 2}
+    position: {x: 0.205, y: -0.1417, z: -0.1275}
+    euler: {x: 354.31342, y: 156.8044, z: 329.72073}
+    scale: {x: 0.46515256, y: 0.4651526, z: 0.46515262}
+    shadowMesh: {fileID: 4300000, guid: 398f88c3cd4ad2849a5a418810e778f9, type: 2}
     visualOnly: 0
     onTable: 0
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
-  - label: Cube (2)
-    mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-    materials:
-    - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
-    position: {x: 0.188, y: -0.21, z: 0.031999998}
-    euler: {x: 16.558008, y: 332.09683, z: 33.0166}
-    scale: {x: 0.14039129, y: 0.16971385, z: 0.006197202}
-    shadowMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-    visualOnly: 0
-    onTable: 0
-    tablePosition: {x: 0, y: 0, z: 0}
-    tableEuler: {x: 0, y: 0, z: 0}
-    tableGroup: 0
-  - label: Cube (3)
-    mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-    materials:
-    - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
-    position: {x: 0.023, y: -0.078999996, z: -0.283}
-    euler: {x: 289.33496, y: 267.39603, z: 151.5453}
-    scale: {x: 0.14039128, y: 0.20123658, z: 0.084429055}
-    shadowMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-    visualOnly: 0
-    onTable: 0
-    tablePosition: {x: 0, y: 0, z: 0}
-    tableEuler: {x: 0, y: 0, z: 0}
-    tableGroup: 0
-  - label: SM_CozyShops_Vase_Flower
-    mesh: {fileID: -2372177539461917185, guid: 8e482744e26d394439cf4d631bdc6f55, type: 3}
-    materials:
-    - {fileID: 2100000, guid: f72b1178ce872444dbeb75dd4336ab9a, type: 2}
-    position: {x: -0.07661396, y: -0.21520224, z: -0.21629712}
-    euler: {x: 48.58004, y: 356.39203, z: 323.57507}
-    scale: {x: 1, y: 1, z: 1}
-    shadowMesh: {fileID: -2372177539461917185, guid: 8e482744e26d394439cf4d631bdc6f55, type: 3}
-    visualOnly: 0
-    onTable: 0
-    tablePosition: {x: 0, y: 0, z: 0}
-    tableEuler: {x: 0, y: 0, z: 0}
-    tableGroup: 0
+    drawGather: 1
   solution: {x: 0, y: 0, z: 0, w: 1}
   start: {x: -0.13088545, y: 0.8681628, z: -0.31598544, w: 0.3596048}
   tolerance: 1
@@ -163,8 +242,9 @@ MonoBehaviour:
   iouMin: 0.62
   bothFaces: 0
   flips: 1
-  leftSlide: {fileID: 0}
-  rightSlide: {fileID: 0}
+  anyTurn: 1
+  leftSlide: {fileID: 2800000, guid: bdf1a6068c623c84e982e53842ce8d76, type: 3}
+  rightSlide: {fileID: 2800000, guid: ea40288cc702e0d49b347474662d2db6, type: 3}
   layers: []
   cueVolume: 0.5
   tiers: {x: 0.35, y: 0.6, z: 0.8}
@@ -173,6 +253,7 @@ MonoBehaviour:
   snapWarmth: 0.9
   snapAngle: 20
   heldSnapAngle: 8
+  lockAngle: 0
   drawGather: 0.4
   drawGatherFrom: 0.12
   transitFly: 0.8

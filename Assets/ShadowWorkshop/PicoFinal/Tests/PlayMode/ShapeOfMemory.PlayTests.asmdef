@@ -2,6 +2,7 @@
   "name": "ShapeOfMemory.PlayTests",
   "references": [
     "ShapeOfMemory",
+    "Unity.Localization",
     "ShadowWorkshop.Runtime",
     "ShadowWorkshop.Integration",
     "PhysicalAssembly.Runtime",

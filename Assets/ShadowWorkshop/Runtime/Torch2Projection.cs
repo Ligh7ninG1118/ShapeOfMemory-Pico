@@ -21,6 +21,30 @@ namespace CloudGarden.ShadowPuzzle
         public const float Pixel=.0088f,HalfAngle=20,RmsCells=12,LampDistance=.80f,LampRise=-.12f;
         // The answer picture is compared at each of these tilts; a passing tilt wins, then the best IoU.
         public static readonly float[] Tilts={-10,-5,0,5,10};
+        // A level whose picture counts turned any way (TurnsCount): every 5 degrees round the circle.
+        public static readonly float[] AllTilts=MakeAllTilts();
+        static float[] MakeAllTilts(){var t=new float[72];for(int i=0;i<72;i++)t[i]=i*5-175;return t;}
+        // ...of which a compare only tries those within this many degrees of where the pile's turn puts the picture
+        // (TurnTilt): 7 tilts a frame, about what the usual 5 cost, instead of 72.
+        public const float TurnWindow=15;
+        // Any turn counts (2026-11-15, the user: "add multiple answers, like if the shadow cast is upside down... all
+        // potential answers"): a one-lamp level that accepts upside down and isn't opted out (Torch2Level.anyTurn). Turning
+        // the pile about its lamp's line of sight turns its picture on the wall (the lamps are 8.5 degrees off square to
+        // their walls, so it stays the picture within about 1%); the compare is centroid/RMS normalised, so the picture is
+        // matched at every tilt, and angles are to the nearest pose of that whole turn (AngleToFamily). Two lamps: never.
+        public static bool TurnsCount(Torch2Level level)=>level&&level.anyTurn&&level.lamps!=null&&level.lamps.Length==1&&(level.flips&Torch2Flips.UpsideDown)!=0;
+        // Degrees from rotation to the nearest of answer turned about axis (world) by any angle, and that pose: the
+        // swing-twist split of rotation * answer^-1 about axis; its twist is the nearest turn, its swing what is left.
+        public static float AngleToFamily(Quaternion rotation,Quaternion answer,Vector3 axis,out Quaternion nearest)
+        {
+            var q=rotation*Quaternion.Inverse(answer);
+            var v=new Vector3(q.x,q.y,q.z);var along=Vector3.Dot(v,axis)*axis;
+            var twist=new Quaternion(along.x,along.y,along.z,q.w);
+            float m=Mathf.Sqrt(twist.x*twist.x+twist.y*twist.y+twist.z*twist.z+twist.w*twist.w);
+            twist=m<1e-6f?Quaternion.identity:new Quaternion(twist.x/m,twist.y/m,twist.z/m,twist.w/m);
+            nearest=twist*answer;
+            return Quaternion.Angle(rotation,nearest);
+        }
         public static readonly Vector3 Corner=new Vector3(0,0,.80f),Home=new Vector3(0,.34f,.10f);
         // Index 0 is the left wall (lit from the front right), 1 the right wall (lit from the front left).
         public static readonly Vector3[] WallOrigin=new Vector3[2],WallRight=new Vector3[2],WallNormal=new Vector3[2],Lamps=new Vector3[2];
@@ -47,6 +71,11 @@ namespace CloudGarden.ShadowPuzzle
         // Every rotation that counts as the answer: the solution first, then the half turns the level's flips accept
         // (Turns). Each has its own pictures, rendered at that rotation, so it matches exactly.
         public readonly Quaternion[] Answers;
+        // Whether any turn of an answer counts (TurnsCount), the line it turns about (its lamp's line of sight), and the
+        // tilts the pictures are compared at (all round, or the usual few).
+        public readonly bool AnyTurn;
+        public readonly Vector3 TurnAxis;
+        public readonly float[] TiltSet;
         // The answer the last Evaluate scored best against (an index into Answers; 0 is the solution).
         public int Matched {get;private set;}
         // [answer][wall slot][tilt]
@@ -72,6 +101,7 @@ namespace CloudGarden.ShadowPuzzle
             var casting=Array.FindAll(level.pieces,p=>!p.visualOnly);int count=casting.Length;
             shadow=new bool[n][];visible=new bool[n][];target=new bool[n][];current=new bool[n][];brightness=new float[n][];scores=new Torch2Score[n];
             near=new bool[n][];counts=new int[n];trial=new Torch2Score[n];
+            AnyTurn=TurnsCount(level);TurnAxis=AnyTurn?Sight(level.lamps[0]):Vector3.up;TiltSet=AnyTurn?AllTilts:Tilts;
             Answers=AnswersFor(level);int answers=Answers.Length;
             targets=new bool[answers][][][];halos=new bool[answers][][][];targetArea=new int[answers][][];
             for(int j=0;j<n;j++){shadow[j]=new bool[Width*Height];visible[j]=new bool[Width*Height];brightness[j]=new float[Width*Height];current[j]=new bool[Grid*Grid];near[j]=new bool[Grid*Grid];}
@@ -80,11 +110,11 @@ namespace CloudGarden.ShadowPuzzle
                 targets[a]=new bool[n][][];halos[a]=new bool[n][][];targetArea[a]=new int[n][];
                 for(int j=0;j<n;j++)
                 {
-                    targets[a][j]=new bool[Tilts.Length][];halos[a][j]=new bool[Tilts.Length][];targetArea[a][j]=new int[Tilts.Length];
-                    for(int t=0;t<Tilts.Length;t++){targets[a][j][t]=new bool[Grid*Grid];halos[a][j][t]=new bool[Grid*Grid];}
+                    targets[a][j]=new bool[TiltSet.Length][];halos[a][j]=new bool[TiltSet.Length][];targetArea[a][j]=new int[TiltSet.Length];
+                    for(int t=0;t<TiltSet.Length;t++){targets[a][j][t]=new bool[Grid*Grid];halos[a][j][t]=new bool[Grid*Grid];}
                 }
             }
-            for(int j=0;j<n;j++)target[j]=targets[0][j][Array.IndexOf(Tilts,0f)];
+            for(int j=0;j<n;j++)target[j]=targets[0][j][Array.IndexOf(TiltSet,0f)];
             local=new Vector3[count][];triangles=new int[count][];
             for(int i=0;i<count;i++)
             {
@@ -112,7 +142,7 @@ namespace CloudGarden.ShadowPuzzle
             for(int a=0;a<answers;a++)
             {
                 Render(Answers[a],Home);
-                for(int j=0;j<n;j++)for(int t=0;t<Tilts.Length;t++){Normalise(visible[j],targets[a][j][t],Tilts[t]);foreach(bool on in targets[a][j][t])if(on)targetArea[a][j][t]++;Dilate(targets[a][j][t],halos[a][j][t]);}
+                for(int j=0;j<n;j++)for(int t=0;t<TiltSet.Length;t++){Normalise(visible[j],targets[a][j][t],TiltSet[t]);foreach(bool on in targets[a][j][t])if(on)targetArea[a][j][t]++;Dilate(targets[a][j][t],halos[a][j][t]);}
             }
             if(!calibrate)return;
             // Typical weakest-wall match from wrong poses, so the warmth meter starts near zero. Against the solution
@@ -125,7 +155,9 @@ namespace CloudGarden.ShadowPuzzle
         public static Quaternion[] AnswersFor(Torch2Level level)
         {
             var answers=new List<Quaternion>{level.solution};
-            foreach(var turn in Turns(level.lamps,level.flips))answers.Add(turn*level.solution);
+            // Any turn counting, upside down is one of them: only a mirrored answer (if ticked) is an answer of its own.
+            var flips=TurnsCount(level)?level.flips&~Torch2Flips.UpsideDown:level.flips;
+            foreach(var turn in Turns(level.lamps,flips))answers.Add(turn*level.solution);
             return answers.ToArray();
         }
         // Half turns about the pile's middle that flip what a lit wall shows: about the lamp's line of sight the picture
@@ -150,14 +182,31 @@ namespace CloudGarden.ShadowPuzzle
         }
         // From a lamp to the pile's rest position.
         public static Vector3 Sight(int wall)=>(Home-Lamps[wall]).normalized;
-        // Degrees to the nearest answer, and which.
-        public float AngleToAnswer(Quaternion rotation)=>AngleToAnswer(rotation,out _);
-        public float AngleToAnswer(Quaternion rotation,out int answer)
+        // Degrees from rotation to the nearest answer of level (any turn of one where TurnsCount), without building its
+        // pictures: for checks such as how far a start is from being solved (MemoryChapters).
+        public static float AngleToAnswers(Torch2Level level,Quaternion rotation)
         {
-            answer=0;float best=float.MaxValue;
-            for(int a=0;a<Answers.Length;a++){float d=Quaternion.Angle(rotation,Answers[a]);if(d<best){best=d;answer=a;}}
+            bool turns=TurnsCount(level);var axis=turns?Sight(level.lamps[0]):Vector3.up;float best=float.MaxValue;
+            foreach(var answer in AnswersFor(level))best=Mathf.Min(best,turns?AngleToFamily(rotation,answer,axis,out _):Quaternion.Angle(rotation,answer));
             return best;
         }
+        // Degrees to the nearest answer, and which.
+        public float AngleToAnswer(Quaternion rotation)=>AngleToAnswer(rotation,out _);
+        public float AngleToAnswer(Quaternion rotation,out int answer)=>AngleToAnswer(rotation,out answer,out _);
+        // ...and the nearest answer pose itself (with any turn counting, the answer turned to where the pile stands).
+        public float AngleToAnswer(Quaternion rotation,out int answer,out Quaternion nearest)
+        {
+            answer=0;float best=float.MaxValue;nearest=Solution;
+            for(int a=0;a<Answers.Length;a++)
+            {
+                Quaternion pose;
+                float d=AnyTurn?AngleToFamily(rotation,Answers[a],TurnAxis,out pose):Quaternion.Angle(rotation,pose=Answers[a]);
+                if(d<best){best=d;answer=a;nearest=pose;}
+            }
+            return best;
+        }
+        // The answer pose a snap eases into (see AngleToAnswer).
+        public Quaternion NearestAnswer(Quaternion rotation,out float angle){angle=AngleToAnswer(rotation,out _,out var nearest);return nearest;}
 
         // Pile pose in workbench space. Returns false when nothing moved.
         public bool Render(Quaternion pose,Vector3 position)
@@ -247,17 +296,31 @@ namespace CloudGarden.ShadowPuzzle
         // Wall slot j against answer a, at the tilt that passes, else the best IoU.
         Torch2Score Compare(int a,int j)
         {
-            var c=current[j];var nearby=near[j];var s=default(Torch2Score);
-            for(int k=0;k<Tilts.Length;k++)
+            var c=current[j];var nearby=near[j];var s=default(Torch2Score);bool any=false;
+            float centre=AnyTurn?TurnTilt(a):float.NaN;
+            for(int k=0;k<TiltSet.Length;k++)
             {
+                if(!float.IsNaN(centre)&&Mathf.Abs(Mathf.DeltaAngle(TiltSet[k],centre))>TurnWindow)continue;
                 int hit=0,spill=0,both=0,either=0;var t=targets[a][j][k];var h=halos[a][j][k];int area=Mathf.Max(1,targetArea[a][j][k]);
                 for(int p=0;p<Grid*Grid;p++){if(t[p]&&nearby[p])hit++;if(c[p]&&!h[p])spill++;if(t[p]&&c[p])both++;if(t[p]||c[p])either++;}
-                var e=new Torch2Score{visible=counts[j]>=12,cover=hit/(float)area,spill=spill/(float)area,iou=both/(float)Mathf.Max(1,either),tilt=Tilts[k]};
+                var e=new Torch2Score{visible=counts[j]>=12,cover=hit/(float)area,spill=spill/(float)area,iou=both/(float)Mathf.Max(1,either),tilt=TiltSet[k]};
                 e.Ready=e.visible&&e.cover>=level.coverMin&&e.spill<=level.spillMax&&e.iou>=level.iouMin;
-                if(k==0||(e.Ready&&!s.Ready)||(e.Ready==s.Ready&&e.iou>s.iou))s=e;
+                if(!any||(e.Ready&&!s.Ready)||(e.Ready==s.Ready&&e.iou>s.iou))s=e;
+                any=true;
             }
             s.warmth=s.Ready?1:Mathf.Clamp(Mathf.Min((s.iou-Baseline)/Mathf.Max(.05f,level.iouMin-Baseline),s.cover/level.coverMin),0,.97f);
             return s;
+        }
+        // Any turn counting: the tilt the last Render's picture matches answer a at. Turning the pile theta degrees about
+        // the lamp's line of sight (AngleAxis, the twist of AngleToFamily) turns its picture theta counterclockwise as the
+        // lamp sees the wall (x along WallRight, y up), and Normalise matches a picture turned theta at tilt -theta. NaN
+        // (try every tilt) where the pile is turned near half round off the line, so the twist means nothing.
+        float TurnTilt(int a)
+        {
+            var q=drawnRotation*Quaternion.Inverse(Answers[a]);
+            float along=q.x*TurnAxis.x+q.y*TurnAxis.y+q.z*TurnAxis.z;
+            if(along*along+q.w*q.w<.04f)return float.NaN;
+            return Mathf.DeltaAngle(0,-2*Mathf.Atan2(along,q.w)*Mathf.Rad2Deg);
         }
         // Centroid + RMS radius onto the Grid x Grid compare image, the sampling grid turned by tilt degrees.
         int Normalise(bool[] source,bool[] output,float tilt)

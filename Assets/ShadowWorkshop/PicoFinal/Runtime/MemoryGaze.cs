@@ -10,9 +10,10 @@ namespace ShapeOfMemory
     // happens without one). What the eyes are on lights as a hovering finger would (a tile rises, a page's edge or the
     // cover's glows, the orb's rings light); no cursor. A pinch then acts on it, wherever the hand is:
     // - a tile or a button presses (held while the pinch is, for HOLD TO RESET);
-    // - the closed book's cover opens;
+    // - the closed book's cover is carried open by the hand's sweep across (MemoryBook.GazeCoverGrab), never by itself;
     // - a page on the stand is drawn by the hand's sweep across (MemoryBook.GazeGrab);
-    // - the orb rolls from the point looked at, as if the fingers were there (Torch2Input.RemoteGrab).
+    // - the orb rolls from the point looked at, as if the fingers were there (Torch2Input.RemoteGrab);
+    // - a ribbon is lifted by the hand's rise (MemoryBookmarks.GazeGrab).
     // Direct use wins: a pinch at a page's edge, at the orb or within Near of a button is the hand's own, not the look's.
     // Only a pinch's start counts, and nothing is taken while something is already held.
     [DefaultExecutionOrder(100)]
@@ -45,14 +46,14 @@ namespace ShapeOfMemory
         {
             bool was=Available;Available=ReadGaze(out var ray);Ray=ray;
             if(Available!=was||!logged){logged=true;Debug.Log("SHAPE_OF_MEMORY_GAZE "+(Available?"on":"off"));}
-            var book=game.Book;var level=game.Level;
+            var book=game.Book;var level=game.Level;var marks=game.Bookmarks;
             // What the eyes are on.
             Pressable on=null;int page=-1;bool cover=false,orb=false;Vector3 orbPoint=default;
             if(Available)
             {
                 if(Physics.Raycast(ray,out var hit,Reach)&&hit.collider.GetComponent<Pressable>() is Pressable p&&p.Available&&p!=book.CoverPress&&!IsEdge(book,p))on=p;
                 if(!on&&book.OnStand)PageAt(book,ray,out page,out cover);
-                if(!on&&page<0&&!cover&&level&&level.input.enabled&&!level.Completed)orb=OrbAt(level,ray,out orbPoint);
+                if(!on&&page<0&&!cover&&level&&level.input.enabled&&!level.Completed&&!level.Locking)orb=OrbAt(level,ray,out orbPoint);
             }
             if(looked&&looked!=on)looked.GazeOn=false;looked=on;if(on)on.GazeOn=true;
             book.GazeSide=page;book.GazeCover=cover;
@@ -63,9 +64,10 @@ namespace ShapeOfMemory
                 if(!xr.ReadHand(hand==0,out _,out var tip,out float pinch)){pinching[hand]=seen[hand]=false;if(pressing[hand]){pressing[hand].GazePinch(false);pressing[hand]=null;}continue;}
                 bool before=pinching[hand];pinching[hand]=pinch<(before?PinchOff:PinchOn);bool start=pinching[hand]&&!before&&seen[hand];seen[hand]=true;
                 if(!pinching[hand]&&pressing[hand]){pressing[hand].GazePinch(false);pressing[hand]=null;}
-                if(!start||!Available||Direct(book,level,hand,tip)||book.Dragging||level&&level.Busy)continue;
-                if(on){if(on.GazePinch(true))pressing[hand]=on;}
-                else if(cover){Debug.Log("SHAPE_OF_MEMORY_GAZE cover");book.OpenCover();}
+                if(!start||!Available||Direct(book,level,hand,tip)||book.Dragging||book.CoverHeld||marks&&marks.Holding||level&&level.Busy)continue;
+                if(on&&marks&&marks.GazeGrab(on,hand,tip))Debug.Log($"SHAPE_OF_MEMORY_GAZE ribbon hand={(hand==0?"left":"right")}");
+                else if(on){if(on.GazePinch(true))pressing[hand]=on;}
+                else if(cover){if(book.GazeCoverGrab(hand,tip))Debug.Log($"SHAPE_OF_MEMORY_GAZE cover hand={(hand==0?"left":"right")}");}
                 else if(page>=0)book.GazeGrab(page==1,hand,tip);
                 else if(orb&&level.input.RemoteGrab(hand,orbPoint,tip))Debug.Log($"SHAPE_OF_MEMORY_GAZE orb hand={(hand==0?"left":"right")}");
             }
@@ -91,6 +93,7 @@ namespace ShapeOfMemory
         bool Direct(MemoryBook book,Torch2Workshop level,int hand,Vector3 tip)
         {
             if(book.HandAt(hand==0))return true;
+            if(game.Bookmarks&&game.Bookmarks.HandAt(hand))return true;
             if(level&&level.input.enabled&&level.input.Near(tip))return true;
             int count=Physics.OverlapSphereNonAlloc(tip,Near,nearby);
             for(int i=0;i<count;i++)if(nearby[i]&&nearby[i].GetComponent<Pressable>())return true;

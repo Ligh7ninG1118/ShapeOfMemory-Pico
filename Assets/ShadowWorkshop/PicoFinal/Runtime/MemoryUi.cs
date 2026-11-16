@@ -88,7 +88,7 @@ namespace ShapeOfMemory
         {
             var go=new GameObject("Label",typeof(TextMeshPro));go.transform.SetParent(parent,false);go.transform.localPosition=position;go.transform.localRotation=rotation;
             var label=go.GetComponent<TextMeshPro>();label.text=text;label.fontSize=size*10;label.color=color;label.alignment=align;
-            label.rectTransform.sizeDelta=bounds;label.textWrappingMode=TextWrappingModes.Normal;return label;
+            label.rectTransform.sizeDelta=bounds;label.textWrappingMode=TextWrappingModes.Normal;MemoryText.Apply(label);return label;
         }
         // A short dry tick for every press.
         public static AudioClip Click(List<Object> owned)

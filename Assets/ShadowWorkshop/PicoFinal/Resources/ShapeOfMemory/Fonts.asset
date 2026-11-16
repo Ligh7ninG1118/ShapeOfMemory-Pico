@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e9fa13e7f282fe4f9de426bcd215d8f, type: 3}
+  m_Name: Fonts
+  m_EditorClassIdentifier: ShapeOfMemory::ShapeOfMemory.MemoryFonts
+  text: {fileID: 11400000, guid: 86a0d44ea3290a94bb35f3134f1b630b, type: 2}
+  italic: {fileID: 11400000, guid: 54ea021c1d955a74bafd6d3b45943c7b, type: 2}
+  bold: {fileID: 11400000, guid: 4c938f693995b5d498f6d7c82fb6a440, type: 2}
+  caps: {fileID: 11400000, guid: 0104167e0c2b0e4449f193eed330923b, type: 2}
+  title: {fileID: 11400000, guid: 8200d7e65e4ee4c49acaa9f7d406f49e, type: 2}
+  cjkText: {fileID: 11400000, guid: 2adc85294ce17b44fa35113cf0aedc71, type: 2}
+  cjkBold: {fileID: 11400000, guid: 1a04bed71ea546c40b384559485976eb, type: 2}

@@ -1,0 +1,148 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: ShapeOfMemory Book_en
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: c22bfd1e0a0cde349bf6738217324e8f, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 61409574912
+    m_Localized: ANOTHER YEAR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61468295168
+    m_Localized: 'Each year I wear a crown of flame
+
+      while everyone sings out
+      your name.
+
+      One breath and all my lights are gone;
+
+      now cut me
+      up and pass me on.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61468295169
+    m_Localized: A two-tier birthday cake with candles on top, and a balloon floating
+      to its right.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61468295170
+    m_Localized: 'HAPPY BIRTHDAY
+
+      Do we have enough candles?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61468295171
+    m_Localized: BON VOYAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61468295172
+    m_Localized: 'Wings, but never a feather;
+
+      a roar, but never a beast.
+
+      I
+      lift you over the weather
+
+      and set you down somewhere east.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61468295173
+    m_Localized: A propeller plane flying to the right.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61472489472
+    m_Localized: 'CLEARED FOR TAKE-OFF
+
+      Window seat, please.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61472489473
+    m_Localized: ORDER UP
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61472489474
+    m_Localized: 'My hat stands tall but keeps off no rain;
+
+      I stir and I taste,
+      then I stir again.
+
+      The pots are my soldiers, the stove is my throne,
+
+      and
+      no plate goes out till I''ve made it my own.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61472489475
+    m_Localized: A chef in a tall hat, seen side-on, looking to the left.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61472489476
+    m_Localized: 'COMPLIMENTS TO THE CHEF
+
+      Seconds, please!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61472489477
+    m_Localized: BEST FRIEND
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61476683776
+    m_Localized: 'One of us walks on four feet, one on two;
+
+      one of us broke
+      it, and guess who?
+
+      One wall for each, a crash in between,
+
+      and
+      one wag of a tail wipes the slate clean.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61476683777
+    m_Localized: 'Left wall: a dog sitting up, ears pricked, as a flower pot tumbles
+      off the table beside it. Right wall: its owner, who saw it all.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61476683778
+    m_Localized: 'GOOD BOY
+
+      It was only a flower pot.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61476683779
+    m_Localized: Made with love by
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61476683780
+    m_Localized: With thanks to
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61476683781
+    m_Localized: Music & Sound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61476683782
+    m_Localized: Art & Assets
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61476683783
+    m_Localized: Tools
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

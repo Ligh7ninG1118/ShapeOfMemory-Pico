@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using CloudGarden.ShadowPuzzle;
@@ -5,6 +6,7 @@ using NUnit.Framework;
 using ShadowWorkshopIntegration.Editor;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace CloudGarden.Tests
 {
@@ -79,6 +81,87 @@ namespace CloudGarden.Tests
             Assert.AreEqual(-.06f,gym.Pieces.First(p=>p.source==mirrored).scale.x,1e-5f,"mirror kept");
             // The preview answer is its own target.
             var p2=gym.Projection;p2.Render(Quaternion.identity,Torch2Projection.Home);p2.Evaluate();Assert.IsTrue(p2.Score.Ready);
+        }
+        // Same rotation to float precision (a Transform renormalises what it is given; Quaternion.Angle reads 0 below ~0.16 degrees).
+        static void Same(Quaternion expected,Quaternion actual,string what)
+        {
+            float sign=Quaternion.Dot(expected,actual)<0?-1:1;for(int c=0;c<4;c++)Assert.AreEqual(expected[c],sign*actual[c],1e-6f,$"{what}: {expected} vs {actual}");
+        }
+        [Test] public void SavedViewsTurnOnlyTheOrbAndComeBackToTheOriginal()
+        {
+            var gym=Gym();var piece=Piece(gym.cluster,PrimitiveType.Cube,new Vector3(.05f,.02f,0),new Vector3(0,30,0),Vector3.one*.1f).transform;
+            gym.cluster.localRotation=Quaternion.Euler(10,20,30);var original=gym.cluster.localRotation;var placed=piece.localPosition;var turned=piece.localRotation;
+            var a=Quaternion.Euler(80,0,0);var b=Quaternion.Euler(0,150,40);
+            gym.cluster.localRotation=a;Torch2GymTools.SaveView(gym);gym.cluster.localRotation=b;Torch2GymTools.SaveView(gym);
+            CollectionAssert.AreEqual(new[]{"View 1","View 2"},gym.views.Select(v=>v.name).ToArray());
+            gym.cluster.localRotation=original;Assert.IsFalse(gym.showingView);
+            Torch2GymTools.ShowView(gym,0);Same(a,gym.cluster.localRotation,"view 1");Assert.AreEqual(0,gym.ShownView());Assert.IsTrue(gym.showingView);
+            Torch2GymTools.ShowView(gym,1);Same(b,gym.cluster.localRotation,"view 2");Assert.AreEqual(1,gym.ShownView());
+            Same(original,gym.beforeViews,"the second view keeps the first one's way back");
+            Torch2GymTools.BackToOriginal(gym);
+            Same(original,gym.cluster.localRotation,"back to the original");Assert.IsFalse(gym.showingView);Assert.AreEqual(-1,gym.ShownView());
+            Assert.AreEqual(placed,piece.localPosition);Assert.IsTrue(piece.localRotation.Equals(turned),"the pieces never move");
+            // Clearing loses only the views; a zeroed entry shows as the answer, never a broken rotation.
+            Torch2GymTools.DeleteView(gym,0);Assert.AreEqual("View 3",gym.NextViewName());
+            Assert.IsTrue(Torch2GymTools.ClearViews(gym,false));Assert.AreEqual(0,gym.views.Count);Same(original,gym.cluster.localRotation,"clearing leaves the orb");
+            gym.views.Add(default);Torch2GymTools.ShowView(gym,0);Same(Quaternion.identity,gym.cluster.localRotation,"a zeroed view is the answer");
+            Torch2GymTools.BackToOriginal(gym);Same(original,gym.cluster.localRotation,"back again");
+        }
+        [Test] public void ViewsFromPlayModeLandOnTheSameGym()
+        {
+            var gym=Gym();var other=Gym();other.name="Other gym";gym.cluster.localRotation=Quaternion.Euler(0,90,0);Torch2GymTools.SaveView(gym);
+            Assert.AreNotEqual(Torch2GymTools.ViewKey(gym),Torch2GymTools.ViewKey(other));
+            var played=new List<Torch2Gym.View>(gym.views){new Torch2Gym.View{name="Lookalike",rotation=Quaternion.Euler(45,0,170)}};
+            Assert.IsTrue(Torch2GymTools.KeepViews(gym,played));Assert.AreEqual(2,gym.views.Count);
+            Assert.IsFalse(Torch2GymTools.KeepViews(gym,played),"the same list changes nothing");
+            // As Play mode ends and edit mode comes back: the list goes through the session (JSON) onto the same gym only.
+            Torch2GymTools.RememberViews();gym.views.RemoveAt(1);other.views.Clear();
+            Torch2GymTools.RestoreViews();
+            Assert.AreEqual(2,gym.views.Count);Assert.AreEqual("Lookalike",gym.views[1].name);Same(Quaternion.Euler(45,0,170),gym.views[1].rotation,"through JSON");
+            Assert.AreEqual(0,other.views.Count);Assert.AreEqual("",SessionState.GetString(Torch2GymTools.ViewsKey,""),"used once");
+        }
+        [Test] public void WheelStaysOutOfTheRingsAndPanKeepsTheOrbUnderTheCursor()
+        {
+            var centre=new Vector3(0,.4f,.3f);var start=new Vector3(0,1.15f,-2f);var forward=(centre-start).normalized;
+            float Depth(Vector3 p)=>Vector3.Dot(centre-p,forward);
+            var nearer=Torch2Gym.Dolly(start,forward,centre,1);
+            Assert.AreEqual(Depth(start)*Mathf.Exp(-Torch2Gym.ViewNotch),Depth(nearer),1e-4f,"a notch up: nearer by ViewNotch");
+            Assert.AreEqual(0,Vector3.Cross(nearer-start,forward).magnitude,1e-5f,"along the view");
+            var p=start;for(int i=0;i<100;i++)p=Torch2Gym.Dolly(p,forward,centre,3);
+            Assert.AreEqual(Torch2Gym.ViewNearest,Depth(p),1e-4f,"stops short");Assert.Greater(Torch2Gym.ViewNearest,Torch2Input.OrbRadius,"never inside the rings");
+            for(int i=0;i<100;i++)p=Torch2Gym.Dolly(p,forward,centre,-3);Assert.AreEqual(Torch2Gym.ViewFurthest,Depth(p),1e-4f);
+            // A right-drag of so many pixels moves the orb's centre on screen by just that.
+            var go=new GameObject("Pan test camera");Undo.RegisterCreatedObjectUndo(go,"Pan test camera");made.Add(go);
+            var target=new RenderTexture(800,600,16);made.Add(target);var camera=go.AddComponent<Camera>();camera.targetTexture=target;camera.fieldOfView=48;
+            go.transform.SetPositionAndRotation(start,Quaternion.LookRotation(forward));var before=camera.WorldToScreenPoint(centre);
+            float perPixel=2*Depth(start)*Mathf.Tan(camera.fieldOfView*.5f*Mathf.Deg2Rad)/camera.pixelHeight;
+            go.transform.position=Torch2Gym.Pan(go.transform.position,go.transform.right,go.transform.up,new Vector2(40,-25),perPixel);
+            var after=camera.WorldToScreenPoint(centre);camera.targetTexture=null;
+            Assert.AreEqual(40,after.x-before.x,.5f);Assert.AreEqual(-25,after.y-before.y,.5f);Assert.AreEqual(Depth(start),Depth(go.transform.position),1e-4f,"no nearer");
+        }
+        // The real thing: Play mode starts, a view is saved and one renamed there, Play mode ends and edit mode has them.
+        [UnityTest] public IEnumerator ViewsSavedInPlayModeOutlastIt()
+        {
+            const string Name="Gym views hand-off test";
+            var gym=Gym();gym.name=Name;gym.autoStart=false;Piece(gym.cluster,PrimitiveType.Cube,Vector3.zero,Vector3.zero,Vector3.one*.1f);
+            gym.cluster.localRotation=Quaternion.Euler(0,40,0);Torch2GymTools.SaveView(gym);gym.cluster.localRotation=Quaternion.identity;
+            try
+            {
+                yield return new EnterPlayMode();
+                var played=Object.FindObjectsByType<Torch2Gym>(FindObjectsSortMode.None).Single(g=>g.name==Name);
+                played.cluster.localRotation=Quaternion.Euler(70,0,20);played.SaveView();var v=played.views[0];v.name="Renamed";played.views[0]=v;
+                yield return new ExitPlayMode();
+                var back=Object.FindObjectsByType<Torch2Gym>(FindObjectsInactive.Include,FindObjectsSortMode.None).Single(g=>g.name==Name);
+                Assert.IsFalse(Application.isPlaying);
+                CollectionAssert.AreEqual(new[]{"Renamed","View 2"},back.views.Select(x=>x.name).ToArray(),"Play mode's list, kept");
+                Same(Quaternion.Euler(70,0,20),back.views[1].rotation,"the view saved in Play mode");
+                Same(Quaternion.identity,back.cluster.localRotation,"the orb itself is back where edit mode left it");
+            }
+            finally
+            {
+                // Edit mode came back from Play mode's backup: clean up whatever holds the name now.
+                foreach(var g in Object.FindObjectsByType<Torch2Gym>(FindObjectsInactive.Include,FindObjectsSortMode.None))if(g.name==Name)made.Add(g.gameObject);
+            }
         }
         [Test] public void CheckRejectsBadIdsScriptLevelsAndEmptyClusters()
         {

@@ -138,6 +138,22 @@ namespace CloudGarden.ShadowPuzzle
             var rect=aspect>wallAspect?new Vector4(wallAspect/aspect,1,(1-wallAspect/aspect)*.5f,0):new Vector4(1,aspect/wallAspect,0,(1-aspect/wallAspect)*.5f);
             foreach(var m in new[]{slides[wall],slides[2+wall]}){m.SetTexture("_Slide",texture);m.SetVector("_SlideRect",rect);}
         }
+        // How much brighter the lit walls are, 0 to 1 (a lock coming in, Torch2Workshop.HoldToSolve): the lamp light gains up
+        // to BrightGain and the slide's darkest value rises to BrightFloor, so the picture lifts into the light. Only the
+        // lit walls: the shadow quads keep their own materials, so the shadow stays as dark and stands out more. Seen
+        // 2026-11-15 on Bon Voyage: .3/.75 burned the slide (clouds, airfield) out to white; .2/.68 lifts it and keeps it.
+        public const float BrightGain=.2f,BrightFloor=.68f;
+        float slideFloor=-1;
+        public void Bright(float amount)
+        {
+            amount=Mathf.Clamp01(amount);
+            for(int k=0;k<2;k++)
+            {
+                var m=slides[k];if(!m)continue;
+                if(slideFloor<0)slideFloor=m.GetFloat("_SlideFloor");
+                m.SetFloat("_Bright",1+BrightGain*amount);m.SetFloat("_SlideFloor",Mathf.Lerp(slideFloor,Mathf.Max(slideFloor,BrightFloor),amount));
+            }
+        }
         // blur: as a fraction of the slide's width (0 = sharp); mix: how strongly the slide tints the lamp light.
         public void Focus(int wall,float blur,float saturation,float mix)
         {

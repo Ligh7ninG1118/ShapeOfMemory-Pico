@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8aaf6bc597a95546a7b13c3ed9274bd, type: 3}
+  m_Name: Ours
+  m_EditorClassIdentifier: ShapeOfMemory::ShapeOfMemory.MemoryLook
+  Sky: {fileID: 2100000, guid: 9d8d826e14533bc43a7f98754f879776, type: 2}
+  GlowAzimuth: 50
+  GlowFacing: 0
+  Lighting:
+    Name: Game
+    KeyColor: {r: 1, g: 0.91, b: 0.78, a: 1}
+    KeyIntensity: 1.2
+    KeyElevation: 48
+    KeyAzimuth: 152
+    KeyFromGlow: 0
+    Ambient: 3
+    AmbientSky: {r: 0.55, g: 0.65, b: 0.7, a: 1}
+    AmbientEquator: {r: 0.114, g: 0.125, b: 0.133, a: 1}
+    AmbientGround: {r: 0.047, g: 0.043, b: 0.035, a: 1}
+  CloudPieces:
+  - {fileID: -8152603725281898206, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: 992986581196586802, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: -7432314761272408855, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: -7304773760559202288, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: -1117354073847909029, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: -1491740167187291299, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: -7455901124239791091, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: 2999092495122880831, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: -7189235557403011602, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: -5606134849326323694, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: -8386114748419596766, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: -2736166527231303649, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: 1968964396991763334, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: 5145240605606351160, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: 107006823747146153, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: 4943283384786951415, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: 2172242418056432002, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: -5312071803548311267, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: -3150321929484448598, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: 8327132502347587200, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: 8189396306762163281, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: -5699607496318229828, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: 3071768246480841425, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: 5675653747721140720, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: -7360955743913594028, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: -3715813799283933899, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: -7000032878743425733, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: -221472736238785520, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: -112605470895169774, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  - {fileID: -5662973785888884378, guid: d1f474e8520a6fb459b9a601bb764561, type: 3}
+  CloudMaterial: {fileID: 2100000, guid: 4f55ff9c3e88c604eaef716abdbe0518, type: 2}
+  CloudsUnderFeet: 0
+  CloudShape:
+    SeaSwell: 0
+    SwellLength: 60
+    Lifted: 0
+    LiftedHeight: {x: 5, y: 14}
+  RuinPieces:
+  - {fileID: -295328064510282547, guid: 346a7f9b334274c4fa2663be6a03579b, type: 3}
+  - {fileID: 3631118356693918156, guid: 346a7f9b334274c4fa2663be6a03579b, type: 3}
+  - {fileID: -1409792714602176305, guid: 346a7f9b334274c4fa2663be6a03579b, type: 3}
+  - {fileID: 2385432169417080015, guid: 346a7f9b334274c4fa2663be6a03579b, type: 3}
+  - {fileID: 3311274929341116348, guid: 346a7f9b334274c4fa2663be6a03579b, type: 3}
+  - {fileID: -2254279863785059279, guid: 346a7f9b334274c4fa2663be6a03579b, type: 3}
+  - {fileID: 124984795525190767, guid: 346a7f9b334274c4fa2663be6a03579b, type: 3}
+  - {fileID: 5534873996461848107, guid: 346a7f9b334274c4fa2663be6a03579b, type: 3}
+  - {fileID: -8090207915426550153, guid: 346a7f9b334274c4fa2663be6a03579b, type: 3}
+  RuinMaterial: {fileID: 2100000, guid: 32a67eedf5bb9604b90445905fe061da, type: 2}
+  RuinModels: []
+  Ruins:
+    Count: 24
+    Floaters: 5
+    FloatAbove: {x: 4, y: 18}
+    Lean: 0
+    AnyFloats: 0
+  EnvironmentScene: 
+  EnvironmentHide: []
+  EnvironmentGiants: 0
+  EnvironmentSeaMaterial: {fileID: 0}
+  Fog:
+    On: 0
+    Start: 25
+    Full: 400
+    Amount: 0.9
+    EaseOut: 1
+    MistTop: -9.5
+    MistDepth: 4.5
+    MistColour: {r: 0.627451, g: 0.47843137, b: 0.68235296, a: 1}
+    MistSky: 0.4
+    WrapTop: -6
+    WrapBottom: -8.5
+    WrapAmount: 0.8
+    Colour: {r: 0.9098039, g: 0.627451, b: 0.6745098, a: 1}
+    ColourShare: 0.55
+    SkyFloor: -0.06
+    SkyBlur: 5
+  DreamPieces: []
+  DreamMaterial: {fileID: 0}

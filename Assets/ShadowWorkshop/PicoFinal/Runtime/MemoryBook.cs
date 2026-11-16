@@ -14,7 +14,8 @@ namespace ShapeOfMemory
     //   page anywhere along its outer edge (the aqua band) and the page comes up by that point and follows the hand round
     //   the spine; let go and it turns or falls back by how far and how fast it was going (PageTurn). A poke or a click on
     //   the band, or a look-and-pinch, turns it by itself. Closed (Opening 0, the left half folded onto the right with its
-    //   cover up) its cover opens the same way.
+    //   cover up), only a hand opens it: pinch the cover's outer edge and carry it past upright (CoverHand), or look at it,
+    //   pinch and sweep (GazeCoverGrab). Nothing opens it by itself on a headset; the desktop's click does (OpenCover).
     // - On the walls (Walls): full size, standing open at a right angle exactly where the lamps' walls are, so the shadows
     //   fall on its pages (the level's own lit walls are drawn on them). Nothing turns here.
     // - Presented (any pose the host gives): the closed book showing its cover, such as the title before it comes down.
@@ -28,7 +29,7 @@ namespace ShapeOfMemory
         public const float FlatScale=.31f;
         public static readonly Color Leather=MemoryPalette.Leather,Edge=new Color(.86f,.80f,.68f),PaperTone=MemoryPalette.Paper;
         // The pages' colour on the walls (where the lamps do not reach), which they take on as the book rises onto them.
-        public static readonly Color Dark=MemoryPalette.Ink700;
+        public static Color Dark=MemoryPalette.Ink700;   // MemoryGame.WallTone sets it
         // A page whose edge is lit: brighter, toward white (the unlit paper shader passes over 1 through to the clamp, so
         // cream lifts to ivory).
         public static readonly Color PageLit=new Color(1.07f,1.04f,.95f);
@@ -83,6 +84,8 @@ namespace ShapeOfMemory
         public int Count;
         public bool Turning=>flip!=null&&!flip.breeze;
         public bool Dragging=>flip!=null&&!flip.breeze&&(flip.direct||flip.indirect);
+        // How far the turning page is over (0 lying where it was .. 1 landed on the far side); 0 with none turning.
+        public float Turn=>flip!=null&&!flip.breeze?flip.turn.Tip:0;
         // Builds one page: spread, right page or left, the page's content root (place things at (u - Width/2, v -
         // Height/2, z) with -z toward the reader), and whether its buttons should work.
         public Action<int,bool,Transform,bool> Fill;
@@ -103,6 +106,52 @@ namespace ShapeOfMemory
         public Pressable CoverPress=>coverPress;
         // Where the cover's title goes: the outside of the left board (facing out once the book is closed).
         public Transform CoverFace=>coverFace;
+
+        // ---- The book's model (the environment artist's SM_Book_01, Art/Art Assets; MemoryGame.BookModel)
+        // Modelled closed and cut through the middle of its pages along the hinge (the model's Z axis, through its origin):
+        // each half ArtHalf thick, its page face ArtFaceGap from the cut, ArtFaceStart..ArtFaceEnd out from the hinge and
+        // ArtFaceLength long (centred ArtFaceCentre along Z); vertex colour R is how much of the turn a vertex takes (1 the
+        // half that opens), so Shaders/BookOpening's _Opening opens it all the way to 180, its two page faces then side by
+        // side. Measured from the mesh 2026-11-13. Dress fits it so at every opening (shut, the cover lifting, open on the
+        // stand, flying, on the walls): its hinge on the spine, its page faces just under the paper and as big as it, opened
+        // with Opening. The game's own boxes (covers, page blocks, gilt rules, spine) stop drawing; the paper, the edges, the
+        // prints and the turning sheet stay, since they are the interface. (Before, the environment artist's add-on showed it
+        // only shut and swapped back to the boxes past 12 degrees.)
+        public const float ArtHalf=.105f,ArtFaceGap=.004f,ArtFaceStart=.032f,ArtFaceEnd=1.085f,ArtFaceLength=1.043f,ArtFaceCentre=.0025f;
+        // Scaled evenly across its cut (thickness and width alike, so a half turning about the hinge keeps its shape) until its
+        // page face reaches the paper's outer edge, and along the spine until the face is as long as the paper.
+        public static float ArtScale=>Width/ArtFaceEnd;
+        public static float ArtLength=>Height/ArtFaceLength;
+        // The model's axes onto the book's: its thickness (x) up through the closed book, out from the hinge (y) across the
+        // pages, along the hinge (z) back down the spine.
+        public static readonly Quaternion ArtTurn=Quaternion.LookRotation(Vector3.back,Vector3.right);
+        public Transform Model{get;private set;}
+        // How far the book reaches below its pages (book units): the stand puts its board that far under them.
+        public float Underside=>Model?ArtHalf*ArtScale:Thickness;
+        readonly List<Renderer> boxes=new List<Renderer>();
+        Renderer[] modelRenderers=Array.Empty<Renderer>();
+        MaterialPropertyBlock modelBlock;
+        static readonly int OpeningId=Shader.PropertyToID("_Opening");
+        public void Dress(Transform model)
+        {
+            if(!model||Model)return;
+            var fit=new GameObject("Model fit").transform;fit.SetParent(transform,false);
+            fit.localPosition=new Vector3(0,0,Height*.5f+ArtFaceCentre*ArtLength);fit.localRotation=ArtTurn;
+            model.SetParent(fit,false);model.localPosition=Vector3.zero;model.localRotation=Quaternion.identity;model.localScale=new Vector3(ArtScale,ArtScale,ArtLength);
+            Model=model;modelBlock=new MaterialPropertyBlock();modelRenderers=model.GetComponentsInChildren<Renderer>(true);
+            // Opened, the turning half sweeps round the far side of the hinge: keep it from being culled (model space).
+            foreach(var r in modelRenderers)r.localBounds=new Bounds(Vector3.zero,new Vector3(2.4f,2.4f,1.2f));
+            foreach(var r in boxes)if(r)r.enabled=false;
+            // The cover's title, band and press onto the model's cover.
+            coverFace.localPosition=new Vector3(coverFace.localPosition.x,coverFace.localPosition.y,Underside+.0015f);
+            Apply(placed);
+            Debug.Log($"SHAPE_OF_MEMORY_BOOK dressed in {model.name} (x{ArtScale:0.000}, x{ArtLength:0.000} along the spine; underside {Underside:0.000})");
+        }
+        void OpenModel(float opening)
+        {
+            if(!Model)return;
+            foreach(var r in modelRenderers){if(!r)continue;r.GetPropertyBlock(modelBlock);modelBlock.SetFloat(OpeningId,opening);r.SetPropertyBlock(modelBlock);}
+        }
 
         MetaShadowPlayer xr;
         MemoryKit kit;
@@ -155,10 +204,10 @@ namespace ShapeOfMemory
                 var frame=new GameObject(k==1?"Right page":"Left page").transform;frame.SetParent(transform,false);frames[k]=frame;
                 paper.Add(MemoryUi.Picture("Paper",frame,new Vector3(0,0,.002f),Quaternion.identity,new Vector2(w,h),kit.Screen,k==1?right:left,PaperTone,kit.Owned));
                 // Its front face 1.5 mm behind the paper (they were one plane, and fought in the depth buffer).
-                MemoryUi.Shape(PrimitiveType.Cube,"Page block",frame,new Vector3(0,0,.0035f+(Block-.0015f)*.5f),Quaternion.identity,new Vector3(w,h,Block-.0015f),kit.Surface,Edge);
-                MemoryUi.Shape(PrimitiveType.Cube,"Cover",frame,new Vector3(outward*Overhang*.5f,0,.002f+Block+Cover*.5f),Quaternion.identity,new Vector3(w+Overhang,h+overH,Cover),kit.Surface,Leather);
+                boxes.Add(MemoryUi.Shape(PrimitiveType.Cube,"Page block",frame,new Vector3(0,0,.0035f+(Block-.0015f)*.5f),Quaternion.identity,new Vector3(w,h,Block-.0015f),kit.Surface,Edge).GetComponent<Renderer>());
+                boxes.Add(MemoryUi.Shape(PrimitiveType.Cube,"Cover",frame,new Vector3(outward*Overhang*.5f,0,.002f+Block+Cover*.5f),Quaternion.identity,new Vector3(w+Overhang,h+overH,Cover),kit.Surface,Leather).GetComponent<Renderer>());
                 // Gilt rule along the cover's outer edge, seen past the paper.
-                MemoryUi.Shape(PrimitiveType.Cube,"Cover rule",frame,new Vector3(outward*(w*.5f+Overhang*.55f),0,.002f+Block-.001f),Quaternion.identity,new Vector3(.006f,h+overH*.4f,.004f),kit.Surface,MemoryPalette.Gold);
+                boxes.Add(MemoryUi.Shape(PrimitiveType.Cube,"Cover rule",frame,new Vector3(outward*(w*.5f+Overhang*.55f),0,.002f+Block-.001f),Quaternion.identity,new Vector3(.006f,h+overH*.4f,.004f),kit.Surface,MemoryPalette.Gold).GetComponent<Renderer>());
                 faces[k]=new GameObject("Face").transform;faces[k].SetParent(frame,false);faces[k].localPosition=new Vector3(0,0,-.001f);
                 // Where the turning page's side for this page is built (lit as the page is) before it is printed.
                 prints[k]=new GameObject("Print").transform;prints[k].SetParent(frame,false);prints[k].localPosition=faces[k].localPosition;prints[k].gameObject.SetActive(false);
@@ -166,9 +215,79 @@ namespace ShapeOfMemory
             }
             MakeCover(frames[0]);
             var page=Shape.Page(true);frames[1].localPosition=page.position+page.rotation*new Vector3(w*.5f,h*.5f,0);frames[1].localRotation=page.rotation;
-            spine=MemoryUi.Shape(PrimitiveType.Cylinder,"Spine",transform,Vector3.zero,Quaternion.identity,Vector3.one,kit.Surface,Leather).transform;
+            spine=MemoryUi.Shape(PrimitiveType.Cylinder,"Spine",transform,Vector3.zero,Quaternion.identity,Vector3.one,kit.Surface,Leather).transform;boxes.Add(spine.GetComponent<Renderer>());
             // The turning page: its front is a right page, its back a left page.
             sheet=new PageSheet(transform,kit,Shape,right,left);paper.Add(sheet.Renderer);MemoryUi.Tint(sheet.Renderer,PaperTone);
+            Decorate();
+        }
+        // Our own book's leather (Dress hides all of it for the environment artist's model): a fine grain on the covers and
+        // the spine in the artist's book's burgundy, and on the front cover's outside the tooling that book had (2026-11-15:
+        // the user brought our book back and asked for that cover): a wide gilt Greek-key border between a rule outside and
+        // a double rule inside, a square at each corner of it, a gilt corner piece in each inner corner; the title prints
+        // over it (MemoryGame.CoverTitle).
+        // A shade redder and the gilt warmer than the artist's texture: the scene's dusk ambient pulls both toward plum and
+        // beige (2026-11-15 capture).
+        public static readonly Color Burgundy=new Color32(0x92,0x24,0x30,255),BurgundyDeep=new Color32(0x5E,0x18,0x22,255),Gilt=new Color32(0xFF,0xBE,0x55,255);
+        void Decorate()
+        {
+            var grain=new Material(kit.Surface){name="Book leather"};grain.SetTexture("_BaseMap",Grain());kit.Owned.Add(grain);
+            foreach(var r in boxes)if(r&&(r.name=="Cover"||r.name=="Spine")){r.sharedMaterial=grain;MemoryUi.Tint(r,Burgundy);}
+            // On the left board's outside, just under the cover face (the title, the band); not under the face itself, so
+            // it comes up with the book after the title, not with it (MemoryGame's title shades).
+            var art=MemoryUi.Picture("Cover art",frames[0],new Vector3(-Overhang*.5f,0,.002f+Block+Cover+.0007f),Quaternion.Euler(0,180,0),new Vector2(Width+Overhang,Height+Overhang*2),kit.Surface,CoverArt(),Color.white,kit.Owned);
+            art.receiveShadows=true;boxes.Add(art);
+        }
+        Texture2D Grain()
+        {
+            const int N=128;var t=new Texture2D(N,N,TextureFormat.RGBA32,true){name="Book leather grain",wrapMode=TextureWrapMode.Repeat,filterMode=FilterMode.Trilinear,anisoLevel=4};kit.Owned.Add(t);
+            var pixels=new Color32[N*N];var random=new System.Random(43);
+            for(int i=0;i<pixels.Length;i++){float c=.88f+(float)random.NextDouble()*.12f;pixels[i]=new Color(c,c,c,1);}
+            t.SetPixels32(pixels);t.Apply(true,true);return t;
+        }
+        // The front cover, 512 square: leather (Burgundy, darker toward the edges, mottled and grained) and gilt tooling.
+        Texture2D CoverArt()
+        {
+            // C: a key cell; I: the border's inset; B: its depth (5 cells, about 5% of the cover as on the artist's); P: one
+            // key (6 cells). The run between the corner squares, N - 2 (I + B) = 420, is a whole 14 keys.
+            const int N=512,C=5,I=21,B=5*C,P=6*C;
+            var t=new Texture2D(N,N,TextureFormat.RGBA32,true){name="Book cover",wrapMode=TextureWrapMode.Clamp,filterMode=FilterMode.Trilinear,anisoLevel=4};kit.Owned.Add(t);
+            var gilt=new bool[N*N];
+            void Fill(int x0,int y0,int w,int h){for(int y=Mathf.Max(0,y0);y<Mathf.Min(N,y0+h);y++)for(int x=Mathf.Max(0,x0);x<Mathf.Min(N,x0+w);x++)gilt[y*N+x]=true;}
+            void Frame(int inset,int thick){Fill(inset,inset,N-2*inset,thick);Fill(inset,N-inset-thick,N-2*inset,thick);Fill(inset,inset,thick,N-2*inset);Fill(N-inset-thick,inset,thick,N-2*inset);}
+            Frame(I-8,3);Frame(I+B+6,3);Frame(I+B+12,1);
+            // The key: a hooked spiral every P along each side, its base line on the outside.
+            bool[,] key={{true,true,true,true,true,true},{true,false,false,false,false,false},{true,false,true,true,true,false},{true,false,false,false,true,false},{true,true,true,true,true,false}};
+            int run0=I+B,run1=N-I-B;
+            for(int r=run0;r<run1;r++)for(int d=0;d<B;d++)
+            {
+                int cx=((r-run0)/C)%(P/C),cy=d/C;if(!key[cy,cx])continue;
+                gilt[(I+d)*N+r]=true;gilt[(N-1-I-d)*N+(N-1-r)]=true;gilt[(N-1-r)*N+(I+d)]=true;gilt[r*N+(N-1-I-d)]=true;
+            }
+            // The border's corners: a square one cell thick with a dot in its middle.
+            foreach(var (x0,y0) in new[]{(I,I),(N-I-B,I),(I,N-I-B),(N-I-B,N-I-B)})
+            {Fill(x0,y0,B,C);Fill(x0,y0+B-C,B,C);Fill(x0,y0,C,B);Fill(x0+B-C,y0,C,B);Fill(x0+2*C,y0+2*C,C,C);}
+            // In each inner corner, a gilt corner piece: a triangle with a concave edge and a tooled line along it.
+            int o=I+B+16;
+            foreach(var (sx,sy) in new[]{(1,1),(-1,1),(1,-1),(-1,-1)})
+            {
+                int ox=sx>0?o:N-1-o,oy=sy>0?o:N-1-o;
+                for(int y=0;y<40;y++)for(int x=0;x<40;x++)
+                {
+                    float hollow=Mathf.Sqrt((x-40f)*(x-40f)+(y-40f)*(y-40f));
+                    if(hollow>34&&x+y<46&&!(hollow>37&&hollow<39))gilt[(oy+sy*y)*N+(ox+sx*x)]=true;
+                }
+            }
+            Color leather=Burgundy,deep=BurgundyDeep,gold=Gilt;
+            var pixels=new Color32[N*N];var random=new System.Random(41);
+            for(int y=0;y<N;y++)for(int x=0;x<N;x++)
+            {
+                float u=(x+.5f)/N,v=(y+.5f)/N,edge=Mathf.Min(Mathf.Min(u,1-u),Mathf.Min(v,1-v));
+                float mottle=1+.05f*Mathf.Sin(u*23+Mathf.Sin(v*17)*2)*Mathf.Sin(v*19+Mathf.Sin(u*13)*2),grain=1+((float)random.NextDouble()-.5f)*.07f;
+                var c=Color.Lerp(deep,leather,Mathf.SmoothStep(0,1,edge*9))*mottle*grain;
+                if(gilt[y*N+x])c=gold*(.86f+.24f*v)*(1+((float)random.NextDouble()-.5f)*.1f);
+                c.a=1;pixels[y*N+x]=c;
+            }
+            t.SetPixels32(pixels);t.Apply(true,true);return t;
         }
         // Cream paper with a faint grain, a thin margin rule and the gutter's shade on the spine side.
         Texture2D Paper(bool right)
@@ -209,7 +328,8 @@ namespace ShapeOfMemory
             edge.press.Label=right?"book/forward":"book/back";edge.press.Why=()=>Refusal(right);
             return edge;
         }
-        // The left board's outside, where the title is, its outer edge's band and a press over it (the closed book opens).
+        // The left board's outside, where the title is, its outer edge's band and a press over it: the desktop's click opens
+        // the closed book. Hands never press it (a fingertip on the cover opened it by itself); they carry it (CoverHand).
         void MakeCover(Transform left)
         {
             float w=Width,h=Height,z=.002f+Block+Cover+.0015f;
@@ -219,8 +339,8 @@ namespace ShapeOfMemory
             coverBand=MemoryUi.Shape(PrimitiveType.Quad,"Cover band",coverFace,new Vector3((w+Overhang)*.5f-EdgeBand*.5f,0,-.0025f),Quaternion.identity,new Vector3(EdgeBand,h*.96f,1),kit.Stroke,Rest(MemoryPalette.AquaIdle)).GetComponent<Renderer>();
             coverRim=MemoryUi.Shape(PrimitiveType.Quad,"Cover band rim",coverFace,new Vector3((w+Overhang)*.5f-EdgeBand*.5f-EdgeRim*.5f,0,-.0005f),Quaternion.identity,new Vector3(EdgeBand+EdgeRim,h*.96f+EdgeRim*2,1),kit.Flat,RimColor).GetComponent<Renderer>();
             var hit=new GameObject("Cover press",typeof(BoxCollider));hit.transform.SetParent(coverFace,false);hit.transform.localPosition=new Vector3(0,0,-.01f);hit.transform.localScale=new Vector3(w+Overhang,h+Overhang*2,.02f);
-            coverPress=Pressable.Add(hit,OpenCover,()=>Closed&&!Sealed&&flight==null&&At!=Where.Walls,handsAllowed,new Vector3(0,0,-.51f),Quaternion.identity);
-            coverPress.Label="book/cover";coverPress.Why=()=>!Closed?"open already":Sealed?"title playing":flight!=null?"flying":handsAllowed!=null&&!handsAllowed()?HandsWhy?.Invoke()??"hands not allowed":null;
+            coverPress=Pressable.Add(hit,OpenCover,()=>Closed&&!Sealed&&flight==null&&At!=Where.Walls,()=>false,new Vector3(0,0,-.51f),Quaternion.identity);
+            coverPress.Label="book/cover";coverPress.Why=()=>!Closed?"open already":Sealed?"title playing":flight!=null?"flying":"hands carry it open by its edge";
         }
         bool Ready(bool forward)=>(flip==null||flip.breeze)&&OnStand&&!Closed&&(forward?Spread<Count-1:Spread>0)&&(Open==null||Open(forward));
         // Why an edge would not turn its page now (null: it would), for the device log.
@@ -240,8 +360,13 @@ namespace ShapeOfMemory
         // ---- Placing and flying
         // Puts the book there at once.
         public void Place(Placement at,Where where){flight=null;At=where;Up=where==Where.Walls?1:0;Apply(at);}
+        // How high a flight's root arcs up on the way (metres, at the middle of the flight). Coming down from the title
+        // (Presented) at .05 its spine end cut through the stand's board: the straight line from there is shallower than
+        // the board's tilt. From .12 nothing of it enters the stand (measured 2026-11-12, 401 samples: 4 mm short of
+        // landing at the closest; .10 still cut in). The walls flights use it too.
+        public const float FlyArc=.12f;
         // Flies there over seconds (eased, with an arc up), then done. The book lands in where.
-        public void Fly(Placement to,Where where,float seconds,Action done=null,float arc=.12f)
+        public void Fly(Placement to,Where where,float seconds,Action done=null,float arc=FlyArc)
         {
             if(flip!=null)EndFlip(true);
             flight=new Flight{from=placed,to=to,arrive=where,seconds=Mathf.Max(.01f,seconds),arc=arc,done=done};
@@ -266,22 +391,27 @@ namespace ShapeOfMemory
             frames[0].localPosition=page.position+page.rotation*new Vector3(Width*.5f,Height*.5f,0);frames[0].localRotation=page.rotation;
             var behind=-(shape.Facing(true)+shape.Facing(false));behind=behind.sqrMagnitude<1e-6f?-Vector3.right:behind.normalized;
             float length=Height+Overhang*2,thick=Block+Cover;
-            // Just below the paper lying open (a ridge in the gutter otherwise), round the corner standing.
-            spine.localPosition=behind*thick*1.1f+Vector3.forward*(Height*.5f);spine.localRotation=Quaternion.FromToRotation(Vector3.up,Vector3.forward);
+            // Just below the paper lying open (a ridge in the gutter otherwise), round the corner standing. Shut, it wraps the
+            // hinge (centred on it, its radius the book's half thickness, so it meets both boards' outsides): set beside
+            // the hinge, it left a wedge each side where the page blocks' cream ends showed as a seam (2026-11-15). It
+            // moves back behind the hinge over the cover's first Unwrap degrees.
+            const float Unwrap=40;
+            spine.localPosition=behind*thick*1.1f*Mathf.SmoothStep(0,1,at.opening/Unwrap)+Vector3.forward*(Height*.5f);spine.localRotation=Quaternion.FromToRotation(Vector3.up,Vector3.forward);
             spine.localScale=new Vector3(thick*2.1f,length*.5f,thick*2.1f);
+            OpenModel(at.opening);
         }
 
         // ---- The cover
-        bool coverOpening;
+        bool coverOpening,coverSweep;
         float coverFrom,coverTo,coverTime;
         int coverGrabber=-1;
         Vector3 coverStart;
-        float coverBegan,coverMoved;
-        // Opens the closed cover by itself (a tap, a click, a look-and-pinch), flying down first if it is presented.
+        // Opens the closed cover by itself, flying down first if it is presented: the desktop's click only. On a headset a
+        // hand carries it (CoverHand, GazeCoverGrab).
         public void OpenCover()
         {
             if(!Closed||coverOpening||Sealed)return;
-            if(At!=Where.Stand||flight!=null){Fly(Stand(0),Where.Stand,.8f,()=>SwingCover(180),.05f);return;}
+            if(At!=Where.Stand||flight!=null){Fly(Stand(0),Where.Stand,.8f,()=>SwingCover(180));return;}
             SwingCover(180);
         }
         void SwingCover(float to){coverOpening=true;coverFrom=placed.opening;coverTo=to;coverTime=0;if(to>90)Say(sounds?.Crinkle,.8f,.22f);}
@@ -293,27 +423,40 @@ namespace ShapeOfMemory
             coverOpening=false;
             if(coverTo>90){Say(sounds?.Flap,.8f,.3f);Debug.Log("SHAPE_OF_MEMORY_BOOK cover opened");Opened?.Invoke();}
         }
-        // A hand pinching the closed cover's outer edge lifts it round the spine; let go past upright it opens, short of it
-        // it falls shut. A quick pinch that hardly moved opens it by itself.
-        void CoverHand(int hand,Vector3 tip,bool pinching,bool fresh)
+        // A hand pinching the closed cover's outer edge lifts it round the spine and it follows the hand; let go past upright
+        // it swings the rest of the way open, short of it it falls shut. Only the carry opens it: a quick pinch leaves it
+        // shut (the user, 2026-11-11: it used to open by itself). Taken by a look and a pinch (coverSweep), the hand's
+        // sweep across the book lifts it instead, as GazeGrab draws a page. Hands() calls it each frame; tests drive it.
+        public void CoverHand(int hand,Vector3 tip,bool pinching,bool fresh)
         {
             var p=transform.InverseTransformPoint(tip);
             if(coverGrabber==hand)
             {
-                if(pinching)
-                {
-                    coverMoved=Mathf.Max(coverMoved,Vector3.Distance(tip,coverStart));
-                    var at=placed;at.opening=Mathf.Clamp(Mathf.Atan2(Mathf.Max(0,p.y),p.x)*Mathf.Rad2Deg,0,180);Apply(at);return;
-                }
-                coverGrabber=-1;bool tap=Time.unscaledTime-coverBegan<.3f&&coverMoved<.03f;
-                Debug.Log($"SHAPE_OF_MEMORY_BOOK cover let go at {placed.opening:0} deg -> {(tap||placed.opening>=90?"opens":"falls shut")}");
-                SwingCover(tap||placed.opening>=90?180:0);return;
+                if(!pinching){LetGoCover("let go");return;}
+                var at=placed;
+                at.opening=coverSweep?Mathf.Clamp01(Vector3.Dot(tip-coverStart,-transform.right)/IndirectReach)*180:Mathf.Clamp(Mathf.Atan2(Mathf.Max(0,p.y),p.x)*Mathf.Rad2Deg,0,180);
+                Apply(at);return;
             }
+            if(coverGrabber>=0||!Closed||coverOpening||Sealed||!OnStand)return;
             float w=Width;bool at_=p.x>w-ReachIn&&p.x<w+ReachOut&&p.z>-ReachOut&&p.z<Height+ReachOut&&p.y>-.1f&&p.y<ReachUp;
             if(!at_)return;
             handAt[hand]=true;coverNear=true;
-            if(pinching&&fresh&&(handsAllowed==null||handsAllowed())){coverGrabber=hand;coverStart=tip;coverBegan=Time.unscaledTime;coverMoved=0;Say(sounds?.Crinkle,1,.18f);Debug.Log($"SHAPE_OF_MEMORY_BOOK cover grab hand={Side(hand)}");}
+            if(pinching&&fresh&&(handsAllowed==null||handsAllowed())){coverGrabber=hand;coverSweep=false;coverStart=tip;Say(sounds?.Crinkle,1,.18f);Debug.Log($"SHAPE_OF_MEMORY_BOOK cover grab hand={Side(hand)}");}
         }
+        // A look at the closed cover and a pinch: the hand's sweep across the book carries the cover open. Returns whether
+        // it took the cover.
+        public bool GazeCoverGrab(int hand,Vector3 tip)
+        {
+            if(coverGrabber>=0||!Closed||coverOpening||Sealed||!OnStand||handsAllowed!=null&&!handsAllowed())return false;
+            coverGrabber=hand;coverSweep=true;coverStart=tip;Say(sounds?.Crinkle,1,.18f);Debug.Log($"SHAPE_OF_MEMORY_BOOK gaze cover grab hand={Side(hand)}");return true;
+        }
+        void LetGoCover(string why)
+        {
+            bool open=placed.opening>=90;coverGrabber=-1;coverSweep=false;
+            Debug.Log($"SHAPE_OF_MEMORY_BOOK cover {why} at {placed.opening:0} deg -> {(open?"opens":"falls shut")}");
+            SwingCover(open?180:0);
+        }
+        public bool CoverHeld=>coverGrabber>=0;
         bool coverNear;
 
         // ---- Spreads
@@ -328,6 +471,20 @@ namespace ShapeOfMemory
         }
         // Turns to a spread: one page, or a riffle through several (the pages between stay blank). done runs on landing.
         public void TurnTo(int spread,Action done=null)=>StartCoroutine(Riffle(Mathf.Clamp(spread,0,Mathf.Max(0,Count-1)),done));
+        // One page turned straight to a spread, however far (a ribbon's jump: the user, 2026-11-15, one flip and that's
+        // it): its front the open spread's page, its back the arriving one's.
+        public void TurnStraight(int spread,Action done=null)=>StartCoroutine(Straight(Mathf.Clamp(spread,0,Mathf.Max(0,Count-1)),done));
+        IEnumerator Straight(int to,Action done)
+        {
+            if(flip!=null&&flip.breeze)EndFlip(true);
+            while(flip!=null||flight!=null||coverOpening)yield return null;
+            if(to!=Spread)
+            {
+                Begin(to>Spread,Spread,to);flip.turn.Auto();Say(sounds?.Crinkle,.9f,.16f);
+                while(flip!=null)yield return null;
+            }
+            done?.Invoke();
+        }
         IEnumerator Riffle(int to,Action done)
         {
             if(flip!=null&&flip.breeze)EndFlip(true);
@@ -442,7 +599,7 @@ namespace ShapeOfMemory
                 if(!xr.ReadHand(hand==0,out _,out var tip,out float pinch,held||coverGrabber==hand))
                 {
                     if(held){handAt[hand]=true;lostFor[hand]+=dt;if(lostFor[hand]>=LostGrace)Drop("hand lost: "+xr.HandProblem(hand==0,true));}
-                    else{if(coverGrabber==hand){coverGrabber=-1;SwingCover(placed.opening>=90?180:0);}pinching[hand]=seen[hand]=wasAt[hand]=false;}
+                    else{if(coverGrabber==hand)LetGoCover("hand lost");pinching[hand]=seen[hand]=wasAt[hand]=false;}
                     continue;
                 }
                 lostFor[hand]=0;
@@ -516,13 +673,18 @@ namespace ShapeOfMemory
             float across=Vector3.Dot(tip-flip.start,transform.right.normalized)*(flip.forward?-1:1);
             flip.moved=Mathf.Max(flip.moved,Vector3.Distance(tip,flip.start));flip.turn.Hold(Mathf.Clamp01(across/IndirectReach));
         }
-        // The held edge goes where the hand is round the spine; the page bends after it.
+        // The held edge goes where the hand is round the spine; the page bends after it. Or, whichever turns it further,
+        // the edge follows the hand across the book as if the hand kept to the circle the edge sweeps: upright with the
+        // hand over the spine, over beyond it. (Sitting back from the stand, the arm reaches the edge nearly straight and
+        // can't lift over the book: the page lay flat until the hand crossed the spine, then jumped, 2026-11-15, sticky.)
         public void Drag(Vector3 point)
         {
             if(flip==null||!flip.direct)return;
             var p=transform.InverseTransformPoint(point)-Shape.Corner;
             float x=Vector3.Dot(p,Shape.Direction(flip.forward)),y=Vector3.Dot(p,Shape.Facing(flip.forward));
-            float angle=Mathf.Clamp(Mathf.Atan2(Mathf.Max(0,y),x),0,Shape.Opening);
+            float from=Mathf.Max(.05f,Vector3.Dot(transform.InverseTransformPoint(flip.start)-Shape.Corner,Shape.Direction(flip.forward)));
+            float across=Mathf.Acos(Mathf.Clamp(x/from,-1,1));
+            float angle=Mathf.Clamp(Mathf.Max(Mathf.Atan2(Mathf.Max(0,y),x),across),0,Shape.Opening);
             flip.moved=Mathf.Max(flip.moved,Vector3.Distance(point,flip.start));
             flip.turn.Hold(PageBend.TipFor(angle,flip.turn.Root,Shape.Opening,flip.grab));
         }
@@ -602,7 +764,8 @@ namespace ShapeOfMemory
             if(coverPress.gameObject.activeSelf!=(Closed&&At!=Where.Walls))coverPress.gameObject.SetActive(Closed&&At!=Where.Walls);
             if(coverLive)
             {
-                bool on=coverPress.Hover||coverNear||coverGrabber>=0||GazeCover;
+                // Not the press's hover: a fingertip over the cover would light it, though only a pinch at the edge takes it.
+                bool on=coverNear||coverGrabber>=0||GazeCover;
                 coverLift=Mathf.MoveTowards(coverLift,on?1:.35f+.3f*Mathf.Sin(Time.unscaledTime*3),Time.unscaledDeltaTime*4);
                 MemoryUi.Tint(coverBand,Lit(Mathf.InverseLerp(.35f,1,coverLift),coverGrabber>=0||coverPress.Down));
             }

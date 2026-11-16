@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
-using UnityEditor.Android;
 using UnityEngine;
 
 namespace PhysicalAssembly.Editor
@@ -29,11 +29,15 @@ namespace PhysicalAssembly.Editor
         public static int Version=>version;
         public static string AdbError { get; private set; }
 
+        // AndroidExternalToolsSettings ships with the Android Build Support module, so it's looked up by name: a direct
+        // reference stops this assembly compiling on an editor installed without that module.
+        static readonly PropertyInfo sdkRootPath=Type.GetType("UnityEditor.Android.AndroidExternalToolsSettings, UnityEditor.Android.Extensions")
+            ?.GetProperty("sdkRootPath",BindingFlags.Public|BindingFlags.Static);
         public static string AdbPath
         {
             get
             {
-                string adb=Path.Combine(AndroidExternalToolsSettings.sdkRootPath??"","platform-tools","adb.exe");
+                string adb=Path.Combine(sdkRootPath?.GetValue(null) as string??"","platform-tools","adb.exe");
                 return File.Exists(adb)?adb:"adb";
             }
         }

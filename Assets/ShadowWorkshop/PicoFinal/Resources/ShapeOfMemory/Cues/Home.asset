@@ -1,0 +1,192 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eae2d91e7e8a7c741a289b4f5cf93710, type: 3}
+  m_Name: Home
+  m_EditorClassIdentifier: ShapeOfMemory::ShapeOfMemory.MemorySolveCue
+  level: {fileID: 11400000, guid: d22f8a6d4b7af484aa334247669c88cf, type: 2}
+  sounds:
+  - clip: {fileID: 8300000, guid: a8351f39520371c44afa1de4e820bfed, type: 3}
+    delay: 0.3
+    volume: 0.75
+  - clip: {fileID: 8300000, guid: b98078803d9c41445af426dc559f888a, type: 3}
+    delay: 0.75
+    volume: 0.53
+  layers:
+  - note: Shards flying left from the pot
+    art: 14
+    wall: 0
+    depth: 1
+    tints:
+    - {r: 0.78431374, g: 0.44313726, b: 0.30588236, a: 1}
+    count: 5
+    spawn: 0
+    from: {x: -0.78, y: -0.82}
+    to: {x: -0.66, y: -0.74}
+    points: []
+    delay: 0.3
+    stagger: 0.05
+    life: {x: 1, y: 1.3}
+    until: 0
+    loop: 0
+    size: {x: 0.09, y: 0.13}
+    velocity: {x: -0.35, y: 0.45}
+    jitter: 0.5
+    gravity: 1.4
+    drag: 0
+    sway: 0
+    swayRate: 0.6
+    spin: {x: 200, y: 500}
+    angle: 0
+    tilt: 180
+    alongLine: 0
+    flipRandom: 0
+    pop: 0.05
+    fadeOut: 0.3
+    flicker: 0
+    wrap: 0
+    inDark: 0.8
+  - note: Shards flying right from the pot
+    art: 14
+    wall: 0
+    depth: 1
+    tints:
+    - {r: 0.78431374, g: 0.44313726, b: 0.30588236, a: 1}
+    count: 5
+    spawn: 0
+    from: {x: -0.78, y: -0.82}
+    to: {x: -0.66, y: -0.74}
+    points: []
+    delay: 0.3
+    stagger: 0.05
+    life: {x: 1, y: 1.3}
+    until: 0
+    loop: 0
+    size: {x: 0.09, y: 0.13}
+    velocity: {x: 0.3, y: 0.5}
+    jitter: 0.5
+    gravity: 1.4
+    drag: 0
+    sway: 0
+    swayRate: 0.6
+    spin: {x: 200, y: 500}
+    angle: 0
+    tilt: 180
+    alongLine: 0
+    flipRandom: 0
+    pop: 0.05
+    fadeOut: 0.3
+    flicker: 0
+    wrap: 0
+    inDark: 0.8
+  - note: Dust where the pot lands
+    art: 8
+    wall: 0
+    depth: 1
+    tints:
+    - {r: 1, g: 1, b: 1, a: 0.55}
+    count: 3
+    spawn: 0
+    from: {x: -0.82, y: -0.88}
+    to: {x: -0.62, y: -0.78}
+    points: []
+    delay: 0.3
+    stagger: 0.2
+    life: {x: 1.2, y: 1.5}
+    until: 0
+    loop: 0
+    size: {x: 0.3, y: 0.4}
+    velocity: {x: 0, y: 0.08}
+    jitter: 0.5
+    gravity: 0
+    drag: 0
+    sway: 0
+    swayRate: 0.6
+    spin: {x: 0, y: 0}
+    angle: 0
+    tilt: 0
+    alongLine: 0
+    flipRandom: 0
+    pop: 0.3
+    fadeOut: 0.8
+    flicker: 0
+    wrap: 0
+    inDark: 0.8
+  - note: The dog startles
+    art: 15
+    wall: 0
+    depth: 1
+    tints:
+    - {r: 0.9647059, g: 0.7647059, b: 0.627451, a: 1}
+    count: 1
+    spawn: 2
+    from: {x: -0.8, y: -0.8}
+    to: {x: 0.8, y: 0.8}
+    points:
+    - {x: 0.36, y: 0.6}
+    delay: 0.55
+    stagger: 0
+    life: {x: 1.8, y: 1.8}
+    until: 0
+    loop: 0
+    size: {x: 0.36, y: 0.36}
+    velocity: {x: 0, y: 0}
+    jitter: 0
+    gravity: 0
+    drag: 0
+    sway: 0
+    swayRate: 0.6
+    spin: {x: 0, y: 0}
+    angle: -8
+    tilt: 0
+    alongLine: 0
+    flipRandom: 0
+    pop: 0.25
+    fadeOut: 0.4
+    flicker: 0
+    wrap: 0
+    inDark: 0.6
+  - note: Hearts rising on both pages
+    art: 10
+    wall: -1
+    depth: 1
+    tints:
+    - {r: 0.8901961, g: 0.42745098, b: 0.5411765, a: 1}
+    - {r: 0.9647059, g: 0.7647059, b: 0.627451, a: 1}
+    - {r: 0.96862745, g: 0.7254902, b: 0.7921569, a: 1}
+    count: 6
+    spawn: 0
+    from: {x: -0.6, y: -0.85}
+    to: {x: 0.6, y: -0.45}
+    points: []
+    delay: 0.9
+    stagger: 2.2
+    life: {x: 2.6, y: 3}
+    until: 0
+    loop: 0
+    size: {x: 0.24, y: 0.3}
+    velocity: {x: 0, y: 0.18}
+    jitter: 0.2
+    gravity: 0
+    drag: 0
+    sway: 0.05
+    swayRate: 0.5
+    spin: {x: 0, y: 0}
+    angle: 0
+    tilt: 12
+    alongLine: 0
+    flipRandom: 0
+    pop: 0.3
+    fadeOut: 0.8
+    flicker: 0
+    wrap: 0
+    inDark: 0.3
+  seconds: 5.5

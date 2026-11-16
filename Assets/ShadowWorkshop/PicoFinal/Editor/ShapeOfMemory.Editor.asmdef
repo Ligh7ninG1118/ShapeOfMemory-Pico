@@ -2,6 +2,9 @@
   "name": "ShapeOfMemory.Editor",
   "references": [
     "ShapeOfMemory",
+    "Unity.Localization",
+    "Unity.Localization.Editor",
+    "Unity.TextMeshPro",
     "ShadowWorkshop.Runtime",
     "PhysicalAssembly.Editor",
     "ShadowWorkshop.Editor"

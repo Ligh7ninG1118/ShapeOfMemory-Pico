@@ -10,11 +10,11 @@ namespace ShapeOfMemory
     public sealed class MemorySounds
     {
         const int Rate=44100;
-        public readonly AudioClip Room,Lamp,Whoosh,Settle,Ending,Crinkle,Rustle,Flap,Found;
+        public readonly AudioClip Room,Lamp,Whoosh,Settle,Ending,Crinkle,Rustle,Flap,Found,Swell;
         public MemorySounds(List<Object> owned)
         {
             Room=Make("Memory room tone",RoomTone(),owned);Lamp=Make("Memory lamp",LampSwitch(),owned);
-            Whoosh=Make("Memory whoosh",Air(),owned);Settle=Make("Memory settle",Knock(),owned);Ending=Make("Memory ending",Arpeggio(),owned);Found=Make("Memory found",Bells(),owned);
+            Whoosh=Make("Memory whoosh",Air(),owned);Settle=Make("Memory settle",Knock(),owned);Ending=Make("Memory ending",Arpeggio(),owned);Found=Make("Memory found",Bells(),owned);Swell=Make("Memory swell",Glissando(),owned);
             Crinkle=Make("Memory page crinkle",PaperCrinkle(),owned);Rustle=Make("Memory page rustle",PaperRustle(),owned);Flap=Make("Memory page flap",PaperFlap(),owned);
         }
         // Paper: bright noise (high-passed) broken into crackles, each a burst of it that dies away in a few milliseconds.
@@ -72,6 +72,28 @@ namespace ShapeOfMemory
                 int start=(int)(Rate*.075f*k);
                 for(int i=start;i<s.Length;i++){float t=(i-start)/(float)Rate;s[i]+=(Mathf.Sin(t*Mathf.PI*2*notes[k])+.25f*Mathf.Sin(t*Mathf.PI*2*notes[k]*2.76f)*Mathf.Exp(-t*6))*.11f*Mathf.Exp(-t*2.2f)*Mathf.Min(1,t*300);}
             }
+            return s;
+        }
+        // While the orb glides into the answer (MemorySolveMoment starts it so its top lands with the orb): a soft harp run up
+        // E major's pentatonic, two octaves in SwellPeak seconds, quickening and growing over a swelling low E and B, then
+        // a short fade, so the found bells (E major) answer it.
+        public const float SwellPeak=1.2f;
+        static float[] Glissando()
+        {
+            var s=new float[(int)(Rate*(SwellPeak+.35f))];
+            float[] notes={329.63f,369.99f,415.30f,493.88f,554.37f,659.25f,739.99f,830.61f,987.77f,1108.73f,1318.51f};
+            for(int i=0;i<s.Length;i++)
+            {
+                float t=i/(float)Rate,rise=Mathf.Clamp01(t/SwellPeak);
+                s[i]=(Mathf.Sin(t*Mathf.PI*2*82.41f)+.6f*Mathf.Sin(t*Mathf.PI*2*123.47f)+.3f*Mathf.Sin(t*Mathf.PI*2*164.81f))*.07f*rise*rise;
+            }
+            for(int k=0;k<notes.Length;k++)
+            {
+                // Each note sooner after the last (k/n squared root spacing), each a little louder.
+                float at=SwellPeak*Mathf.Sqrt(k/(float)(notes.Length-1))*.94f,gain=.05f+.07f*k/(notes.Length-1);int start=(int)(Rate*at);
+                for(int i=start;i<s.Length;i++){float t=(i-start)/(float)Rate;s[i]+=(Mathf.Sin(t*Mathf.PI*2*notes[k])+.2f*Mathf.Sin(t*Mathf.PI*4*notes[k])*Mathf.Exp(-t*8))*gain*Mathf.Exp(-t*3.2f)*Mathf.Min(1,t*400);}
+            }
+            int fade=(int)(Rate*.3f);for(int i=0;i<fade;i++)s[s.Length-fade+i]*=1-i/(float)fade;
             return s;
         }
         static AudioClip Make(string name,float[] samples,List<Object> owned)

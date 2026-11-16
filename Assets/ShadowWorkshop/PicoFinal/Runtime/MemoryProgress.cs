@@ -53,5 +53,24 @@ namespace ShapeOfMemory
             get=>store.Get(Prefix+"Lift",0)/1000f;
             set=>store.Set(Prefix+"Lift",Mathf.RoundToInt(Mathf.Clamp(value,-MaxLift,MaxLift)*1000));
         }
+        // ---- Settings (the book's Settings spread)
+        // The soundtrack plays (the closeness cue is the level's own and always plays).
+        public bool Music{get=>store.Get(Prefix+"Music",1)!=0;set=>store.Set(Prefix+"Music",value?1:0);}
+        // The buttons by the left hand instead of the right.
+        public bool LeftHanded{get=>store.Get(Prefix+"LeftHanded",0)!=0;set=>store.Set(Prefix+"LeftHanded",value?1:0);}
+        // The language the player picked: one of Languages, or "" for the headset's own.
+        public static readonly string[] Languages={"en","zh-Hans"};
+        public string Language
+        {
+            get{int k=store.Get(Prefix+"Language",0);return k>=1&&k<=Languages.Length?Languages[k-1]:"";}
+            set=>store.Set(Prefix+"Language",Array.IndexOf(Languages,value)+1);
+        }
+        // Start over: every memory is waiting again (found, hints, intros seen, the first lesson). The settings and the
+        // table height stay.
+        public void Forget()
+        {
+            for(int i=0;i<ids.Length;i++){store.Set(Prefix+"Solved."+ids[i],0);store.Set(Prefix+"Intro."+ids[i],0);store.Set(Prefix+"Hints."+ids[i],0);}
+            Taught=false;
+        }
     }
 }

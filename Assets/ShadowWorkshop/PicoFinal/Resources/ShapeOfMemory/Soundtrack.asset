@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0302879db24acc942b2a46c1d6e3e01d, type: 3}
+  m_Name: Soundtrack
+  m_EditorClassIdentifier: ShapeOfMemory::ShapeOfMemory.MemorySoundtrack
+  songs:
+  - clip: {fileID: 8300000, guid: 87c6c7027df8a0045ba283a240a5a1bc, type: 3}
+    loop: 1
+    volume: 0.4
+    trimStart: 1.2
+    trimEnd: 2.5
+  duringPlay: 0
+  fadeIn: 2.5
+  fadeOut: 1.2

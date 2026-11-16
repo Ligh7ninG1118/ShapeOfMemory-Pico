@@ -104,8 +104,10 @@ namespace CloudGarden.ShadowPuzzle
             // The music (and its tick) only warms within cueAngle of an answer: further out it reads cold however warm the
             // shadow scores, so a lookalike never sounds close. The slides keep the wider lookalikeAngle.
             float heard=angle>level.cueAngle?0:p.Score.warmth;
-            if(Overall.Update(heard,game.Completed||p.Score.Ready,lookalike,level.tiers,dt)>0&&Level>.5f){tick.pitch=1+.12f*Overall.Tier;tick.PlayOneShot(tick.clip);}
-            for(int j=0;j<Walls.Length;j++)Walls[j].Update(p.scores[j].warmth,game.Completed||p.scores[j].Ready,lookalike,level.tiers,dt);
+            // A lock coming in (Torch2Workshop.HoldToSolve) counts as passing from its first moment, with the light.
+            bool done=game.Completed||game.Locking;
+            if(Overall.Update(heard,done||p.Score.Ready,lookalike,level.tiers,dt)>0&&Level>.5f){tick.pitch=1+.12f*Overall.Tier;tick.PlayOneShot(tick.clip);}
+            for(int j=0;j<Walls.Length;j++)Walls[j].Update(p.scores[j].warmth,done||p.scores[j].Ready,lookalike,level.tiers,dt);
             Apply(false);
         }
         void Apply(bool force)

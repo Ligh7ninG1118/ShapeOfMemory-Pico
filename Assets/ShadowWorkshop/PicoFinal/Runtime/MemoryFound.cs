@@ -39,10 +39,10 @@ namespace ShapeOfMemory
             MemoryUi.Shape(PrimitiveType.Quad,"Plaque edge",banner,new Vector3(0,.012f,.003f),Quaternion.identity,new Vector3(.64f,.2f,1),kit.Screen,Gold);
             MemoryUi.Shape(PrimitiveType.Quad,"Plaque line",banner,new Vector3(0,.012f,.0015f),Quaternion.identity,new Vector3(.628f,.188f,1),kit.Screen,MemoryPalette.GoldBright);
             MemoryUi.Shape(PrimitiveType.Quad,"Plaque",banner,new Vector3(0,.012f,0),Quaternion.identity,new Vector3(.62f,.18f,1),kit.Screen,MemoryPalette.LeatherDeep);
-            words.Add(MemoryUi.Label("MEMORY FOUND",banner,new Vector3(0,.06f,-.004f),Quaternion.identity,.03f,new Vector2(.56f,.05f),Gold));
-            words[0].characterSpacing=18;words[0].fontStyle=FontStyles.Bold;
-            words.Add(MemoryUi.Label(level.button,banner,new Vector3(0,-.012f,-.004f),Quaternion.identity,.075f,new Vector2(.56f,.1f),MemoryPalette.Light(MemoryPalette.ChapterOf(level))));
-            words[1].fontStyle=FontStyles.Bold;words[1].characterSpacing=6;
+            words.Add(MemoryUi.Label(MemoryText.Get("found/banner"),banner,new Vector3(0,.06f,-.004f),Quaternion.identity,.03f,new Vector2(.56f,.05f),Gold));
+            words[0].characterSpacing=18;MemoryText.Apply(words[0],MemoryText.Role.Caps);
+            words.Add(MemoryUi.Label(MemoryText.Name(level),banner,new Vector3(0,-.012f,-.004f),Quaternion.identity,.075f,new Vector2(.56f,.1f),MemoryPalette.Light(MemoryPalette.ChapterOf(level))));
+            words[1].characterSpacing=6;MemoryText.Apply(words[1],MemoryText.Role.Title);
             foreach(var word in words){word.textWrappingMode=TextWrappingModes.NoWrap;word.enableAutoSizing=true;word.fontSizeMin=word.fontSize*.4f;word.fontSizeMax=word.fontSize;}
         }
         // Small gold diamonds flung out of the pile, slowing and shrinking away (unlit, so they read in any light): half Gold,

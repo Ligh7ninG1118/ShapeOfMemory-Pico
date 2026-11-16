@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Unity.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 
 namespace CloudGarden.ShadowPuzzle
@@ -11,9 +12,11 @@ namespace CloudGarden.ShadowPuzzle
     // answer. The cluster itself is the orb: it stays at the rest position, and its rotation only previews the orb
     // (identity is the answer). The game's own room (Torch2Room) shows the pile's shadow live in edit mode, so blocking
     // out needs no Play mode. ShadowPiece marks objects as visual only or gives them a simpler shadow mesh. The table
-    // layout holds a twin of each piece where it lies on the table before the level; Play mode shows them lifting into the
-    // orb (Torch2Transit), and export stores it. Checks, export, open-in-gym and play live in the editor (Torch2GymEditor,
-    // MetaHackthone > Shadow Workshop > Gym).
+    // layout holds a twin of each piece where it lies on the table before the level (without one they scatter, as in the
+    // game); Play mode shows them lifting into the orb (Torch2Transit), then the rings close and the lamps come on, and
+    // then the orb rolls under the mouse as on the game's desktop (the wheel and right-drag move the camera). Saved views
+    // are orb rotations to come back to: V in Play mode or the inspector saves one, and they outlast Play mode. Checks,
+    // export, open-in-gym and play live in the editor (Torch2GymEditor, MetaHackthone > Shadow Workshop > Gym).
     [ExecuteAlways]
     public sealed class Torch2Gym : MonoBehaviour
     {
@@ -54,6 +57,12 @@ namespace CloudGarden.ShadowPuzzle
         [Tooltip("Let go within snapAngle degrees of the answer, passing or at snapWarmth, and the orb turns itself into the answer.")]
         public float snapWarmth=.90f,snapAngle=20;
         [Tooltip("Shape of Memory: still held within this many degrees of an answer, the orb leaves the hand and snaps in, solved.")] public float heldSnapAngle=8;
+        // Held here so opening a level and exporting it keep them (export makes a new level: anything the gym does not
+        // hold goes back to its default).
+        [Tooltip("One-lamp levels that accept upside down: the picture counts turned any way at all on the wall (Torch2Level.anyTurn). Two-lamp levels never.")]
+        public bool anyTurn=true;
+        [Tooltip("Above 0: a host's lock (hold to solve) only takes the orb within this many degrees of an answer (Torch2Level.lockAngle; Birthday 10, GoodMorning 6).")]
+        public float lockAngle=0;
         [Tooltip("Shape of Memory only: pieces further than Draw Gather From are drawn with that extra distance times this (1 = as placed); shadows unchanged. The gym always shows the real places.")]
         [Range(.2f,1)] public float drawGather=1;
         public float drawGatherFrom=.12f;
@@ -64,9 +73,20 @@ namespace CloudGarden.ShadowPuzzle
         [Tooltip("Seconds each thing takes from the table to its place.")] [Range(.3f,2)] public float transitFly=.8f;
         [Tooltip("How much of one flight the next may share (0 = strictly one at a time). Check level reports any clash.")] [Range(0,.8f)] public float transitOverlap=.3f;
         [Tooltip("Play mode only: the things fly into the orb at the answer instead of the level's start rotation.")] public bool transitToAnswer;
+        [Tooltip("Play mode opens with the things flying in from the table, then the rings and lamps. Untick to start with the orb up and the lamps on (Skip intro in the Game view or Space does it once).")] public bool playIntro=true;
         [Header("Room")]
         public Material surfaceMaterial,screenMaterial,glowMaterial;
         [HideInInspector] public string report="";
+
+        // An orb rotation to come back to (the cluster's local rotation; identity is the answer).
+        [Serializable] public struct View{public string name;public Quaternion rotation;}
+        // Saved views, drawn by the inspector. Never part of the level. Changes made in Play mode are kept when it ends
+        // (Torch2GymSession copies the list back onto the edit-mode gym).
+        [HideInInspector] public List<View> views=new List<View>();
+        // Edit mode: a saved view turned the orb, and the rotation it had before the first one did (BackToOriginal). Saved
+        // with the scene, so the way back survives reloads and restarts.
+        [HideInInspector] public bool showingView;
+        [HideInInspector] public Quaternion beforeViews=Quaternion.identity;
 
         public struct Piece
         {
@@ -108,23 +128,27 @@ namespace CloudGarden.ShadowPuzzle
         }
         void OnDisable()
         {
+            // Mid-flight: the pieces go back to their places (the room with its orb goes next).
+            if(transit!=null){for(int i=0;i<transitPieces.Length;i++)if(transitPieces[i])transitPieces[i].SetLocalPositionAndRotation(restPositions[i],restRotations[i]);transit=null;}
             DropRoom();
             for(int k=0;k<2;k++){Torch2Room.Kill(placeholders[k]);placeholders[k]=null;placeholderKeys[k]=null;}
             foreach(var copy in readable.Values)Torch2Room.Kill(copy);readable.Clear();
             if(Preview)Torch2Room.Kill(Preview);Preview=null;Projection=null;built=false;
         }
-        void Start()
+        void Start(){if(!Application.isPlaying)return;PlayTransit();if(!playIntro)SkipTransit();}
+        void Update()
         {
-            if(!Application.isPlaying)return;
-            if(tableLayout)PlayTransit();
-            else Debug.Log("TORCH2_GYM_TRANSIT nothing to play: set Table Layout on the gym to the object holding the table copies of the cluster's pieces.",this);
+            if(Application.isPlaying)CameraInput();
+            if(transit!=null){StepTransit();return;}
+            if(Application.isPlaying&&cluster)PlayInput();
+            Refresh();
         }
-        void Update(){if(transit!=null)StepTransit();else Refresh();}
 
-        // ---- Play mode: the table to the orb, as the game's intro does it
-        const float TransitLead=.6f;
+        // ---- Play mode: the table to the orb, then the rings close and the lamps come on, as the game's intro does it
+        // (MemoryIntro's timings); only then does the orb roll.
+        const float TransitLead=.6f,RingsAt=.1f,CloseRings=.4f,LampsAt=.4f,Flicker=.4f,Rest=.3f;
         Torch2Transit transit;
-        float transitTime;
+        float transitTime,lampShown=-1;
         Transform[] transitPieces;
         Vector3[] restPositions;
         Quaternion[] restRotations;
@@ -132,36 +156,175 @@ namespace CloudGarden.ShadowPuzzle
         // The editor's start picker, the one Check level uses (Torch2GymTools). While Auto Start is on, Play mode picks
         // the start with it, so the preview never opens on a start that was never checked.
         public static Func<Torch2Gym,Quaternion> StartPicker;
-        public float TransitLength=>transit!=null?TransitLead+transit.Length:0;
-        // The table layout hides and its twins under the cluster fly from its places into the orb, with the lamps off;
-        // then the lamps come on over the start pose. Play mode only, so the scene comes back as it was afterwards.
+        float Landed=>TransitLead+transit.Length;
+        public float TransitLength=>transit!=null?Landed+LampsAt+Flicker+Rest:0;
+        // The table layout hides and the pieces under the cluster fly from its twins' places (or, without a full table
+        // layout, from where the game scatters them) into the orb, with the lamps off; then the rings close round the pile
+        // and the lamps come on over the start pose. Play mode only, so the scene comes back as it was afterwards.
         public void PlayTransit()
         {
             if(!Application.isPlaying)return;
             if(transit!=null)EndTransit();
-            Refresh(true);if(Preview==null||!Torch2Transit.HasTable(Preview)){Debug.LogWarning("TORCH2_GYM_TRANSIT needs a table layout with a twin of every piece: "+Notes.Trim());return;}
+            Refresh(true);if(Preview==null||Preview.pieces.Length==0||!orb){Debug.LogWarning("TORCH2_GYM_TRANSIT nothing under the cluster to fly in. "+Notes.Trim(),this);return;}
+            bool table=Torch2Transit.HasTable(Preview);
+            if(tableLayout&&!table)Debug.LogWarning("TORCH2_GYM_TRANSIT the table layout has no twin for some pieces, so all of them scatter, as the game would do: "+Notes.Trim(),this);
             if(!transitToAnswer&&autoStart&&StartPicker!=null)start=StartPicker(this);
-            var rotation=transitToAnswer?Quaternion.identity:start;cluster.localRotation=rotation;
+            var rotation=transitToAnswer?Quaternion.identity:start;cluster.localRotation=rotation;Refresh();
             transit=new Torch2Transit(Preview,rotation,Torch2Projection.Home,transitFly,transitOverlap);
             int n=Pieces.Count;transitPieces=new Transform[n];restPositions=new Vector3[n];restRotations=new Quaternion[n];
             for(int i=0;i<n;i++){var t=Pieces[i].source.transform;transitPieces[i]=t;restPositions[i]=t.localPosition;restRotations[i]=t.localRotation;}
-            tableLayout.gameObject.SetActive(false);orb.gameObject.SetActive(false);room.Lamps(0);if(Projection!=null)room.Light(Projection,Torch2Room.Dark);
+            if(tableLayout)tableLayout.gameObject.SetActive(false);
+            orb.gameObject.SetActive(false);lampShown=-1;Lamp(0);rolling=false;
             transitTime=0;PoseTransit();
-            Debug.Log($"TORCH2_GYM_TRANSIT {n} pieces in {transit.movers.Length} movers, {TransitLength:0.0} s{(Array.Exists(transit.movers,m=>m.blocked)?", some without a clear line (Check level)":"")}");
+            Debug.Log($"TORCH2_GYM_TRANSIT {n} pieces in {transit.movers.Length} movers from {(table?"the table layout":"a scatter")}, {TransitLength:0.0} s{(Array.Exists(transit.movers,m=>m.blocked)?", some without a clear line (Check level)":"")}");
         }
-        void StepTransit(){transitTime+=Time.deltaTime;PoseTransit();if(transitTime>=TransitLength)EndTransit();}
+        // Space skips to the end (as do the Game view's Skip intro and the inspector's Skip).
+        void StepTransit()
+        {
+            var keyboard=Keyboard.current;
+            if(keyboard!=null&&keyboard.spaceKey.wasPressedThisFrame){SkipTransit();return;}
+            transitTime+=Time.deltaTime;PoseTransit();if(transitTime>=TransitLength)EndTransit();
+        }
+        // Straight to the end of the intro: everything in its place, the rings up, the lamps on.
+        public void SkipTransit(){if(transit==null)return;transitTime=TransitLength;PoseTransit();EndTransit();}
         void PoseTransit()
         {
             // Parents before children, so a moved parent never carries a child off its pose.
             var order=new int[transitPieces.Length];for(int i=0;i<order.Length;i++)order[i]=i;
             Array.Sort(order,(a,b)=>Depth(transitPieces[a]).CompareTo(Depth(transitPieces[b])));
             foreach(int i in order){var pose=transit.Evaluate(i,transitTime-TransitLead);transitPieces[i].SetPositionAndRotation(transform.TransformPoint(pose.position),transform.rotation*pose.rotation);}
+            // Once everything has landed: the rings close round it, and the lamps catch, dip and come on.
+            float after=transitTime-Landed,ring=Mathf.Clamp01((after-RingsAt)/CloseRings),f=after-LampsAt;
+            orb.gameObject.SetActive(ring>0);orb.localScale=Vector3.one*Back(ring);
+            Lamp(f<0?0:f<.06f?.7f:f<.16f?.15f:Mathf.Clamp01(.15f+(f-.16f)/(Flicker-.16f)*.85f));
         }
+        static float Back(float t){const float s=1.7f;t-=1;return t*t*((s+1)*t+s)+1;}
         static int Depth(Transform t){int d=0;for(;t;t=t.parent)d++;return d;}
+        // 0 = lamps off and the walls dark, 1 = on.
+        void Lamp(float level)
+        {
+            if(level==lampShown)return;lampShown=level;
+            room.Lamps(level);if(Projection!=null)room.Light(Projection,Color.Lerp(Torch2Room.Dark,Torch2Room.Warm,level));
+        }
         void EndTransit()
         {
             for(int i=0;i<transitPieces.Length;i++)if(transitPieces[i])transitPieces[i].SetLocalPositionAndRotation(restPositions[i],restRotations[i]);
-            transit=null;orb.gameObject.SetActive(true);room.Lamps(1);Refresh(true);
+            transit=null;orb.gameObject.SetActive(true);orb.localScale=Vector3.one;Lamp(1);Refresh(true);
+        }
+
+        // ---- Play mode, once the orb is up: it rolls as on the game's desktop (Torch2Input): left-drag rolls it under the
+        // cursor, A/D W/S Z/C turn it. Always in place, as in Shape of Memory. V saves the view.
+        bool rolling,viewMoved;
+        Vector3 lastSpoke;
+        float savedUntil;
+        string savedName;
+        GUIStyle hintStyle;
+        // The Game view's camera, any time in Play mode (the flight in too): the wheel takes it nearer or further along its
+        // view, right-drag pans it, the orb staying under the cursor. Play mode puts the camera back when it ends.
+        public const float ViewNearest=.45f,ViewFurthest=6,ViewNotch=.12f;
+        void CameraInput()
+        {
+            var mouse=Mouse.current;var view=Camera.main;viewMoved=false;if(mouse==null||!view)return;
+            var t=view.transform;var centre=transform.TransformPoint(Torch2Projection.Home);
+            float scroll=mouse.scroll.ReadValue().y;
+            if(InputSystem.settings.scrollDeltaBehavior==InputSettings.ScrollDeltaBehavior.KeepPlatformSpecificInputRange&&
+                (Application.platform==RuntimePlatform.WindowsEditor||Application.platform==RuntimePlatform.WindowsPlayer))scroll/=120f;
+            scroll=Mathf.Clamp(scroll,-3,3);
+            if(scroll!=0)
+            {
+                if(view.orthographic)view.orthographicSize=Mathf.Clamp(view.orthographicSize*Mathf.Exp(-scroll*ViewNotch),.05f,ViewFurthest);
+                else t.position=Dolly(t.position,t.forward,centre,scroll);
+                viewMoved=true;
+            }
+            var delta=mouse.delta.ReadValue();
+            if(mouse.rightButton.isPressed&&!mouse.rightButton.wasPressedThisFrame&&delta!=Vector2.zero)
+            {
+                float height=view.orthographic?2*view.orthographicSize:2*Mathf.Max(Vector3.Dot(centre-t.position,t.forward),.05f)*Mathf.Tan(view.fieldOfView*.5f*Mathf.Deg2Rad);
+                t.position=Pan(t.position,t.right,t.up,delta,height/Mathf.Max(1,view.pixelHeight));viewMoved=true;
+            }
+        }
+        // The camera after notches of the wheel (up = nearer): the orb's depth in front of it changes by ViewNotch a notch,
+        // within ViewNearest (clear of the rings) and ViewFurthest. The camera moves along its own view.
+        public static Vector3 Dolly(Vector3 position,Vector3 forward,Vector3 centre,float notches)
+        {
+            float depth=Vector3.Dot(centre-position,forward);
+            float target=Mathf.Clamp(depth*Mathf.Exp(-notches*ViewNotch),ViewNearest,ViewFurthest);
+            return position+forward*(depth-target);
+        }
+        // The camera after a drag of delta pixels: what lies at the orb's depth moves with the cursor (perPixel: metres a
+        // pixel there).
+        public static Vector3 Pan(Vector3 position,Vector3 right,Vector3 up,Vector2 delta,float perPixel)=>position-(right*delta.x+up*delta.y)*perPixel;
+        void PlayInput()
+        {
+            var mouse=Mouse.current;var keyboard=Keyboard.current;var view=Camera.main;if(!view)return;
+            var rotation=cluster.localRotation;
+            if(mouse!=null)
+            {
+                var ray=view.ScreenPointToRay(mouse.position.ReadValue());
+                var local=new Ray(transform.InverseTransformPoint(ray.origin),transform.InverseTransformDirection(ray.direction).normalized);
+                var spoke=Torch2Input.OrbPoint(local,Torch2Projection.Home,Torch2Input.OrbRadius)-Torch2Projection.Home;
+                if(mouse.leftButton.wasPressedThisFrame)rolling=true;
+                // A camera move shifts the cursor's point on the orb without the hand moving: no turn from it.
+                else if(rolling&&mouse.leftButton.isPressed&&!viewMoved)rotation=Quaternion.FromToRotation(lastSpoke,spoke)*rotation;
+                if(!mouse.leftButton.isPressed)rolling=false;
+                lastSpoke=spoke;
+            }
+            if(keyboard!=null)rotation=Torch2Input.KeyTurn(keyboard,Time.unscaledDeltaTime,transform.InverseTransformDirection(view.transform.right),transform.InverseTransformDirection(view.transform.forward))*rotation;
+            if(!rotation.Equals(cluster.localRotation))cluster.localRotation=Quaternion.Normalize(rotation);
+            if(keyboard!=null&&keyboard.vKey.wasPressedThisFrame)
+            {
+                int i=SaveView();savedName=views[i].name;savedUntil=Time.unscaledTime+2;
+                Debug.Log($"TORCH2_GYM_VIEW saved {savedName}, {AngleFromAnswer(views[i].rotation):0} degrees from the answer ({views.Count} saved; kept after Play mode)",this);
+            }
+        }
+        // What the Game view can do, along its bottom edge.
+        void OnGUI()
+        {
+            if(!Application.isPlaying||!cluster)return;
+            if(hintStyle==null)hintStyle=new GUIStyle(GUI.skin.box){alignment=TextAnchor.MiddleLeft,fontSize=13,wordWrap=false,padding=new RectOffset(10,10,6,6)};
+            bool intro=Transiting;
+            string text=intro?"The things fly in from the table, then the rings close and the lamps come on. Wheel: nearer / further, right-drag: pan.":
+                $"Drag rolls the orb, A/D W/S Z/C turn it. Wheel: nearer / further, right-drag: pan. V saves this view ({views.Count} saved, kept after Play). {AngleFromAnswer(cluster.localRotation):0} degrees from the answer.";
+            if(!intro&&Time.unscaledTime<savedUntil)text=$"Saved {savedName}.   "+text;
+            const string skip="Skip intro (Space)";var button=intro?GUI.skin.button.CalcSize(new GUIContent(skip))+new Vector2(16,8):Vector2.zero;
+            var size=hintStyle.CalcSize(new GUIContent(text));float room=Screen.width-20-(intro?button.x+8:0);
+            GUI.Box(new Rect(10,Screen.height-size.y-10,Mathf.Min(size.x,room),size.y),text,hintStyle);
+            // The button: once the flight is under way, the intro can be cut short (the click does not turn the orb).
+            if(intro&&GUI.Button(new Rect(10+Mathf.Min(size.x,room)+8,Screen.height-Mathf.Max(size.y,button.y)-10,button.x,Mathf.Max(size.y,button.y)),skip))SkipTransit();
+        }
+
+        // ---- Saved views (no undo here: the editor records it, Torch2GymTools)
+        // Degrees to the nearest answer, flips included.
+        public float AngleFromAnswer(Quaternion rotation)=>Projection!=null?Projection.AngleToAnswer(rotation):Quaternion.Angle(rotation,Quaternion.identity);
+        public string NextViewName()
+        {
+            int n=0;foreach(var v in views)if(v.name!=null&&v.name.StartsWith("View ")&&int.TryParse(v.name.Substring(5),out int k))n=Mathf.Max(n,k);
+            return "View "+(n+1);
+        }
+        // Saves the orb as it is now; returns its index.
+        public int SaveView(){views.Add(new View{name=NextViewName(),rotation=Rotation(cluster.localRotation)});return views.Count-1;}
+        // Turns the orb to a saved view. In edit mode the first view shown remembers where the orb was, for BackToOriginal;
+        // later ones keep that. Only the cluster turns: the pieces under it, which are the answer, never move.
+        public void ShowView(int i)
+        {
+            if(!cluster||i<0||i>=views.Count||Transiting)return;
+            if(!Application.isPlaying&&!showingView){beforeViews=Rotation(cluster.localRotation);showingView=true;}
+            cluster.localRotation=Rotation(views[i].rotation);Refresh();
+        }
+        // The orb back to the rotation it had before the first view was shown.
+        public void BackToOriginal(){if(!cluster||!showingView)return;cluster.localRotation=Rotation(beforeViews);showingView=false;Refresh();}
+        // The saved view the orb is at (within a tenth of a degree), or -1.
+        public int ShownView()
+        {
+            if(!cluster)return -1;var now=cluster.localRotation;
+            for(int i=0;i<views.Count;i++)if(Quaternion.Angle(now,Rotation(views[i].rotation))<.1f)return i;
+            return -1;
+        }
+        // A usable rotation, bit for bit when it already is one: a zeroed one (a default list entry) is the answer.
+        public static Quaternion Rotation(Quaternion q)
+        {
+            float m=q.x*q.x+q.y*q.y+q.z*q.z+q.w*q.w;
+            return m<1e-8f?Quaternion.identity:Mathf.Abs(m-1)<1e-5f?q:Quaternion.Normalize(q);
         }
         // Re-gathers when anything under the cluster changed (or force), redraws the shadows when the orb turned.
         public void Refresh(bool force=false)
@@ -285,6 +448,7 @@ namespace CloudGarden.ShadowPuzzle
             level.leftSlide=leftSlide;level.rightSlide=rightSlide;level.layers=layers!=null?(AudioClip[])layers.Clone():new AudioClip[0];level.cueVolume=cueVolume;
             level.tiers=tiers;level.lookalikeAngle=lookalikeAngle;level.snapWarmth=snapWarmth;level.snapAngle=snapAngle;
             level.flips=flips;level.cueAngle=cueAngle;level.heldSnapAngle=heldSnapAngle;level.drawGather=drawGather;level.drawGatherFrom=drawGatherFrom;
+            level.anyTurn=anyTurn;level.lockAngle=lockAngle;
             level.pieces=pieces.ConvertAll(p=>new Torch2Piece{label=p.label,mesh=p.mesh,materials=p.materials,position=p.position,euler=p.rotation.eulerAngles,scale=p.scale,
                 shadowMesh=p.visualOnly?null:shadowOf(p.shadow),visualOnly=p.visualOnly}).ToArray();
             level.transitFly=transitFly;level.transitOverlap=transitOverlap;

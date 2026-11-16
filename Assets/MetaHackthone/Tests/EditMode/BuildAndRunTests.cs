@@ -51,7 +51,10 @@ namespace PhysicalAssembly.Tests
             CollectionAssert.AllItemsAreUnique(apks);
             var memory=DeployConfig.Find("Shape of Memory");
             Assert.IsNotNull(memory,"Shape of Memory config");
-            CollectionAssert.AreEqual(new[] { "Assets/ShadowWorkshop/PicoFinal/Scenes/PicoFinal.unity" },memory.ScenePaths);
+            // PicoFinal first (the build starts there), then at most the environment scene it loads additively by path.
+            Assert.AreEqual("Assets/ShadowWorkshop/PicoFinal/Scenes/PicoFinal.unity",memory.ScenePaths.FirstOrDefault());
+            CollectionAssert.IsSubsetOf(memory.ScenePaths,new[] { "Assets/ShadowWorkshop/PicoFinal/Scenes/PicoFinal.unity","Assets/ShadowWorkshop/PicoFinal/Scenes/PicoFinal_Environment.unity" });
+            CollectionAssert.AllItemsAreUnique(memory.ScenePaths);
             Assert.AreEqual("com.metahackathon2026.shadow",memory.Package);
             Assert.AreEqual("Builds/ShapeOfMemory-Pico.apk",memory.ApkPath(DevicePlatform.Pico));
             // Its chapters are checked to be in this folder (ShapeOfMemory.Tests MemoryChaptersTests).

@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8aaf6bc597a95546a7b13c3ed9274bd, type: 3}
+  m_Name: Env art
+  m_EditorClassIdentifier: ShapeOfMemory::ShapeOfMemory.MemoryLook
+  Sky: {fileID: 2100000, guid: 87ce179224b11c3499a2e0d6e6eb523c, type: 2}
+  GlowAzimuth: 30
+  GlowFacing: -20
+  Lighting:
+    Name: Sun
+    KeyColor: {r: 1, g: 0.8, b: 0.45, a: 1}
+    KeyIntensity: 1.6
+    KeyElevation: 15
+    KeyAzimuth: 0
+    KeyFromGlow: 1
+    Ambient: 1
+    AmbientSky: {r: 0.42, g: 0.48720002, b: 0.84, a: 0.8}
+    AmbientEquator: {r: 0.30912003, g: 0.33856001, b: 0.64768, a: 0.8}
+    AmbientGround: {r: 0.1872, g: 0.1944, b: 0.4176, a: 0.8}
+  CloudPieces: []
+  CloudMaterial: {fileID: 0}
+  CloudsUnderFeet: 0
+  CloudShape:
+    SeaSwell: 0
+    SwellLength: 60
+    Lifted: 0
+    LiftedHeight: {x: 5, y: 14}
+  RuinPieces: []
+  RuinMaterial: {fileID: 0}
+  RuinModels: []
+  Ruins:
+    Count: 24
+    Floaters: 5
+    FloatAbove: {x: 4, y: 18}
+    Lean: 0
+    AnyFloats: 0
+  EnvironmentScene: Assets/ShadowWorkshop/PicoFinal/Scenes/PicoFinal_Environment.unity
+  EnvironmentHide: []
+  EnvironmentGiants: 0
+  EnvironmentSeaMaterial: {fileID: 0}
+  Fog:
+    On: 1
+    Start: 25
+    Full: 400
+    Amount: 0.9
+    EaseOut: 1
+    MistTop: -9.5
+    MistDepth: 4.5
+    MistColour: {r: 0.627451, g: 0.47843137, b: 0.68235296, a: 1}
+    MistSky: 1
+    WrapTop: -6
+    WrapBottom: -8.5
+    WrapAmount: 0.8
+    WrapSky: 1
+    SkyAbove: 3
+    SkyWidth: 12
+    SkyBlur: 3
+    Colour: {r: 0.6627451, g: 0.47843137, b: 0.65882355, a: 1}
+    ColourShare: 0
+    ColourToSkyFar: 1
+  DreamPieces: []
+  DreamMaterial: {fileID: 0}

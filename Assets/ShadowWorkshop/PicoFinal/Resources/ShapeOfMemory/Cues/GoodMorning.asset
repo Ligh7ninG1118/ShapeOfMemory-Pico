@@ -1,0 +1,154 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eae2d91e7e8a7c741a289b4f5cf93710, type: 3}
+  m_Name: GoodMorning
+  m_EditorClassIdentifier: ShapeOfMemory::ShapeOfMemory.MemorySolveCue
+  level: {fileID: 11400000, guid: ceaffbbdce24ee9458cec9d6a3a6e429, type: 2}
+  sounds:
+  - clip: {fileID: 8300000, guid: 3b9f468bde93c614899dba7da617b4e8, type: 3}
+    delay: 0.2
+    volume: 1
+  layers:
+  - note: The sun rising behind her
+    art: 12
+    wall: -1
+    depth: 0
+    tints:
+    - {r: 0.9490196, g: 0.6901961, b: 0.2901961, a: 1}
+    count: 1
+    spawn: 2
+    from: {x: -0.8, y: -0.8}
+    to: {x: 0.8, y: 0.8}
+    points:
+    - {x: 0.72, y: -0.3}
+    delay: 0
+    stagger: 0
+    life: {x: 5.5, y: 5.5}
+    until: 0
+    loop: 0
+    size: {x: 0.75, y: 0.75}
+    velocity: {x: 0, y: 0.075}
+    jitter: 0
+    gravity: 0
+    drag: 0
+    sway: 0
+    swayRate: 0.6
+    spin: {x: 5, y: 5}
+    angle: 0
+    tilt: 0
+    alongLine: 0
+    flipRandom: 0
+    pop: 0.8
+    fadeOut: 0.8
+    flicker: 0
+    wrap: 0
+    inDark: 0.4
+  - note: Steam rising in front of her
+    art: 11
+    wall: -1
+    depth: 1
+    tints:
+    - {r: 1, g: 1, b: 1, a: 0.75}
+    count: 4
+    spawn: 0
+    from: {x: -0.8, y: -0.5}
+    to: {x: -0.6, y: -0.4}
+    points: []
+    delay: 0.4
+    stagger: 1.2
+    life: {x: 2, y: 2.4}
+    until: 0
+    loop: 1
+    size: {x: 0.4, y: 0.5}
+    velocity: {x: 0, y: 0.18}
+    jitter: 0
+    gravity: 0
+    drag: 0
+    sway: 0.05
+    swayRate: 0.5
+    spin: {x: 0, y: 0}
+    angle: 0
+    tilt: 8
+    alongLine: 0
+    flipRandom: 0
+    pop: 0.5
+    fadeOut: 0.8
+    flicker: 0
+    wrap: 0
+    inDark: 0.4
+  - note: Sparkles over the hat
+    art: 9
+    wall: -1
+    depth: 1
+    tints:
+    - {r: 1, g: 0.8901961, b: 0.6509804, a: 1}
+    count: 5
+    spawn: 0
+    from: {x: -0.35, y: 0.55}
+    to: {x: 0.4, y: 0.85}
+    points: []
+    delay: 0.5
+    stagger: 2.5
+    life: {x: 0.6, y: 0.9}
+    until: 0
+    loop: 0
+    size: {x: 0.12, y: 0.18}
+    velocity: {x: 0, y: 0}
+    jitter: 0
+    gravity: 0
+    drag: 0
+    sway: 0
+    swayRate: 0.6
+    spin: {x: 30, y: 60}
+    angle: 0
+    tilt: 0
+    alongLine: 0
+    flipRandom: 0
+    pop: 0.15
+    fadeOut: 0.4
+    flicker: 0
+    wrap: 0
+    inDark: 0.6
+  - note: Morning birds
+    art: 3
+    wall: -1
+    depth: 0
+    tints:
+    - {r: 1, g: 1, b: 1, a: 0.85}
+    count: 2
+    spawn: 0
+    from: {x: -0.95, y: 0.45}
+    to: {x: -0.5, y: 0.75}
+    points: []
+    delay: 1
+    stagger: 1.2
+    life: {x: 4, y: 4.2}
+    until: 0
+    loop: 0
+    size: {x: 0.16, y: 0.2}
+    velocity: {x: -0.06, y: 0.02}
+    jitter: 0.3
+    gravity: 0
+    drag: 0
+    sway: 0
+    swayRate: 0.6
+    spin: {x: 0, y: 0}
+    angle: 0
+    tilt: 0
+    alongLine: 0
+    flipRandom: 1
+    pop: 0.3
+    fadeOut: 0.6
+    flicker: 0
+    wrap: 0
+    inDark: 0.1
+  seconds: 5.5

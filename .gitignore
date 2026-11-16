@@ -72,3 +72,23 @@ __pycache__/
 *.pyc
 .env
 .env.local
+
+# Addressables / Localization build output (rebuilt with every player build)
+/Assets/AddressableAssetsData/link.xml
+/Assets/AddressableAssetsData/link.xml.meta
+/Assets/AddressableAssetsData/*/*.bin*
+/Assets/StreamingAssets/aa/
+/Assets/StreamingAssets/aa.meta
+
+# Python caches from Tools/
+__pycache__/
+*.pyc
+
+# Found-moment sounds cut from Soundsnap downloads: the Soundsnap licence forbids sharing the raw files, so they stay
+# out of this public repository (see README). BonVoyage_CabinChime (Pixabay) is included.
+/Assets/ShadowWorkshop/PicoFinal/Audio/Cues/Birthday_BlowOut.wav*
+/Assets/ShadowWorkshop/PicoFinal/Audio/Cues/Birthday_PartyHorn.wav*
+/Assets/ShadowWorkshop/PicoFinal/Audio/Cues/BonVoyage_JetPass.wav*
+/Assets/ShadowWorkshop/PicoFinal/Audio/Cues/GoodMorning_Sizzle.wav*
+/Assets/ShadowWorkshop/PicoFinal/Audio/Cues/Home_PotBreak.wav*
+/Assets/ShadowWorkshop/PicoFinal/Audio/Cues/Home_PuppyBark.wav*

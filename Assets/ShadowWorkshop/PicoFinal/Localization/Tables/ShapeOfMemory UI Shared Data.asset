@@ -1,0 +1,631 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: ShapeOfMemory UI Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: ShapeOfMemory UI
+  m_TableCollectionNameGuidString: ceb2f0f2cb84deb41b749761abf4f821
+  m_Entries:
+  - m_Id: 2450243584
+    m_Key: cover/title/top
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396770
+  - m_Id: 2454437888
+    m_Key: cover/title/of
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396771
+  - m_Id: 2454437889
+    m_Key: cover/title/bottom
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396772
+  - m_Id: 2454437890
+    m_Key: title
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396773
+  - m_Id: 2454437891
+    m_Key: cover/prompt/gaze
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396774
+  - m_Id: 2454437892
+    m_Key: cover/prompt/gaze/more
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396775
+  - m_Id: 2454437893
+    m_Key: cover/prompt/hands
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396776
+  - m_Id: 2454437894
+    m_Key: cover/prompt/hands/more
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396777
+  - m_Id: 2454437895
+    m_Key: cover/prompt/desktop
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396778
+  - m_Id: 2454437896
+    m_Key: how/title
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396779
+  - m_Id: 2454437897
+    m_Key: how/turn
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396780
+  - m_Id: 2454437898
+    m_Key: how/turn/desktop
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396781
+  - m_Id: 2454437899
+    m_Key: how/turn/hands
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396782
+  - m_Id: 2454437900
+    m_Key: how/press
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396783
+  - m_Id: 2454437901
+    m_Key: how/press/desktop
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396784
+  - m_Id: 2454437902
+    m_Key: how/press/hands
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396785
+  - m_Id: 2454437903
+    m_Key: how/objects
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396786
+  - m_Id: 2454437904
+    m_Key: how/objects/desktop
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396787
+  - m_Id: 2454437905
+    m_Key: how/objects/hands
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396788
+  - m_Id: 2454437906
+    m_Key: how/gaze
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396789
+  - m_Id: 2454437907
+    m_Key: progress/none
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396790
+  - m_Id: 2454437908
+    m_Key: progress/all
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396791
+  - m_Id: 2454437909
+    m_Key: progress/some
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396792
+  - m_Id: 2458632192
+    m_Key: begin
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396793
+  - m_Id: 2462826496
+    m_Key: table/lower
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396794
+  - m_Id: 2462826497
+    m_Key: table/raise
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396795
+  - m_Id: 2462826498
+    m_Key: table/height
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396796
+  - m_Id: 2462826499
+    m_Key: chapter/number
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396797
+  - m_Id: 2462826500
+    m_Key: chapter/locked
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396798
+  - m_Id: 2462826501
+    m_Key: chapter/found
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396799
+  - m_Id: 2462826502
+    m_Key: chapter/locked/why
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396800
+  - m_Id: 2462826503
+    m_Key: chapter/not-found
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396801
+  - m_Id: 2462826504
+    m_Key: chapter/blank
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396802
+  - m_Id: 2462826505
+    m_Key: chapter/wait
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396803
+  - m_Id: 2462826506
+    m_Key: play-again
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396804
+  - m_Id: 2462826507
+    m_Key: found
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396805
+  - m_Id: 2462826508
+    m_Key: goal
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396806
+  - m_Id: 2462826509
+    m_Key: picture
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396807
+  - m_Id: 2462826510
+    m_Key: leave
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396808
+  - m_Id: 2462826511
+    m_Key: turn-on
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396809
+  - m_Id: 2462826512
+    m_Key: paused
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396810
+  - m_Id: 2462826513
+    m_Key: resume
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396811
+  - m_Id: 2462826515
+    m_Key: ending/unfinished
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396813
+  - m_Id: 2462826516
+    m_Key: ending/thanks
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396814
+  - m_Id: 2462826517
+    m_Key: ending/for-playing
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396815
+  - m_Id: 2462826518
+    m_Key: credits/to-come
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396816
+  - m_Id: 2462826519
+    m_Key: strip/hint
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396817
+  - m_Id: 2462826520
+    m_Key: strip/reset
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396818
+  - m_Id: 2462826522
+    m_Key: guide/teach/gaze
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396820
+  - m_Id: 2462826523
+    m_Key: guide/teach/gaze/more
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396821
+  - m_Id: 2462826524
+    m_Key: guide/teach/hands
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396822
+  - m_Id: 2462826525
+    m_Key: guide/teach/desktop
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396823
+  - m_Id: 2462826526
+    m_Key: guide/teach/more
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396824
+  - m_Id: 2462826529
+    m_Key: found/banner
+    m_Metadata:
+      m_Items:
+      - rid: 714218833402396827
+  - m_Id: 1304533670805504
+    m_Key: strip/pause
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533704359936
+    m_Key: strip/quit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533704359937
+    m_Key: how/drawer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533704359938
+    m_Key: how/drawer/hands
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533704359939
+    m_Key: how/drawer/desktop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748544
+    m_Key: begin/settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748545
+    m_Key: chapter/drawer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748546
+    m_Key: chapter/again
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748547
+    m_Key: settings/title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748548
+    m_Key: settings/language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748549
+    m_Key: settings/music/on
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748550
+    m_Key: settings/music/off
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748551
+    m_Key: settings/hand
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748552
+    m_Key: settings/hand/left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748553
+    m_Key: settings/hand/right
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748554
+    m_Key: settings/forget
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304533712748555
+    m_Key: language/name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1366626096889856
+    m_Key: play
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1374265795133440
+    m_Key: close/title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1374265828687872
+    m_Key: close/kept
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1374265828687873
+    m_Key: close/stay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1374265828687874
+    m_Key: close/quit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1378742795223040
+    m_Key: how/ribbon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1378742824583168
+    m_Key: how/ribbon/hands
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1378742824583169
+    m_Key: how/ribbon/desktop
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 714218833402396764
+  references:
+    version: 2
+    RefIds:
+    - rid: 714218833402396764
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1794474446064
+    - rid: 714218833402396770
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'English cover title, first big word: the cover reads top
+          / of / bottom. An upright language (Chinese) prints ''title'' on one line
+          instead, so its entry here is never shown.'
+    - rid: 714218833402396771
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'English cover title, the small word between the two big ones
+          (not shown in Chinese: see cover/title/top).'
+    - rid: 714218833402396772
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'English cover title, second big word (not shown in Chinese:
+          see cover/title/top).'
+    - rid: 714218833402396773
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'The game''s name: the Chinese cover''s title (one line),
+          and printed small under THANK YOU on the ending page.'
+    - rid: 714218833402396774
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: "Card above the closed book (eye tracking on). <em>\u2026</em>
+          words print in the highlight colour."
+    - rid: 714218833402396775
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Smaller second line of the cover card (eye tracking on).
+    - rid: 714218833402396776
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: "Card above the closed book (hands). <em>\u2026</em> prints
+          in the highlight colour."
+    - rid: 714218833402396777
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Smaller second line of the cover card (hands).
+    - rid: 714218833402396778
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Card above the closed book (desktop, mouse).
+    - rid: 714218833402396779
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Begin spread (the cover opens here), left page heading over
+          the instructions.
+    - rid: 714218833402396780
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'Endpaper: first instruction heading.'
+    - rid: 714218833402396781
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: "Endpaper: how to turn a page (mouse). <em>\u2026</em> prints
+          in the edge's colour."
+    - rid: 714218833402396782
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: "Endpaper: how to turn a page (hands). <em>\u2026</em> prints
+          in the edge's colour."
+    - rid: 714218833402396783
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'Endpaper: second instruction heading.'
+    - rid: 714218833402396784
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'Endpaper: how to press (mouse).'
+    - rid: 714218833402396785
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'Endpaper: how to press (hands).'
+    - rid: 714218833402396786
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'Endpaper: third instruction heading.'
+    - rid: 714218833402396787
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'Endpaper: how to turn the objects (mouse).'
+    - rid: 714218833402396788
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'Endpaper: how to turn the objects (hands).'
+    - rid: 714218833402396789
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Endpaper foot, only with eye tracking on.
+    - rid: 714218833402396790
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Endpaper, right page, before any memory is found.
+    - rid: 714218833402396791
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Endpaper, right page, once the book is finished.
+    - rid: 714218833402396792
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Endpaper, right page, part way. {0} = memories found so far,
+          {1} = memories in the book.
+    - rid: 714218833402396793
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Endpaper, right page, the big line.
+    - rid: 714218833402396794
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Tile under the table-height control.
+    - rid: 714218833402396795
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Tile under the table-height control.
+    - rid: 714218833402396796
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Between the LOWER and RAISE tiles; \n is a line break.
+    - rid: 714218833402396797
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: "Chapter heading. {0} = Roman numeral (I, II\u2026), {1} =
+          Chinese numeral (\u4E00, \u4E8C\u2026), {2} = digit (1, 2\u2026)."
+    - rid: 714218833402396798
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: A chapter's name while it is locked.
+    - rid: 714218833402396799
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Under a chapter's plate once found.
+    - rid: 714218833402396800
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Under a locked chapter's plate.
+    - rid: 714218833402396801
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Under an open chapter's plate.
+    - rid: 714218833402396802
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Right page of a locked chapter.
+    - rid: 714218833402396803
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Right page of the next chapter, which starts by itself.
+    - rid: 714218833402396804
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Tile on a found chapter.
+    - rid: 714218833402396805
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Heading once a memory is found (on the walls, in the margin,
+          on the found page).
+    - rid: 714218833402396806
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: "First chapter only, on the dark page, until the player has
+          turned the objects. <em>\u2026</em> prints in the highlight colour."
+    - rid: 714218833402396807
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'Dark wall page: label beside the small answer picture shown
+          after the second hint.'
+    - rid: 714218833402396808
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Paused memory, left page foot.
+    - rid: 714218833402396809
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Found memory, right page foot.
+    - rid: 714218833402396810
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Paused memory, right page heading.
+    - rid: 714218833402396811
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Tile on the paused page.
+    - rid: 714218833402396813
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Ending page before the book is finished.
+    - rid: 714218833402396814
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Ending page, big word.
+    - rid: 714218833402396815
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Ending page, small line under the big word.
+    - rid: 714218833402396816
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: 'Credits: printed under a section heading that has no lines
+          yet.'
+    - rid: 714218833402396817
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Button on the post by the right hand during play.
+    - rid: 714218833402396818
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Button on the post by the right hand during play.
+    - rid: 714218833402396820
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: First chapter, beside the objects until they are turned (eye
+          tracking on).
+    - rid: 714218833402396821
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Smaller second line (eye tracking on).
+    - rid: 714218833402396822
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: First chapter, beside the objects until they are turned (hands).
+    - rid: 714218833402396823
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: First chapter, beside the objects until they are turned (mouse).
+    - rid: 714218833402396824
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Smaller second line (hands and mouse).
+    - rid: 714218833402396827
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Gold plaque over the objects at the moment of a solve.
