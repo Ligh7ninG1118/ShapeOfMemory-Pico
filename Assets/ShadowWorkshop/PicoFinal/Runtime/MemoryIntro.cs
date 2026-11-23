@@ -43,7 +43,8 @@ namespace ShapeOfMemory
         void Begin(Torch2Workshop game,bool skippable,MemorySounds sounds)
         {
             this.game=game;this.sounds=sounds;Skippable=skippable;Running=true;game.input.enabled=false;
-            var world=game.world;var level=game.level;transit=new Torch2Transit(level,game.Rotation,game.Position,game.Drawn);
+            // Planned ahead on a worker thread where the host asked (MemoryGame.Prebuild); else here (tens of milliseconds).
+            var world=game.world;var level=game.level;transit=Torch2Transit.Take(level,game.Rotation,game.Position,game.Drawn);
             int n=world.Pieces.Length;parts=new Part[n];flown=new bool[transit.movers.Length];landed=new bool[transit.movers.Length];
             for(int i=0;i<n;i++)
             {

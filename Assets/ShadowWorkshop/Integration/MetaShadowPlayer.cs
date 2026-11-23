@@ -109,8 +109,63 @@ namespace CloudGarden.Integration
                 if (pointer && pointer.Hand != null) yield return (ray, pointer.Hand);
             }
         }
+        // A hand driven by a controller (ControllerHandDataSource at the root of its chain: the UnityXR rig's controller
+        // hands, HandsMerger and the interactor hands built on it) never stands in for a lost hand either: an idle PICO
+        // controller left switched on reads as tracked, and its made-up hand would be drawn and pressed with.
         Hand Tracked(bool left) => Hands.FirstOrDefault(h => h && h.isActiveAndEnabled && h.IsConnected && h.IsTrackedDataValid
-            && h.Handedness == (left ? Handedness.Left : Handedness.Right));
+            && h.Handedness == (left ? Handedness.Left : Handedness.Right) && !(RawSource(h) is ControllerHandDataSource));
+
+        // Whether hand `left` is really in view now: what is drawn of it and what it presses follow this. Both rigs' hand
+        // chains run through the Interaction SDK's LastKnownGoodHand, which goes on reporting a hand that lost tracking as
+        // tracked at its last good pose for as long as the runtime keeps it connected. So the hands the game reads never go
+        // invalid; they freeze in the air where they were lost (playtest 2026-11-16). Seen asks the chain's raw source
+        // (FromUnityXRHandDataSource, FromOVRHandDataSource) instead, and lets go LostAfter after it stops tracking so a
+        // dropped frame doesn't blink the hand. ReadHand keeps the bridged hand: a pinch on the orb or a page survives a
+        // short occlusion.
+        public const float LostAfter = .12f;
+        public sealed class Sight
+        {
+            public bool Seen { get; private set; }
+            float lostAt = -1;
+            // present: the chain gives a hand at all; raw: its source is tracking it. True when Seen changed.
+            public bool Step(bool present, bool raw, float now)
+            {
+                bool was = Seen;
+                if (present && raw) { Seen = true; lostAt = -1; }
+                else if (!present || !Seen) { Seen = false; lostAt = -1; }
+                else if (lostAt < 0) lostAt = now;
+                else if (now - lostAt >= LostAfter) { Seen = false; lostAt = -1; }
+                return Seen != was;
+            }
+        }
+        readonly Sight[] sight = { new Sight(), new Sight() };
+        readonly int[] sightFrame = { -1, -1 };
+        public bool Seen(bool left)
+        {
+            int i = left ? 0 : 1; var s = sight[i];
+            if (sightFrame[i] == Time.frameCount) return s.Seen;
+            sightFrame[i] = Time.frameCount;
+            var hand = TrackedHand(left);
+            if (s.Step(hand, hand && RawTracked(hand), Time.unscaledTime))
+                Debug.Log($"SHAPE_OF_MEMORY_HAND_SEEN {(left ? "Left" : "Right")} {(s.Seen ? "in view" : hand ? "lost (the rig was holding its last pose)" : "lost")}");
+            return s.Seen;
+        }
+        // The start of a hand's data chain: what the runtime itself reports, before LastKnownGoodHand, filters or synthesis.
+        public static IDataSource<HandDataAsset> RawSource(IDataSource<HandDataAsset> source)
+        {
+            for (int depth = 0; depth < 16; depth++)
+            {
+                var modifier = source as DataModifier<HandDataAsset>;
+                if (modifier == null || modifier.ModifyDataFromSource == null) break;
+                source = modifier.ModifyDataFromSource;
+            }
+            return source;
+        }
+        static bool RawTracked(Hand hand)
+        {
+            var data = RawSource(hand).GetData();
+            return data != null && data.IsDataValid && data.IsTracked;
+        }
         // The UnityXR rig has no OVRHand. Its runtime (Pico) reports the system gesture (palm up and pinch: the system
         // menu) in the hand-aim flags instead, and that pinch belongs to the system, not the orb.
         readonly bool[] systemGesture = new bool[2];

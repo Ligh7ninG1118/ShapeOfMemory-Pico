@@ -12,15 +12,17 @@ using Debug=UnityEngine.Debug;
 namespace PhysicalAssembly.Editor
 {
     // The one way the project builds an APK. A build temporarily changes tracked settings (package id and name, the
-    // default icon when the config has one, and for Pico the OpenXR features, the manifest and the PICO config), so the
+    // default icon and version name when the config has them, and for Pico the OpenXR features, the manifest and the PICO config), so the
     // originals are written to Library first. The finally block puts them back; if the editor dies mid-build, the next
     // editor load does instead.
     public static class BuildRunner
     {
-        // icon: the default icon's asset path before the build ("" = none), only meaningful when iconSwapped.
-        [Serializable] public sealed class Session { public string config,platform,packageId,productName,icon; public bool iconSwapped; }
+        // icon: the default icon's asset path before the build ("" = none), only meaningful when iconSwapped; version: the
+        // project's version name before the build, only meaningful when versionSwapped. removePermissions is read by
+        // RemovedPermissions while the build generates its Gradle project.
+        [Serializable] public sealed class Session { public string config,platform,packageId,productName,icon,version; public bool iconSwapped,versionSwapped; public string[] removePermissions; }
         // Saved next to the APK as <apk>.json: Run reads the package id from it, the window the build's age.
-        [Serializable] public sealed class Record { public string config,platform,packageId,productName,built,unity; public bool development; public long bytes; public float seconds; }
+        [Serializable] public sealed class Record { public string config,platform,packageId,productName,version,built,unity; public bool development; public long bytes; public float seconds; }
         const string SessionPath="Library/MetaHackthoneBuild/session.json";
         public static Session Current { get; private set; }
 
@@ -60,9 +62,10 @@ namespace PhysicalAssembly.Editor
             if(scenes.Length==0) throw new InvalidOperationException($"{config.name} has no scenes.");
             Recover(); PicoBuild.Restore(); // A Pico switch left on by hand would fail the build's guard.
             // BuildPlayer unloads loaded assets, config included: read everything from it now.
-            var target=NamedBuildTarget.Android; string apk=config.ApkPath(platform),package=config.Package,product=config.Product,name=config.name;bool eyeGaze=config.PicoEyeGaze;var icon=config.Icon;
+            var target=NamedBuildTarget.Android; string apk=config.ApkPath(platform),package=config.Package,product=config.Product,name=config.name,version=config.Version??"";bool eyeGaze=config.PicoEyeGaze;var icon=config.Icon;
+            var remove=(config.RemovePermissions??new string[0]).Select(p=>p?.Trim()).Where(p=>!string.IsNullOrEmpty(p)).Distinct().ToArray();
             var session=new Session { config=name,platform=platform.ToString(),packageId=PlayerSettings.GetApplicationIdentifier(target),productName=PlayerSettings.productName,
-                iconSwapped=icon,icon=DefaultIconPath() };
+                iconSwapped=icon,icon=DefaultIconPath(),versionSwapped=version!="",version=PlayerSettings.bundleVersion,removePermissions=remove };
             Directory.CreateDirectory(Path.GetDirectoryName(SessionPath)); File.WriteAllText(SessionPath,JsonUtility.ToJson(session,true)); Current=session;
             var clock=Stopwatch.StartNew();
             try
@@ -70,6 +73,8 @@ namespace PhysicalAssembly.Editor
                 if(platform==DevicePlatform.Pico) PicoBuild.Prepare(eyeGaze);
                 PlayerSettings.SetApplicationIdentifier(target,package); PlayerSettings.productName=product;
                 if(icon) SetDefaultIcon(icon);
+                if(version!="") PlayerSettings.bundleVersion=version;
+                string versionName=PlayerSettings.bundleVersion;
                 // An up-to-date incremental build leaves an identical APK untouched, old timestamp and all; start from none.
                 Directory.CreateDirectory(Path.GetDirectoryName(apk)); File.Delete(apk); File.Delete(apk+".json");
                 var options=development?BuildOptions.Development|BuildOptions.CompressWithLz4:BuildOptions.CompressWithLz4HC;
@@ -77,9 +82,10 @@ namespace PhysicalAssembly.Editor
                 var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions { scenes=scenes,target=BuildTarget.Android,targetGroup=BuildTargetGroup.Android,locationPathName=apk,options=options });
                 var file=new FileInfo(apk); float seconds=(float)clock.Elapsed.TotalSeconds;
                 if(report.summary.result==BuildResult.Succeeded && file.Exists)
-                    File.WriteAllText(apk+".json",JsonUtility.ToJson(new Record { config=name,platform=platform.ToString(),packageId=package,productName=product,
+                    File.WriteAllText(apk+".json",JsonUtility.ToJson(new Record { config=name,platform=platform.ToString(),packageId=package,productName=product,version=versionName,
                         built=file.LastWriteTime.ToString("o"),unity=Application.unityVersion,development=development,bytes=file.Length,seconds=seconds },true));
-                Debug.Log($"BUILD_AND_RUN_BUILD result={report.summary.result} config={name} platform={platform} package={package} development={development} "+
+                Debug.Log($"BUILD_AND_RUN_BUILD result={report.summary.result} config={name} platform={platform} package={package} version={versionName} development={development} "+
+                    (remove.Length>0?$"removed={string.Join(",",remove)} ":"")+
                     $"errors={report.summary.totalErrors} seconds={seconds:0} "+(file.Exists?$"apk={file.FullName} bytes={file.Length}":"apk=missing"));
                 return report;
             }
@@ -93,7 +99,7 @@ namespace PhysicalAssembly.Editor
             if(Current!=null || BuildPipeline.isBuildingPlayer || !File.Exists(SessionPath)) return false;
             var session=JsonUtility.FromJson<Session>(File.ReadAllText(SessionPath));
             Debug.LogWarning($"BUILD_AND_RUN_RECOVERED an interrupted {session.config} {session.platform} build: package id {session.packageId}, name {session.productName}"+
-                (session.iconSwapped?", the default icon":"")+" and the Quest configuration are restored.");
+                (session.iconSwapped?", the default icon":"")+(session.versionSwapped?$", version {session.version}":"")+" and the Quest configuration are restored.");
             Restore(session); return true;
         }
         static void Restore(Session session)
@@ -102,6 +108,7 @@ namespace PhysicalAssembly.Editor
             {
                 PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,session.packageId); PlayerSettings.productName=session.productName;
                 if(session.iconSwapped) SetDefaultIcon(session.icon==""?null:AssetDatabase.LoadAssetAtPath<Texture2D>(session.icon));
+                if(session.versionSwapped) PlayerSettings.bundleVersion=session.version??"";
                 PicoBuild.Restore(); AssetDatabase.SaveAssets();
             }
             finally { File.Delete(SessionPath); Current=null; }

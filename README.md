@@ -34,6 +34,12 @@ The first open imports everything and takes a while.
 Build and Run. It builds `Builds/ShapeOfMemory[-Pico].apk` as `com.metahackathon2026.shadow`, installs it, starts it
 and saves the device log. See [Docs/BuildAndRun.md](Docs/BuildAndRun.md).
 
+## Releases
+
+The `v1.0.0` tag is the source of the 1.0.0 release build (version name 1.0.0, set by the Shape of Memory build
+config). The repository leaves out the Soundsnap clips listed under Third-party content, so a build from it plays those
+moments without them.
+
 ## Layout
 
 | Path | What it is |
@@ -69,5 +75,6 @@ PlayMode covers the game flow and the level browser.
 - Found-moment sounds (`Assets/ShadowWorkshop/PicoFinal/Audio/Cues`): six are cut from Soundsnap downloads, whose licence
   does not allow sharing the files, so they are **not in this repository**. Without them those moments play with the
   harp swell and bells only; to restore them, put your own clips in that folder and list them on the chapter's cue
-  (**MetaHackthone > Pico Final > Solve cues**). The cabin chime is from Pixabay (Pixabay Content License).
+  (**MetaHackthone > Pico Final > Solve cues**). The cabin chime and Wild West's gallop and harmonica are from Pixabay
+  (Pixabay Content License). Summer's splash and seal bark are synthesized in the project (`MemorySummerSounds`).
 - Home's framed dog picture: a cartoon bull terrier by biancavandijk on Pixabay (Pixabay Content License).

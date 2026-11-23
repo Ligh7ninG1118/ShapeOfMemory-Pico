@@ -18,8 +18,10 @@ namespace ShapeOfMemory
         public const string ResourceFolder="ShapeOfMemory/Cues";
         // The cut-outs' atlas (Tools/ShadowArt/build_cue_atlas.py): Art cells in a Columns x Columns grid, read row by
         // row from the top left.
-        public const int Columns=4;
-        public enum Art{CloudA,CloudB,CloudSmall,Bird,Confetti,Streamer,Balloon,Flame,Puff,Sparkle,Heart,Steam,Sun,Dash,Shard,Bang}
+        // Cue assets store the index, so new art goes at the end: Star (Good Morning's chef, 2026-11-16) is cell 16 and Sun
+        // keeps 12 for Summer and Wild West (2026-11-17).
+        public const int Columns=5;
+        public enum Art{CloudA,CloudB,CloudSmall,Bird,Confetti,Streamer,Balloon,Flame,Puff,Sparkle,Heart,Steam,Sun,Dash,Shard,Bang,Star}
         public enum Spawn{Random,Line,Points}
         public enum Depth{Behind,Front}
 

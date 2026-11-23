@@ -13,7 +13,7 @@ using UnityEngine.XR;
 
 namespace ShapeOfMemory
 {
-    // Shape of Memory: the four posable-pile levels (Torch2Level) as one game in one scene, played in a book (MemoryBook).
+    // Shape of Memory: the chapters' posable-pile levels (Torch2Level, MemoryChapters) as one game in one scene, played in a book (MemoryBook).
     // The book lies on a reading stand in front of the player; its pages are the only way through the game:
     // The UI's rule (2026-11-15): the book chooses, the drawer starts, the toolbar by the hand is always in reach.
     // - Closed at first (Cover): the title on its cover. At every launch the title comes up alone in the dark, the book
@@ -71,12 +71,15 @@ namespace ShapeOfMemory
         // orb's reach; a seated player reaches it with the forearm. It rises out of the table while a memory plays.
         public static Vector3 StripAt=>new Vector3(0,StageBelow-.52f,.30f-StageAhead);
         public static Quaternion StripFacing=>Facing(StripAt);
-        // A hand presses the strip only while the player looks down at it (the user, 2026-11-16: hands rolling the orb
-        // pressed it unseen). The strip sits about 60 degrees under the eyes, the orb about 27 (its lowest ring 33): the
-        // strip wakes with the head turned StripWake degrees down and sleeps again above StripSleep, within StripYaw of
-        // straight ahead; asleep its buttons go dim and take no fingertip. A hand that held the orb in the last
-        // OrbCooldown seconds presses nothing on it either (letting go, it drops onto the strip). Headsets only.
-        public const float StripWake=36,StripSleep=33,StripYaw=45,OrbCooldown=.6f;
+        // A hand presses the strip only while the player looks down toward it (the user, 2026-11-16: hands rolling the orb
+        // pressed it unseen). The strip sits about 60 degrees under the eyes, the orb about 27 (rings 21-33), the shadows on
+        // the walls about 13. The eyes do much of a look that far down: on the Quest 2 (2026-11-17) the head stayed under
+        // 36 degrees while the user looked at the strip, and it refused 16 touches. So it wakes with the head turned
+        // StripWake degrees down (under the walls; looking at the orb may wake it) and sleeps again above StripSleep, within
+        // StripYaw of straight ahead; asleep its buttons go dim and take no fingertip. A hand that held the orb in the last
+        // OrbCooldown seconds presses nothing on it either (letting go, it drops onto the strip): that, not the look, keeps
+        // the hands on the orb off it. Headsets only.
+        public const float StripWake=24,StripSleep=20,StripYaw=45,OrbCooldown=.6f;
         // Turned to the eyes: +y toward them, +z up the panel.
         public static Quaternion Facing(Vector3 at)
         {
@@ -96,6 +99,8 @@ namespace ShapeOfMemory
         public bool JointHands=true;
         [Tooltip("With JointHands: the hands as our skinned mesh in this look (Looks/Hands: Ink, Lantern; MemoryHandSkin), placed from the tracked joints. Empty: the joint-drawn bones (MemoryHands). Switch with MetaHackthone > Pico Final > Hands.")]
         public MemoryHandLook HandLook;
+        [Tooltip("Quest (OVR rig): draw the SDK's own hands (Meta's mesh, posed by the SDK as it is) in HandLook's materials and motes (MemorySdkHandLook). Off: the SDK's see-through hand.")]
+        public bool SdkHandsInLook=true;
         [Tooltip("How far past the drawn rings a pinch still takes the orb (metres; Torch2Input.ReachMargin). The gym keeps 0.06; raised here after the 2026-11-08 playtest found the smaller rings hard to catch.")]
         public float RingReach=.10f;
         // ---- The play area as the scene has it (2026-11-13). Each one empty: built from primitives at runtime, as before.
@@ -168,6 +173,8 @@ namespace ShapeOfMemory
         float stripUp;
         // The player looks down at the strip (StripWake), and when a hand last held the orb.
         bool stripAwake;
+        // The head's angle under the horizon (stage space), for the device log.
+        float headDown;
         float orbHeldAt=float.NegativeInfinity;
         public bool StripAwake=>stripAwake;
         // The toolbar shows from the moment the title's dark lifts (or at once on a launch into a chapter).
@@ -258,7 +265,22 @@ namespace ShapeOfMemory
                 while(Player.ViewCamera.transform.position.y-Player.XRRig.position.y<.4f&&Time.realtimeSinceStartup<deadline)yield return null;
                 SubsystemManager.GetSubsystems(inputs);foreach(var input in inputs)input.trackingOriginUpdated+=OnTrackingOriginUpdated;
                 if(xr.UnityXRRig&&JointHands)ShowRealHands();
-                Debug.Log("SHAPE_OF_MEMORY_HAND_VISUALS "+(xr.UnityXRRig&&JointHands?Skin?"skin ("+Skin.Look.name+", MemoryHandSkin)":"joints (MemoryHands)":"SDK see-through hands"));
+                else
+                {
+                    sdkHands=Player.XRRig.GetComponentsInChildren<HandVisual>(true);
+                    // The Quest's own hands (Meta's mesh where the SDK poses it) in the hand look: its shader and motes.
+                    if(!xr.UnityXRRig&&SdkHandsInLook&&HandLook&&HandLook.Valid)
+                    {
+                        SdkLook=MemorySdkHandLook.Add(gameObject,sdkHands,HandLook);
+                        // As on the Pico: the drawn hands stop on solid things and a faint ghost shows the tracked hand.
+                        SdkLook.Seen=xr.Seen;
+                        SdkLook.Ghost=new MemoryGhostHand(Solids);
+                        var ghost=Resources.Load<Material>(MemoryHandSkin.GhostMaterialPath);SdkLook.GhostMaterial=ghost?ghost:SeeThrough;
+                        SdkLook.Prewarm();
+                    }
+                }
+                Debug.Log("SHAPE_OF_MEMORY_HAND_VISUALS "+(xr.UnityXRRig&&JointHands?Skin?"skin ("+Skin.Look.name+", MemoryHandSkin)":"joints (MemoryHands)":
+                    SdkLook?$"SDK hands in {SdkLook.Look.name} ({SdkLook.Count} restyled, MemorySdkHandLook)":"SDK see-through hands"));
                 Trace=MemoryTrace.Add(gameObject,Player.XRRig);
                 Gaze=MemoryGaze.Add(this,xr);
             }
@@ -327,6 +349,22 @@ namespace ShapeOfMemory
         }
         public MemoryHands Hands{get;private set;}
         public MemoryHandSkin Skin{get;private set;}
+        // The Quest's SDK hands redrawn in HandLook (null: their own see-through look, or the Pico rig).
+        public MemorySdkHandLook SdkLook{get;private set;}
+        // The SDK's own hands where they are what the player sees (the OVR rig): hidden with a hand out of view, as ours are,
+        // and (in HandLook) while only the ghost of a hand deep in something shows (MemorySdkHandLook.Ghosted). This is the
+        // one place that sets their ForceOffVisibility.
+        HandVisual[] sdkHands;
+        void HideLostSdkHands()
+        {
+            if(sdkHands==null)return;
+            foreach(var visual in sdkHands)
+            {
+                if(!visual||visual.Hand==null)continue;
+                bool off=!xr.Seen(visual.Hand.Handedness==Oculus.Interaction.Input.Handedness.Left)||(SdkLook&&SdkLook.Ghosted(visual));
+                if(visual.ForceOffVisibility!=off)visual.ForceOffVisibility=off;
+            }
+        }
         // Passthrough until the book is first opened, then the magic-hour sky.
         public MemorySky Sky{get;private set;}
         // Architecture drifting beyond the book once the sky is up.
@@ -407,6 +445,25 @@ namespace ShapeOfMemory
                 if(level.lamps.Length>1)for(int slot=0;slot<level.lamps.Length;slot++){yield return null;pages.Picture(level,slot);}
                 Debug.Log($"SHAPE_OF_MEMORY_PICTURE {level.name} {MemoryPages.PictureSize} px in {ms} ms");
             }
+            // Each chapter's projection and intro flights, built on worker threads so PLAY doesn't build them in its frame
+            // (on Quest 2 that frame took 126-156 ms, 2026-11-17). The mesh reads are all that runs here, one chapter a frame.
+            for(int i=0;i<Progress.Count;i++){yield return null;Prebuild(Chapter(i));}
+            // The found-moment cues load all at once on the first lookup (MemorySolveCue.For: Resources.LoadAll), here
+            // rather than in the first PLAY's frame.
+            yield return null;MemorySolveCue.For(Chapter(0));
+        }
+        // Load takes them (Torch2Workshop.Awake, MemoryIntro.Begin): the projection, and the intro's plan from the pose a
+        // level wakes in (Torch2Workshop.SetPose: Home, the start rotation), drawn gathered as Load draws it.
+        static void Prebuild(Torch2Level level)
+        {
+            if(!level)return;
+            Torch2Projection.Prebuild(level);
+            Torch2Transit.Prebuild(level,Quaternion.Normalize(level.start),Torch2Projection.Home,level.Drawn);
+        }
+        IEnumerator PrebuildSoon(Torch2Level level)
+        {
+            for(int i=0;i<3;i++)yield return null;
+            Prebuild(level);
         }
         // The cover opens onto the endpaper and nothing more. (It used to riffle on to the next memory not yet found, which
         // then started by itself; the user, 2026-11-11: the cover does nothing extra.)
@@ -433,33 +490,41 @@ namespace ShapeOfMemory
         {
             if(Busy||index<0||index>=Progress.Count||!(force||Progress.Unlocked(index)))return;
             var asset=Chapter(index);if(!asset)return;
-            ClearLevel();DestroyIdleRoom();
+            // Each step's milliseconds go to one SHAPE_OF_MEMORY_LOAD line: this all runs in one frame, which on Quest 2 cost
+            // 126-156 ms (14-16 dropped frames) before the projection was prebuilt (trace 2026-11-17).
+            var clock=System.Diagnostics.Stopwatch.StartNew();var laps=new System.Text.StringBuilder();double lapAt=0;
+            void Lap(string step){double now=clock.Elapsed.TotalMilliseconds;laps.Append(step).Append(' ').Append((now-lapAt).ToString("0.0")).Append(' ');lapAt=now;}
+            ClearLevel();DestroyIdleRoom();Lap("clear");
             var content=new GameObject(asset.name+" memory");content.SetActive(false);content.transform.SetParent(Stage,false);
             var game=content.AddComponent<Torch2Workshop>();game.bare=true;game.level=asset;game.viewCamera=Player.ViewCamera;game.xr=xr;game.roomStyle=room=>StyleStage(room,game);game.hostShowsPictures=true;
             game.surfaceMaterial=Surface;game.screenMaterial=Screen;game.glowMaterial=Glow;
             // Far pieces drawn nearer the middle where the level asks (Torch2Level.drawGather; Home's two pictures spread its pile).
             game.drawGathered=true;
-            content.SetActive(true);game.input.FixedInPlace=true;
+            content.SetActive(true);game.input.FixedInPlace=true;Lap("workshop");
+            // The next start of this chapter (PLAY AGAIN) gets one too, built during this one (a few frames on: the mesh read
+            // that runs here costs a few milliseconds).
+            StartCoroutine(PrebuildSoon(asset));
             // No snaps (2026-11-15, the user: "nerf the snap"; the held snap of 2026-11-08 took the orb out of the hand):
             // left alone within reach of the answer for a second, the light on the pages brightens, the orb glides slowly
             // into the answer and the found moment plays as it lands (Torch2Workshop.HoldToSolve).
             game.HoldToSolve=true;
             // The glide in swells, and the chapter's own found moment plays on its pages (MemorySolveCue).
-            MemorySolveMoment.Add(game,MemorySolveCue.For(asset),sounds.Swell);
+            MemorySolveMoment.Add(game,MemorySolveCue.For(asset),sounds.Swell);Lap("cue");
             // Drawn PileScale smaller (the shadow keeps the pile's own size), before the intro takes the parts' sizes.
             game.world.Pile.localScale=Vector3.one*PileScale;game.input.OrbScale=PileScale;game.input.ReachMargin=RingReach;
             // No wires to a hub and no hub: the things float free inside the rings (playtest 2026-11-08). The hub's
             // transform stays as the orb's middle (MemoryFound).
             game.world.RemoveWires();game.world.Hub.enabled=false;
-            Rings(game.world);
+            Rings(game.world);Lap("rings");
             // Held, the things keep their own colours; the pinched ring and a dot where each hand holds show the grip
             // (playtest 2026-11-11).
             game.world.LightHeldPieces=false;MemoryGrip.Add(game,kit);
             Level=game;LevelIndex=index;HintStage=0;Guide=null;Found=null;settling=false;foldFrom=foldTo=1;
-            stageRoom?.ShowWalls(false);Current=Phase.Rising;Show(null);
-            Intro=MemoryIntro.Play(game,Progress.SeenIntro(index),sounds);Intro.Frozen=true;Intro.Seek(0);
+            stageRoom?.ShowWalls(false);Current=Phase.Rising;Show(null);Lap("grip+strip");
+            Intro=MemoryIntro.Play(game,Progress.SeenIntro(index),sounds);Intro.Frozen=true;Intro.Seek(0);Lap("intro");
             if(!Book.OnStand)Book.Place(Book.Stand(180),MemoryBook.Where.Stand);
-            if(Book.Spread!=SpreadOf(index))Book.Show(SpreadOf(index));else Book.Refill();
+            if(Book.Spread!=SpreadOf(index))Book.Show(SpreadOf(index));else Book.Refill();Lap("book");
+            Debug.Log($"SHAPE_OF_MEMORY_LOAD {asset.name} {clock.Elapsed.TotalMilliseconds:0.0} ms: {laps}(workshop = projection {game.ProjectionMs:0.0} + world {game.WorldMs:0.0} + input {game.InputMs:0.0})");
             Book.Fly(MemoryBook.Walls,MemoryBook.Where.Walls,RiseSeconds,()=>{if(Level!=game)return;Book.Refill();stageRoom?.ShowWalls(true);if(Intro)Intro.Frozen=false;Current=Phase.Intro;});
         }
         // The orb's rings are light strokes: unlit and see-through (MemoryPalette.StrokeRest; opaque they were too loud),
@@ -564,6 +629,7 @@ namespace ShapeOfMemory
         {
             if(!Ready)return;
             float dt=Time.unscaledDeltaTime;
+            GlideLift(dt);HideLostSdkHands();
             if(Current==Phase.Intro&&Level&&!Intro.Running)
             {
                 Current=Phase.Playing;Progress.SawIntro(LevelIndex);Show("play");
@@ -589,6 +655,7 @@ namespace ShapeOfMemory
             // a chapter, the book down after it. It makes way for the closeness cue while the book is up on the walls.
             if(!Music.Started&&Book.OnStand&&!Book.Closed)Music.Begin();
             Music.Up=Book.Up;
+            var cue=Level&&Level.world?Level.world.Cue:null;Music.Warm=cue?cue.Overall.Shown/4f:0;
             // The stand sinks into the table as the book rises off it, and comes up under it as it lands: it moves only
             // while the book is within StandShare of the stand, both ways. Measured 2026-11-08 along the flight (walls <->
             // stand, arc .12): the book's underside sweeps through the stand's space from about 30% of the way out, so a
@@ -955,11 +1022,15 @@ namespace ShapeOfMemory
                 pages.Text(face,T("title"),m,.30f,.03f,.8f,.05f,MemoryPages.Faded,FontStyles.Bold,12);
                 return;
             }
-            for(int i=0;i<Progress.Count;i++)
+            // Every memory's plates in reading order: two columns up to four chapters, three beyond (six: 3x2), smaller so a
+            // two-wall pair in the outer column stays clear of the turning edge's band.
+            int n=Progress.Count,cols=n<=4?2:3,rows=(n+cols-1)/cols;
+            float pitch=cols==2?.44f:.30f,size=cols==2?.3f:.22f,top=rows<=2?.70f:.78f,drop=rows<=2?.40f:.28f;
+            for(int i=0;i<n;i++)
             {
-                var level=Chapter(i);if(!level)continue;float u=m+(i%2==0?-.22f:.22f),v=i<2?.70f:.30f;
-                MemoryPlate(face,u,v,.3f,level,Progress.Solved(i),"?",MemoryPalette.Deep(i),.62f);
-                pages.Text(face,MemoryText.Name(level),u,v-.19f,.022f,.4f,.04f,MemoryPages.Ink,FontStyles.Bold,6);
+                var level=Chapter(i);if(!level)continue;float u=m+(i%cols-(cols-1)*.5f)*pitch,v=top-i/cols*drop;
+                MemoryPlate(face,u,v,size,level,Progress.Solved(i),"?",MemoryPalette.Deep(i),.62f);
+                pages.Text(face,MemoryText.Name(level),u,v-size*.5f-.04f,.022f,pitch-.03f,.04f,MemoryPages.Ink,FontStyles.Bold,6);
             }
         }
         // The credits (MemoryCredits' asset, read each time the spread is printed): who made the game (left); what others
@@ -1050,7 +1121,7 @@ namespace ShapeOfMemory
         public void Recenter()
         {
             if(Busy||!Player)return;
-            float lift=Progress.Lift;
+            float lift=Progress.Lift;liftShown=lift;liftSpeed=0;
             if(!Player.IsXR){Stage.SetPositionAndRotation(desktopPose.position+Vector3.up*lift,desktopPose.rotation);Frame();return;}
             var head=Player.ViewCamera.transform;var forward=Vector3.ProjectOnPlane(head.forward,Vector3.up).normalized;
             if(forward.sqrMagnitude<.1f)forward=Vector3.forward;
@@ -1060,7 +1131,21 @@ namespace ShapeOfMemory
         }
         // On the desktop the table stays put: where the scene's play area is, or 72 cm over the floor.
         Pose desktopPose=new Pose(new Vector3(0,.72f,0),Quaternion.identity);
-        void Raise(float amount){float before=Progress.Lift;Progress.Lift=before+amount;Stage.position+=Stage.up*(Progress.Lift-before);if(!Player.IsXR)Frame();}
+        // LOWER / RAISE set where the table goes (Progress.Lift); it glides there (SmoothDamp, settled in about .4 s) rather
+        // than jumping the step (playtest 2026-11-16). Presses in a row move the goal on and the glide follows without a stop.
+        public const float LiftGlide=.12f;
+        float liftShown,liftSpeed;
+        // The lift the table stands at now, on its way to Progress.Lift.
+        public float LiftShown=>liftShown;
+        void Raise(float amount)=>Progress.Lift+=amount;
+        void GlideLift(float dt)
+        {
+            float goal=Progress.Lift;if(liftShown==goal)return;
+            float next=Mathf.SmoothDamp(liftShown,goal,ref liftSpeed,LiftGlide,Mathf.Infinity,dt);
+            if(Mathf.Abs(goal-next)<.0002f){next=goal;liftSpeed=0;}
+            Stage.position+=Stage.up*(next-liftShown);liftShown=next;
+            if(!Player.IsXR)Frame();
+        }
         // Desktop: the book on its stand and the walls in one view.
         void Frame()
         {
@@ -1164,9 +1249,9 @@ namespace ShapeOfMemory
             {
                 var spec=specs[i];var position=new Vector3((i-(specs.Length-1)*.5f)*ButtonPitch,.014f,.015f);string id=name+"/"+spec.id;
                 captions[id]=spec.caption;
-                var button=MemoryButton.Create(set.transform,spec.id,T(spec.caption),Icon(spec.icon),position,kit,()=>{Debug.Log("SHAPE_OF_MEMORY_PRESS "+id);audioSource.PlayOneShot(click);spec.action();},
+                var button=MemoryButton.Create(set.transform,spec.id,T(spec.caption),Icon(spec.icon),position,kit,()=>{Debug.Log("SHAPE_OF_MEMORY_PRESS "+id+(Player&&Player.IsXR?$" head {headDown:0} deg down":""));audioSource.PlayOneShot(click);spec.action();},
                     ()=>!Busy&&!Book.Turning&&(spec.enabled==null||spec.enabled()),()=>StripBlocked()==null,spec.hold,true);
-                button.Press.Label=id;button.Press.Why=()=>Busy?"orb held":Book.Turning?"book turning":spec.enabled!=null&&!spec.enabled()?$"not now ({Current})":StripBlocked();
+                button.Press.Label=id;button.Press.Why=()=>Busy?"orb held":Book.Turning?"book turning":spec.enabled!=null&&!spec.enabled()?$"not now ({Current})":StripBlocked(true);
                 button.Awake=()=>stripAwake;
                 buttons[id]=button;
             }
@@ -1181,24 +1266,31 @@ namespace ShapeOfMemory
         public MemoryButton Button(string set,string id)=>buttons.TryGetValue(set+"/"+id,out var button)?button:null;
         Texture2D Icon(string name){foreach(var icon in Icons)if(icon&&icon.name==name)return icon;return null;}
         // The strip's buttons: as any button (HandsBlocked), and on a headset only while looked down at (StripWake) and not
-        // just after the orb was held (OrbCooldown).
-        string StripBlocked()
+        // just after the orb was held (OrbCooldown). say: the device log's words, with the head's angle (allocates; the
+        // per-frame check passes false).
+        string StripBlocked(bool say=false)
         {
             var why=HandsBlocked();if(why!=null||!Player||!Player.IsXR)return why;
-            if(!stripAwake)return "not looking at the strip";
+            if(!stripAwake)return say?$"not looking at the strip (head {headDown:0} deg down, wakes at {StripWake:0})":"not looking at the strip";
             if(Time.unscaledTime-orbHeldAt<OrbCooldown)return "the orb just let go";
             return null;
         }
-        // Whether the head looks down at the strip: turned at least StripWake degrees under the horizon (to wake; awake, it
-        // sleeps above StripSleep), within StripYaw of the stage's straight ahead. The desktop's strip never sleeps.
-        bool LookingAtStrip(bool awake)=>!Player||!Player.IsXR||LooksAtStrip(Stage.InverseTransformDirection(Player.ViewCamera.transform.forward),awake);
+        // Whether the head looks down toward the strip: turned at least StripWake degrees under the horizon (to wake; awake,
+        // it sleeps above StripSleep), within StripYaw of the stage's straight ahead. The desktop's strip never sleeps.
+        bool LookingAtStrip(bool awake)
+        {
+            if(!Player||!Player.IsXR)return true;
+            var forward=Stage.InverseTransformDirection(Player.ViewCamera.transform.forward);headDown=Down(forward);
+            return LooksAtStrip(forward,awake);
+        }
         // The same for a head looking along forward (stage space: +z ahead, +y up).
         public static bool LooksAtStrip(Vector3 forward,bool awake)
         {
-            forward.Normalize();
-            float down=Mathf.Asin(Mathf.Clamp(-forward.y,-1,1))*Mathf.Rad2Deg,aside=Mathf.Abs(Mathf.Atan2(forward.x,forward.z)*Mathf.Rad2Deg);
-            return down>=(awake?StripSleep:StripWake)&&aside<=StripYaw;
+            float aside=Mathf.Abs(Mathf.Atan2(forward.x,forward.z)*Mathf.Rad2Deg);
+            return Down(forward)>=(awake?StripSleep:StripWake)&&aside<=StripYaw;
         }
+        // Degrees under the horizon of a look along forward (stage space).
+        static float Down(Vector3 forward)=>Mathf.Asin(Mathf.Clamp(-forward.normalized.y,-1,1))*Mathf.Rad2Deg;
         // Hands may press a button unless one of them is pinching at the orb: that pinch belongs to the pile.
         bool HandsFree()=>HandsBlocked()==null;
         // Why hands may not press now (null: they may), for the device log.

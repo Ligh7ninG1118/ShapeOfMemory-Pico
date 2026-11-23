@@ -45,7 +45,8 @@ namespace ShapeOfMemory.Tests
             var cells=arts.Select(MemorySolveCue.Cell).ToArray();
             foreach(var c in cells){Assert.GreaterOrEqual(c.xMin,0);Assert.GreaterOrEqual(c.yMin,0);Assert.LessOrEqual(c.xMax,1+1e-6f);Assert.LessOrEqual(c.yMax,1+1e-6f);}
             for(int i=0;i<cells.Length;i++)for(int j=i+1;j<cells.Length;j++){var a=cells[i];var b=cells[j];a.xMin+=1e-4f;a.yMin+=1e-4f;a.xMax-=1e-4f;a.yMax-=1e-4f;Assert.IsFalse(a.Overlaps(b),arts[i]+" and "+arts[j]);}
-            Assert.AreEqual(new Rect(0,.75f,.25f,.25f),MemorySolveCue.Cell(MemorySolveCue.Art.CloudA),"the first cell is the top left");
+            float s=1f/MemorySolveCue.Columns;
+            Assert.AreEqual(new Rect(0,1-s,s,s),MemorySolveCue.Cell(MemorySolveCue.Art.CloudA),"the first cell is the top left");
         }
     }
 }

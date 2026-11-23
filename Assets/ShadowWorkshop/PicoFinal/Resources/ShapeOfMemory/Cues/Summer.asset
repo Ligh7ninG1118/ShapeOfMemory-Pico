@@ -1,0 +1,376 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eae2d91e7e8a7c741a289b4f5cf93710, type: 3}
+  m_Name: Summer
+  m_EditorClassIdentifier: ShapeOfMemory::ShapeOfMemory.MemorySolveCue
+  level: {fileID: 11400000, guid: 8941b305ac4a09445950647b7fcbc163, type: 2}
+  sounds:
+  - clip: {fileID: 8300000, guid: 5e930f5e00500db4dab2188769c7fb40, type: 3}
+    delay: 0
+    volume: 0.73
+  - clip: {fileID: 8300000, guid: a8070c79b95adc243b3ab4265efeaaef, type: 3}
+    delay: 0.6
+    volume: 0.55
+  layers:
+  - note: The summer sun high behind the seal, top right
+    art: 12
+    wall: -1
+    depth: 0
+    tints:
+    - {r: 0.9490196, g: 0.6901961, b: 0.2901961, a: 1}
+    count: 1
+    spawn: 2
+    from: {x: -0.8, y: -0.8}
+    to: {x: 0.8, y: 0.8}
+    points:
+    - {x: 0.36, y: 0.55}
+    delay: 0
+    stagger: 0
+    life: {x: 5.5, y: 5.5}
+    until: 0
+    loop: 0
+    size: {x: 0.5, y: 0.5}
+    velocity: {x: 0, y: 0}
+    jitter: 0
+    gravity: 0
+    drag: 0
+    sway: 0
+    swayRate: 0.6
+    spin: {x: 6, y: 6}
+    angle: 0
+    tilt: 0
+    alongLine: 0
+    flipRandom: 0
+    pop: 0.8
+    fadeOut: 0.8
+    flicker: 0
+    wrap: 0
+    inDark: 0.4
+  - note: The shallows lapping along the shore
+    art: 13
+    wall: -1
+    depth: 1
+    tints:
+    - {r: 0.2509804, g: 0.65882355, b: 0.85882354, a: 0.85}
+    - {r: 0.84705883, g: 0.94509804, b: 0.98039216, a: 0.85}
+    count: 7
+    spawn: 1
+    from: {x: -1.05, y: -0.62}
+    to: {x: 1.05, y: -0.65}
+    points: []
+    delay: 0
+    stagger: 0.5
+    life: {x: 5.5, y: 5.5}
+    until: 0
+    loop: 0
+    size: {x: 0.18, y: 0.22}
+    velocity: {x: 0.03, y: 0}
+    jitter: 0
+    gravity: 0
+    drag: 0
+    sway: 0.035
+    swayRate: 0.35
+    spin: {x: 0, y: 0}
+    angle: 0
+    tilt: 0
+    alongLine: 0
+    flipRandom: 0
+    pop: 0.4
+    fadeOut: 0.8
+    flicker: 0
+    wrap: 1
+    inDark: 0.3
+  - note: White water thrown up where the flippers slap the shallows
+    art: 8
+    wall: -1
+    depth: 1
+    tints:
+    - {r: 0.84705883, g: 0.94509804, b: 0.98039216, a: 0.9}
+    - {r: 1, g: 1, b: 1, a: 0.9}
+    count: 6
+    spawn: 0
+    from: {x: -0.39999998, y: -0.76}
+    to: {x: -0.16, y: -0.68}
+    points: []
+    delay: 0
+    stagger: 0.15
+    life: {x: 1, y: 1.3}
+    until: 0
+    loop: 0
+    size: {x: 0.18, y: 0.26}
+    velocity: {x: 0, y: 0.5}
+    jitter: 0.5
+    gravity: 0.9
+    drag: 0.6
+    sway: 0
+    swayRate: 0.6
+    spin: {x: 0, y: 0}
+    angle: 0
+    tilt: 0
+    alongLine: 0
+    flipRandom: 0
+    pop: 0.1
+    fadeOut: 0.6
+    flicker: 0
+    wrap: 0
+    inDark: 0.6
+  - note: Spray from the slap, glinting as it falls back
+    art: 9
+    wall: -1
+    depth: 1
+    tints:
+    - {r: 1, g: 1, b: 1, a: 0.95}
+    - {r: 0.84705883, g: 0.94509804, b: 0.98039216, a: 0.95}
+    - {r: 1, g: 0.8901961, b: 0.6509804, a: 1}
+    count: 12
+    spawn: 0
+    from: {x: -0.38, y: -0.72}
+    to: {x: -0.13999999, y: -0.58}
+    points: []
+    delay: 0.05
+    stagger: 0.4
+    life: {x: 0.9, y: 1.2}
+    until: 0
+    loop: 0
+    size: {x: 0.07, y: 0.11}
+    velocity: {x: -0.08, y: 0.6}
+    jitter: 0.7
+    gravity: 1.3
+    drag: 0
+    sway: 0
+    swayRate: 0.6
+    spin: {x: 90, y: 240}
+    angle: 0
+    tilt: 0
+    alongLine: 0
+    flipRandom: 0
+    pop: 0.08
+    fadeOut: 0.4
+    flicker: 0
+    wrap: 0
+    inDark: 0.6
+  - note: Ripples running out both ways along the water from the slap
+    art: 13
+    wall: -1
+    depth: 1
+    tints:
+    - {r: 0.84705883, g: 0.94509804, b: 0.98039216, a: 0.9}
+    - {r: 0.2509804, g: 0.65882355, b: 0.85882354, a: 0.9}
+    count: 6
+    spawn: 2
+    from: {x: -0.8, y: -0.8}
+    to: {x: 0.8, y: 0.8}
+    points:
+    - {x: -0.39, y: -0.6}
+    - {x: -0.13, y: -0.6}
+    - {x: -0.52, y: -0.6}
+    - {x: 0, y: -0.6}
+    - {x: -0.65, y: -0.6}
+    - {x: 0.13, y: -0.6}
+    delay: 0.1
+    stagger: 0.6
+    life: {x: 1.1, y: 1.3}
+    until: 0
+    loop: 0
+    size: {x: 0.12, y: 0.16}
+    velocity: {x: 0, y: 0}
+    jitter: 0
+    gravity: 0
+    drag: 0
+    sway: 0
+    swayRate: 0.6
+    spin: {x: 0, y: 0}
+    angle: 0
+    tilt: 0
+    alongLine: 0
+    flipRandom: 0
+    pop: 0.15
+    fadeOut: 0.6
+    flicker: 0
+    wrap: 0
+    inDark: 0.4
+  - note: Bark lines over the nose, one with each arf
+    art: 13
+    wall: -1
+    depth: 1
+    tints:
+    - {r: 1, g: 1, b: 1, a: 0.9}
+    count: 4
+    spawn: 2
+    from: {x: -0.8, y: -0.8}
+    to: {x: 0.8, y: 0.8}
+    points:
+    - {x: 0.78000003, y: 0.04}
+    - {x: 0.81, y: 0.05}
+    - {x: 0.84000003, y: 0.06}
+    - {x: 0.87, y: 0.06999999}
+    delay: 0.63
+    stagger: 0.90000004
+    life: {x: 0.5, y: 0.6}
+    until: 0
+    loop: 0
+    size: {x: 0.13, y: 0.16}
+    velocity: {x: 0, y: 0}
+    jitter: 0
+    gravity: 0
+    drag: 0
+    sway: 0
+    swayRate: 0.6
+    spin: {x: 0, y: 0}
+    angle: 22
+    tilt: 0
+    alongLine: 0
+    flipRandom: 0
+    pop: 0.08
+    fadeOut: 0.25
+    flicker: 0
+    wrap: 0
+    inDark: 0.5
+  - note: Bark lines under the nose, one with each arf
+    art: 13
+    wall: -1
+    depth: 1
+    tints:
+    - {r: 1, g: 1, b: 1, a: 0.9}
+    count: 4
+    spawn: 2
+    from: {x: -0.8, y: -0.8}
+    to: {x: 0.8, y: 0.8}
+    points:
+    - {x: 0.78000003, y: -0.08}
+    - {x: 0.81, y: -0.09}
+    - {x: 0.84000003, y: -0.099999994}
+    - {x: 0.87, y: -0.11}
+    delay: 0.63
+    stagger: 0.90000004
+    life: {x: 0.5, y: 0.6}
+    until: 0
+    loop: 0
+    size: {x: 0.13, y: 0.16}
+    velocity: {x: 0, y: 0}
+    jitter: 0
+    gravity: 0
+    drag: 0
+    sway: 0
+    swayRate: 0.6
+    spin: {x: 0, y: 0}
+    angle: -22
+    tilt: 0
+    alongLine: 0
+    flipRandom: 0
+    pop: 0.08
+    fadeOut: 0.25
+    flicker: 0
+    wrap: 0
+    inDark: 0.5
+  - note: The sun glinting on the sea behind the seal (the slide's sea, between the
+      shore line and the horizon)
+    art: 9
+    wall: -1
+    depth: 0
+    tints:
+    - {r: 1, g: 0.8901961, b: 0.6509804, a: 1}
+    - {r: 1, g: 1, b: 1, a: 0.95}
+    count: 6
+    spawn: 0
+    from: {x: -0.7, y: -0.54}
+    to: {x: 0.6, y: -0.26}
+    points: []
+    delay: 0.8
+    stagger: 3.4
+    life: {x: 0.6, y: 0.9}
+    until: 0
+    loop: 0
+    size: {x: 0.09, y: 0.13}
+    velocity: {x: 0, y: 0}
+    jitter: 0
+    gravity: 0
+    drag: 0
+    sway: 0
+    swayRate: 0.6
+    spin: {x: 30, y: 60}
+    angle: 0
+    tilt: 0
+    alongLine: 0
+    flipRandom: 0
+    pop: 0.15
+    fadeOut: 0.4
+    flicker: 0
+    wrap: 0
+    inDark: 0.6
+  - note: Gulls wheeling over the shore, between the tail and the sun
+    art: 3
+    wall: -1
+    depth: 0
+    tints:
+    - {r: 1, g: 1, b: 1, a: 0.85}
+    count: 3
+    spawn: 0
+    from: {x: -0.22, y: 0.7}
+    to: {x: 0.12, y: 0.88}
+    points: []
+    delay: 1
+    stagger: 1.1
+    life: {x: 3.8, y: 4.2}
+    until: 0
+    loop: 0
+    size: {x: 0.13, y: 0.17}
+    velocity: {x: -0.06, y: 0.015}
+    jitter: 0.3
+    gravity: 0
+    drag: 0
+    sway: 0.03
+    swayRate: 0.4
+    spin: {x: 0, y: 0}
+    angle: 0
+    tilt: 0
+    alongLine: 0
+    flipRandom: 1
+    pop: 0.3
+    fadeOut: 0.6
+    flicker: 0
+    wrap: 0
+    inDark: 0.1
+  - note: A summer cloud drifting by
+    art: 2
+    wall: -1
+    depth: 0
+    tints:
+    - {r: 1, g: 1, b: 1, a: 0.9}
+    count: 2
+    spawn: 0
+    from: {x: -1.3, y: 0.62}
+    to: {x: 1.3, y: 0.88}
+    points: []
+    delay: 0.3
+    stagger: 0.8
+    life: {x: 6, y: 6}
+    until: 0
+    loop: 0
+    size: {x: 0.3, y: 0.38}
+    velocity: {x: -0.05, y: 0}
+    jitter: 0.3
+    gravity: 0
+    drag: 0
+    sway: 0
+    swayRate: 0.6
+    spin: {x: 0, y: 0}
+    angle: 0
+    tilt: 0
+    alongLine: 0
+    flipRandom: 0
+    pop: 0.6
+    fadeOut: 0
+    flicker: 0
+    wrap: 1
+    inDark: 0.05
+  seconds: 5.5

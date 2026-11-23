@@ -20,6 +20,10 @@ namespace PhysicalAssembly.Editor
         [Tooltip("APK file name in Builds/, without .apk. Pico builds add -Pico. Empty: the asset's name.")] public string ApkName="";
         [Tooltip("App icon for this game's builds only: square, 1024 px, opaque. Unity scales it for the launcher. Empty: the project's default icon.")]
         public Texture2D Icon;
+        [Tooltip("Version name (Android versionName) for this game's builds only, e.g. 1.0.0. Empty: the project's Player Settings > Version.")]
+        public string Version="";
+        [Tooltip("Permissions kept out of this game's APKs even when Unity or a package declares them (Unity adds RECORD_AUDIO whenever any player code uses Microphone, and asks for it at first launch). e.g. android.permission.RECORD_AUDIO")]
+        public string[] RemovePermissions=new string[0];
         public bool Quest=true,Pico=true;
         [Tooltip("Pico: also turn on look-and-pinch input (OpenXR Eye Gaze Interaction and PICO eye tracking, which adds the eye tracking permission). For a game that uses it. The declaration makes the PICO system show an eye tracking prompt at launch, and a headset without eye tracking (PICO 4 Ultra) never gives a gaze, so leave it off unless the target headset has it.")]
         public bool PicoEyeGaze;

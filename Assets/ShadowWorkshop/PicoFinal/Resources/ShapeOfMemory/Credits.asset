@@ -24,11 +24,14 @@ MonoBehaviour:
   sections:
   - heading: Music & Sound
     lines:
-    - "\"Childhood\" by Scott Buckley \u2013 released under CC-BY 4.0. www.scottbuckley.com.au"
+    - "\"Childhood\" by Scott Buckley \u2013 released"
+    - under CC-BY 4.0. www.scottbuckley.com.au
+    - Sound effects from Soundsnap and Pixabay
   - heading: Art & Assets
     lines:
-    - 'Fonts: Cinzel and Cinzel Decorative by Natanael Gama,'
-    - Merriweather by Sorkin Type, Noto Serif SC by Google
+    - 'Fonts: Cinzel and Cinzel Decorative'
+    - by Natanael Gama, Merriweather by
+    - Sorkin Type, Noto Serif SC by Google
     - (SIL Open Font License 1.1)
-  - heading: Tools
-    lines: []
+    - 'Props: CozyShops Lite by Sari3D, and'
+    - Free Low Poly Game Assets (Unity Asset Store)

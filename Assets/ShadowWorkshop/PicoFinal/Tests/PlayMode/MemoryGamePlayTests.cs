@@ -47,6 +47,13 @@ namespace ShapeOfMemory.Tests
             yield return null;yield return null;
         }
         IEnumerator Tap(MemoryButton button)=>Tap(button?button.Press:null,button?button.name:"button");
+        // LOWER / RAISE glide the table to its new height (MemoryGame.LiftGlide): wait until it is there.
+        static IEnumerator Glided(MemoryGame game)
+        {
+            float until=Time.realtimeSinceStartup+2;
+            while(game.LiftShown!=game.Progress.Lift&&Time.realtimeSinceStartup<until)yield return null;
+            Assert.AreEqual(game.Progress.Lift,game.LiftShown,1e-5f,"the table got to its height");
+        }
         // A hand's ray pinch held for seconds (a hold button or tile).
         IEnumerator Hold(Pressable press,float seconds)
         {
@@ -269,7 +276,10 @@ namespace ShapeOfMemory.Tests
             Assert.IsTrue(game.Book.Corner(true).isActiveAndEnabled,"the endpaper turns on");Assert.IsTrue(game.Book.Corner(false).isActiveAndEnabled,"and back, to Settings");
             Assert.IsNull(game.ShownSet,"no play buttons off the walls");Assert.NotNull(game.Bookmarks.Find("quit"),"QUIT's ribbon");Assert.IsNull(game.Button("bar","quit"),"no QUIT plaque");
             float height=game.Stage.position.y;yield return Tap(game.Tile("title/raise"),"RAISE");
-            Assert.AreEqual(height+MemoryGame.Lift,game.Stage.position.y,1e-4f);Assert.AreEqual(MemoryGame.Lift,game.Progress.Lift,1e-4f);
+            Assert.AreEqual(MemoryGame.Lift,game.Progress.Lift,1e-4f);
+            float glide=Time.realtimeSinceStartup;yield return Glided(game);
+            Assert.AreEqual(height+MemoryGame.Lift,game.Stage.position.y,1e-4f,"the table glides up the step");
+            Assert.Less(Time.realtimeSinceStartup-glide,1,"in well under a second");
         }
         // The book chooses, PLAY starts: Begin has none; the next chapter's page has PLAY under its riddle and nothing starts
         // by itself; pressed, the stand's drawer runs out, the memory rises onto the walls with gold motes flying from the
@@ -374,23 +384,29 @@ namespace ShapeOfMemory.Tests
             yield return Tap(game.Tile("close/stay"),"KEEP READING");yield return Settle(game);
             Assert.AreEqual(MemoryGame.Phase.Levels,game.Current);Assert.AreEqual(MemoryGame.SpreadOf(0),game.Book.Spread,"back to its chapter");
         }
-        // The soundtrack: silent through the title, on once the cover is open; it fades out and holds while a memory is up on
-        // the walls (the closeness cue is the music there) and goes on from where it held when the book comes down.
+        // The soundtrack: silent through the title, on once the cover is open. While a memory is up on the walls it stays
+        // under the closeness cue (playtest 2026-11-16; it used to fall silent there): quieter, muffled, giving way as the
+        // cue warms. Switched off it fades out and holds, and goes on from where it held. With the book down it is full again.
         [UnityTest] public IEnumerator TheSoundtrackWaitsForTheOpenBookAndMakesWayForTheCue()
         {
-            MemoryGame game=null;yield return Open(g=>game=g);var music=game.Music;Assert.NotNull(music.Soundtrack,"the shipping soundtrack");
+            MemoryGame game=null;yield return Open(g=>game=g);var music=game.Music;var s=music.Soundtrack;Assert.NotNull(s,"the shipping soundtrack");
             yield return new WaitForSecondsRealtime(.5f);Assert.IsFalse(music.Started,"no music in the title");Assert.IsFalse(music.Source.isPlaying);
             yield return OpenCover(game);yield return null;
             Assert.IsTrue(music.Started,"the open book starts it");Assert.AreEqual(0,music.Song);
             yield return new WaitForSecondsRealtime(1);Assert.IsTrue(music.Source.isPlaying);Assert.Greater(music.Fade,.2f,"fading in");
-            yield return Play(game,0);yield return new WaitForSecondsRealtime(music.Soundtrack.fadeOut+.2f);
-            Assert.IsTrue(music.Held,"held while the memory is out");Assert.IsFalse(music.Source.isPlaying);float heldAt=music.Source.time;
-            // MENU: the music comes back as the book starts down (it follows the book), so read its time the frame it does.
-            yield return Tap(game.Button("play","pause"));
-            float deadline=Time.realtimeSinceStartup+1;while(music.Held&&Time.realtimeSinceStartup<deadline)yield return null;
-            Assert.IsFalse(music.Held,"back with the book");Assert.IsTrue(game.Book.Flying,"while the book comes down, not after");
-            Assert.AreEqual(heldAt,music.Source.time,.25f,"from where it held");
-            yield return WaitFor(game,MemoryGame.Phase.Paused,MemoryGame.PauseSeconds+1);Assert.IsTrue(music.Source.isPlaying);
+            yield return Play(game,0);yield return new WaitForSecondsRealtime(s.fadeOut+.2f);
+            Assert.IsFalse(music.Held,"not held on the walls");Assert.IsTrue(music.Source.isPlaying,"it plays on under the cue");
+            Assert.AreEqual(s.Share(1,music.Warm),music.Fade,.05f,"at its share under the cue");Assert.Less(music.Fade,.6f,"well down");
+            Assert.IsTrue(music.Muffle.enabled,"muffled");Assert.AreEqual(s.playCutoff,music.Muffle.cutoffFrequency,1,"down to playCutoff");
+            // Switched off (Settings): it fades out and holds where it is; on again, it goes on from there.
+            music.Muted=true;yield return new WaitForSecondsRealtime(s.fadeOut+.2f);
+            Assert.IsTrue(music.Held,"held while switched off");Assert.IsFalse(music.Source.isPlaying);float heldAt=music.Source.time;
+            music.Muted=false;yield return null;yield return null;
+            Assert.IsFalse(music.Held,"switched on");Assert.AreEqual(heldAt,music.Source.time,.25f,"from where it held");
+            // MENU: the book comes down, and on the stand the music is full and open again.
+            yield return Tap(game.Button("play","pause"));yield return WaitFor(game,MemoryGame.Phase.Paused,MemoryGame.PauseSeconds+1);
+            yield return new WaitForSecondsRealtime(s.fadeIn+.2f);
+            Assert.IsTrue(music.Source.isPlaying);Assert.AreEqual(1,music.Fade,.01f,"all of it on the stand");Assert.IsFalse(music.Muffle.enabled,"not muffled");
         }
         [UnityTest] public IEnumerator AFoundMemoryGoesBackToTheTableThenItsPageMovesOn()
         {
@@ -607,11 +623,11 @@ namespace ShapeOfMemory.Tests
                 touch.Step(1,true,face.position+face.right*.3f);touch.Step(1,true,face.position-outward*.003f);yield return null;yield return null;
                 Assert.AreEqual(height,game.Stage.position.y,1e-5f,"arriving from the side, through the face: nothing");
                 touch.Step(1,true,face.position+outward*.05f);Assert.IsTrue(press.Hover,"a fingertip in front hovers it");
-                touch.Step(1,true,face.position+outward*.02f);touch.Step(1,true,face.position+outward*.002f);yield return null;yield return null;
+                touch.Step(1,true,face.position+outward*.02f);touch.Step(1,true,face.position+outward*.002f);yield return null;yield return null;yield return Glided(game);
                 Assert.AreEqual(height+MemoryGame.Lift,game.Stage.position.y,1e-4f,"pushed through from in front: one press");
-                touch.Step(1,true,face.position-outward*.004f);yield return null;yield return null;
+                touch.Step(1,true,face.position-outward*.004f);yield return null;yield return null;yield return Glided(game);
                 Assert.AreEqual(height+MemoryGame.Lift,game.Stage.position.y,1e-4f,"held in: no second press");
-                touch.Step(1,true,face.position+outward*.04f);touch.Step(1,true,face.position+outward*.02f);touch.Step(1,true,face.position+outward*.002f);yield return null;yield return null;
+                touch.Step(1,true,face.position+outward*.04f);touch.Step(1,true,face.position+outward*.02f);touch.Step(1,true,face.position+outward*.002f);yield return null;yield return null;yield return Glided(game);
                 Assert.AreEqual(height+2*MemoryGame.Lift,game.Stage.position.y,1e-4f,"backed out and in again: a second press");
                 touch.Step(1,false,default);Assert.IsFalse(press.Hover,"a lost hand hovers nothing");
             }
@@ -633,12 +649,12 @@ namespace ShapeOfMemory.Tests
                 Assert.IsTrue(press.Hover,"the sweep was over the tile");
                 Assert.AreEqual(height,game.Stage.position.y,1e-5f,"a sweep across it: nothing");
                 // Backed out and pushed straight in: a press.
-                touch.Step(1,true,At(0,.03f));touch.Step(1,true,At(0,.015f));touch.Step(1,true,At(0,.002f));yield return null;yield return null;
+                touch.Step(1,true,At(0,.03f));touch.Step(1,true,At(0,.015f));touch.Step(1,true,At(0,.002f));yield return null;yield return null;yield return Glided(game);
                 Assert.AreEqual(height+MemoryGame.Lift,game.Stage.position.y,1e-4f,"then a straight push presses");
                 // Out again, then in at 45 degrees: still a press.
                 touch.Step(1,true,At(-.022f,.026f));
                 foreach(var (x,h) in new[]{(-.0165f,.0205f),(-.011f,.015f),(-.0055f,.0095f),(0f,.004f)})touch.Step(1,true,At(x,h));
-                yield return null;yield return null;
+                yield return null;yield return null;yield return Glided(game);
                 Assert.AreEqual(height+2*MemoryGame.Lift,game.Stage.position.y,1e-4f,"a press 45 degrees off square still takes");
             }
             finally{Object.Destroy(touch.gameObject);}
@@ -736,16 +752,18 @@ namespace ShapeOfMemory.Tests
             yield return WaitFor(game,MemoryGame.Phase.Solved,level.LockRemaining+1);
             Assert.Less(Quaternion.Angle(level.Rotation,answer),.01f,"exactly the answer as it is found");
         }
-        // The play strip wakes only while the head looks down at it (headsets; the desktop's never sleeps).
+        // The play strip wakes only while the head looks down toward it (headsets; the desktop's never sleeps). The eyes do
+        // much of the look (Quest 2, 2026-11-17: refused under 36 degrees while looking at it), so a head 25-30 down wakes it.
         [Test] public void TheStripWakesOnlyLookedDownAt()
         {
             Vector3 Look(float down,float aside=0)=>Quaternion.Euler(down,aside,0)*Vector3.forward;
-            Assert.IsFalse(MemoryGame.LooksAtStrip(Look(5),false),"at the walls");
-            Assert.IsFalse(MemoryGame.LooksAtStrip(Look(27),false),"at the orb");
-            Assert.IsFalse(MemoryGame.LooksAtStrip(Look(32.7f),false),"at the orb's lowest ring");
+            Assert.IsFalse(MemoryGame.LooksAtStrip(Look(5),false),"level");
+            Assert.IsFalse(MemoryGame.LooksAtStrip(Look(13),false),"at the shadows on the walls");
+            Assert.IsFalse(MemoryGame.LooksAtStrip(Look(21),false),"at the foot of the walls");
+            Assert.IsTrue(MemoryGame.LooksAtStrip(Look(26),false),"head part way down, the eyes on the strip");
             Assert.IsTrue(MemoryGame.LooksAtStrip(Look(45),false),"down at the strip");
-            Assert.IsTrue(MemoryGame.LooksAtStrip(Look(34),true),"awake, it stays awake a little above where it woke");
-            Assert.IsFalse(MemoryGame.LooksAtStrip(Look(31),true),"and sleeps again looking up at the orb");
+            Assert.IsTrue(MemoryGame.LooksAtStrip(Look(21),true),"awake, it stays awake a little above where it woke");
+            Assert.IsFalse(MemoryGame.LooksAtStrip(Look(18),true),"and sleeps again looking up at the walls");
             Assert.IsFalse(MemoryGame.LooksAtStrip(Look(50,60),false),"down, but off to the side");
         }
         // MENU while a lock comes in undoes it, so the found moment never plays with the book down (and the paused orb never

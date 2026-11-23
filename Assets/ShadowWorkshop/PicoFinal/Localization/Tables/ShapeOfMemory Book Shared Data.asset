@@ -115,11 +115,38 @@ MonoBehaviour:
     m_Metadata:
       m_Items:
       - rid: 714218833402396847
-  - m_Id: 61476683783
-    m_Key: credits/section/Tools
+  - m_Id: 1819050543833088
+    m_Key: Summer/button
     m_Metadata:
-      m_Items:
-      - rid: 714218833402396848
+      m_Items: []
+  - m_Id: 1819050589970432
+    m_Key: Summer/riddle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1819050589970433
+    m_Key: Summer/hint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1819050589970434
+    m_Key: Summer/complete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1842325437177856
+    m_Key: WildWest/button
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1842325474926592
+    m_Key: WildWest/riddle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1842325474926593
+    m_Key: WildWest/hint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1842325474926594
+    m_Key: WildWest/complete
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
@@ -227,11 +254,6 @@ MonoBehaviour:
         m_CommentText: 'From the Credits asset (Pico Final > Credits). English: Copy
           asset text into tables.'
     - rid: 714218833402396847
-      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
-      data:
-        m_CommentText: 'From the Credits asset (Pico Final > Credits). English: Copy
-          asset text into tables.'
-    - rid: 714218833402396848
       type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
       data:
         m_CommentText: 'From the Credits asset (Pico Final > Credits). English: Copy

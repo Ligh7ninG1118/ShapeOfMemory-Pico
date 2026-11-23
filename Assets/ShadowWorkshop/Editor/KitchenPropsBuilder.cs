@@ -8,7 +8,8 @@ namespace ShadowWorkshopIntegration.Editor
     // Detailed looks for the GoodMorning kitchen pieces: a Swiss cheese wedge, a steel fork, a salt jar (in place of the
     // plain glass tumbler) and a printed sugar-cube box (in place of the plain box). Each keeps its original's pivot and
     // outline and is only drawn: the original mesh stays the piece's shadow (ShadowPiece.shadowProxy in the gym,
-    // Torch2Piece.shadowMesh in levels), so the puzzle's picture and scoring are unchanged. Kept to a mobile VR budget
+    // Torch2Piece.shadowMesh in levels), so the puzzle's picture and scoring are unchanged; the salt jar's is a light
+    // copy of the tumbler's outline (SaltJarShadow) instead of the 1600-triangle tumbler. Kept to a mobile VR budget
     // (a few hundred triangles each); the detail is in the textures. Printed textures come from
     // Tools/ShadowArt/build_kitchen_labels.py; the cheese and wood textures are generated here.
     public static class KitchenPropsBuilder
@@ -39,7 +40,7 @@ namespace ShadowWorkshopIntegration.Editor
         public static void Build()
         {
             CheeseTextures();WoodGrain();Prints();
-            var meshes=new[]{Cheese(),Fork(),SaltJar(),SugarBox()};
+            var meshes=new[]{Cheese(),Fork(),SaltJar(),SugarBox(),SaltJarShadow()};
             foreach(var p in Props)Materials(p);
             Debug.Log("KITCHEN_PROPS_OK "+string.Join(", ",System.Array.ConvertAll(meshes,m=>$"{m.name} {m.triangles.Length/3} tris")));
         }
@@ -116,6 +117,27 @@ namespace ShadowWorkshopIntegration.Editor
             for(int k=0;k<=JarSides;k++){float a=k*2*Mathf.PI/JarSides;var p=new Vector3(Mathf.Cos(a)*.0383f,.1101f,Mathf.Sin(a)*.0383f);b.Add(p,up,new Vector2(p.x/.08f+.5f,p.z/.08f+.5f));}
             for(int k=0;k<JarSides;k++)b.Tri(Wood,center,center+1+k,center+2+k);
             return b.Save(Props[2].mesh,"Salt jar");
+        }
+        // The salt jar's shadow in levels, in place of the 1600-triangle tumbler (the shadow is redrawn every frame the
+        // orb moves on Quest): the tumbler's outer surface closed at the top, since an open cup casts the same shadow as
+        // its hull. Base bevel, taper and rim from the tumbler's own rings; 20 sides, nudged out so the 20-gon straddles
+        // the tumbler's 32-gon. 196 triangles.
+        public const string SaltJarShadowPath=Meshes+"Salt jar shadow.asset";
+        [MenuItem("MetaHackthone/Shadow Workshop/Build salt jar shadow")]
+        public static Mesh SaltJarShadow()
+        {
+            const int Sides=20;float grow=(1+Mathf.Cos(Mathf.PI/32))/(1+Mathf.Cos(Mathf.PI/Sides));
+            var profile=new[]{new Vector2(.0295f,0),new Vector2(.0316f,.0008f),new Vector2(.0325f,.0028f),new Vector2(.0390f,.1089f),new Vector2(.0380f,.1101f)};
+            var b=new PropMesh(1);var rings=new int[profile.Length];
+            for(int i=0;i<profile.Length;i++)
+            {
+                rings[i]=b.v.Count;
+                for(int s=0;s<Sides;s++){float a=s*2*Mathf.PI/Sides;var radial=new Vector3(Mathf.Cos(a),0,Mathf.Sin(a));b.Add(radial*(profile[i].x*grow)+Vector3.up*profile[i].y,radial,Vector2.zero);}
+            }
+            for(int i=0;i+1<profile.Length;i++)for(int s=0;s<Sides;s++){int t=(s+1)%Sides;b.Quad(0,rings[i]+s,rings[i]+t,rings[i+1]+t,rings[i+1]+s);}
+            int bottom=rings[0],top=rings[profile.Length-1];
+            for(int s=1;s+1<Sides;s++){b.Tri(0,bottom,bottom+s,bottom+s+1);b.Tri(0,top,top+s+1,top+s);}
+            return b.Save(SaltJarShadowPath,"Salt jar shadow");
         }
 
         // --- Sugar box: the original's 110 x 64 x 64 mm box and its slightly larger lid, printed from one atlas -----------

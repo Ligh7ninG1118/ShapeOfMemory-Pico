@@ -1,6 +1,6 @@
 # Shape of Memory
 
-The posable-pile shadow levels (Torch levels 2; the book's four chapters are listed in its [Chapters](#chapters)
+The posable-pile shadow levels (Torch levels 2; the book's six chapters are listed in its [Chapters](#chapters)
 asset) as a game rather than a debug level browser. Everything lives in `Assets/ShadowWorkshop/PicoFinal/`. The
 deliverable scene is `Scenes/PicoFinal.unity`.
 
@@ -130,15 +130,21 @@ it with **MetaHackthone > Pico Final > Chapters**. Nothing else in the game or i
   on Build and Run's headset.
 - **These go with the slot, not the level:**
   - the chapter number;
-  - its colour (`MemoryPalette`, by order: Rose, Cornflower, Lilac, Peach);
+  - its colour (`MemoryPalette`, by order: Rose, Cornflower, Lilac, Peach, Sage, Heather);
   - the teaching, which happens on chapter I only (the ghost pinch and the goal line);
-  - the ending's 2×2 plates. That layout is why the book has exactly four chapters.
+  - the ending's plates: two columns up to four chapters, three beyond (3×2 for six). The book has exactly
+    `MemoryChapters.Count` (six) chapters.
+- **The order is by difficulty (2026-11-17):** Birthday, Summer, Wild West, Bon Voyage, Good Morning, Home. Measured
+  per level from 25,000 random orientations: the share that can lock (pass, or snap-warm, within `lockAngle`), how far
+  each axis passes, and the mean warmth 10-40 degrees out. The old four came out in their old order; Summer and Wild West
+  lock as easily as Birthday (all three are capped by `lockAngle` 10) but Summer warms sooner, and Wild West's warmth
+  and pass windows sit between Summer's and Bon Voyage's. Birthday stays first: it is the one-wall teaching chapter.
 - **Progress is saved per level id (the asset's name).** A level that is swapped in starts unfound. Renaming a
   chapter's asset loses its saves. **Clear saved progress** clears the
   keys of every Torch2 level, including levels that are no longer in the book.
 - **Check.** The inspector lists problems as you edit. **Pico Final > Check chapters** logs `SHAPE_OF_MEMORY_CHAPTERS`
   with either `ok` and the order, or each problem.
-  - Errors: the book doesn't have exactly four chapters, a slot is empty, a level is in the book twice, a level has no
+  - Errors: the book doesn't have exactly `MemoryChapters.Count` chapters, a slot is empty, a level is in the book twice, a level has no
     pieces, or a level's lamps aren't 0, 1 or both. A build of the game stops on any error (`MemoryChaptersBuildCheck`).
   - Warnings: an empty or placeholder name or riddle (the gym's `NEW LEVEL` and its default riddle), an empty hint
     (HINT 1 shows nothing) or complete text (the FOUND page has no words), and a level outside
@@ -262,10 +268,10 @@ Spreads:
 | --- | --- | --- |
 | 0, Settings (`SettingsSpread`) | SETTINGS: table height (LOWER / RAISE), language (each by its own name, in its own face) | MUSIC ON / OFF, HOLD TO START OVER (2 s) |
 | 1, Begin (`BeginSpread`; the cover opens here) | TO THE READER (读者须知): turn a page, press, pinch a ribbon, turn the objects | How many memories are found, "Turn the page to begin", table height, "Settings: turn back a page" |
-| 2–5, one chapter per memory (`SpreadOf`) | CHAPTER n, the name, its picture (found), ? (open) or a padlock (locked) | The riddle and PLAY under it (found: PLAY AGAIN) |
-| 6, the end | THANK YOU (once Home is found) | The four memories' pictures |
-| 7, credits | "Made with love by", then the team in two columns | "With thanks to", then music, art and tools by section ([Credits](#credits)) |
-| 8, the back endpaper (`QuitSpread`, the last; `Phase.Quit`) | CLOSE THE BOOK? (合上这本书？), "The book keeps every memory you find.", how many are found (once any are) | KEEP READING (back to where QUIT's ribbon was touched, else the credits) · QUIT (a press: the page is the question) |
+| 2–7, one chapter per memory (`SpreadOf`) | CHAPTER n, the name, its picture (found), ? (open) or a padlock (locked) | The riddle and PLAY under it (found: PLAY AGAIN) |
+| 8, the end | THANK YOU (once the last chapter, Home, is found) | The six memories' pictures (3×2) |
+| 9, credits | "Made with love by", then the team in two columns | "With thanks to", then music, art and tools by section ([Credits](#credits)) |
+| 10, the back endpaper (`QuitSpread`, the last; `Phase.Quit`) | CLOSE THE BOOK? (合上这本书？), "The book keeps every memory you find.", how many are found (once any are) | KEEP READING (back to where QUIT's ribbon was touched, else the credits) · QUIT (a press: the page is the question) |
 
 The option in use on Settings has a gilt frame round its tile. Begin turns both ways (back is Settings); Settings only
 forward. The credits turn on to the back endpaper, which only turns back. A backward turn from the end only lands on a
@@ -382,6 +388,12 @@ Home → turn the page → the end → the credits. Plan and its reasoning: the 
   and back down clear of what is already on the table), so a base goes in before what rests on it. Planning uses
   oriented boxes; an EditMode test checks the four levels with the real (convex) shapes, and the gym's Check level does
   the same for a designer's level. Intros take about 5–7 s.
+- **Planned ahead:** a level's flights take tens of milliseconds to plan (50–250 ms in the editor), and so does its
+  projection (`Torch2Projection`, the any-turn targets). So while the title plays, `MemoryGame.Prewarm` reads each
+  chapter's meshes and builds both on worker threads (`Torch2Projection.Prebuild`, `Torch2Transit.Prebuild`), and a
+  chapter start takes them (`Take`). If none is ready, or anything one was built from has changed, it is built in place
+  as before. Each start prebuilds that chapter again for PLAY AGAIN. On the Quest 2 this took the PLAY frame from
+  126–156 ms to 22–66 ms (2026-11-17; `SHAPE_OF_MEMORY_LOAD` below).
 - **Where things lie:** a level exported with a table layout (the gym's, below) uses it; the four shipped levels
   scatter: `Torch2Transit.Scatter` lays each thing on its thinnest side, turned close to a right angle, largest first,
   inside x ±0.58 m and z −0.15…0.48 m, seeded by the level's name, 2.5 cm in front of both walls (`WallClear`: the
@@ -409,12 +421,13 @@ Home → turn the page → the end → the credits. Plan and its reasoning: the 
 - **Each chapter's own moment:** `Resources/ShapeOfMemory/Cues/<chapter>.asset` (**MetaHackthone > Pico Final > Solve
   cues > Select cues**). Its **Sounds** play from the moment the memory is found (each with a delay and volume). Its
   **Layers** are paper cut-outs that come alive on the lit page round the shadow: clouds streaming past Bon Voyage's
-  plane, the birthday candles lighting one by one, the sun rising behind the chef, hearts over Home. They fade off the
+  plane, the birthday candles lighting one by one, five stars stamped over the chef's hat, hearts over Home. They fade off the
   lamp's spot and go out with the lamps.
 - Layer places and sizes are in **spot units**: the lamp's spot on its page, (0,0) its middle, 1 its radius, x across the
   page as the player sees it. A flipped find is turned upright first; the cut-outs start after that.
 - Cut-out art is one atlas, `Art/Cues/CueAtlas.png`, drawn by `Tools/ShadowArt/build_cue_atlas.py` (white paper with an
-  ink outline, so a layer's tint colours it). **Make default cues** rewrites the four chapters' layers as designed and
+  ink outline, so a layer's tint colours it). Cells are a 5x5 grid in `MemorySolveCue.Art` order; cue assets store the
+  index, so new art goes at the end (Star is cell 16, Sun stays 12 for Summer and Wild West). **Make default cues** rewrites the four chapters' layers as designed and
   keeps their sounds.
 - New sounds go in `Audio/Cues/`. The shipped ones (Soundsnap, plus one Pixabay chime) are cut from the downloads by
   `Tools/ShadowArt/trim_cue_audio.py`: a window of each, short fades, peak at -1 dBFS, and the jet's channels swapped so its
@@ -424,8 +437,9 @@ Home → turn the page → the end → the credits. Plan and its reasoning: the 
 - **Each chapter's lamp slide** (`Torch2Level.leftSlide` / `rightSlide`, the picture the lamp projects, blurred and grey
   while cold, sharp and in colour once found): `Art/Slides/Slide_<chapter>.png`, drawn by `Tools/ShadowArt/build_slides.py`
   round each chapter's shadow and cut-outs (Birthday: party wallpaper and bunting; Bon Voyage: sky and an airfield;
-  Good Morning: a kitchen whose window is where the cut-out sun rises; Home: a living room, one slide per wall). Re-running
-  the script rewrites the PNGs in place. A gym **Export** writes its own slides back to the level, so open the level in
+  Good Morning: a kitchen, its kettle where the cut-out steam starts; Home: a living room, one slide per wall). Re-running
+  the script rewrites the PNGs in place. Summer's (a summer shore, its sea line and sun glow where the cue's `Water` and
+  `SunAt` are) is drawn in C# instead: **MetaHackthone > Pico Final > Slides > Draw Summer slide** (`MemorySummerSlide`). A gym **Export** writes its own slides back to the level, so open the level in
   the gym first (it copies them in).
 
 ### Onboarding (`MemoryGuide`)
@@ -555,12 +569,15 @@ while pressed, an aqua collar on hover, hint pips, a hold's square ring of dots 
 | QUIT's ribbon (ember, the right-hand one; [Ribbons](#ribbons-memorybookmarks)) | Whenever the book lies open on its stand: browsing, paused or found | Turns to the back endpaper, which asks: KEEP READING or QUIT |
 
 **Mistouch guard** (2026-11-16, the user: hands rolling the orb pressed it, unseen): on a headset the strip takes a
-fingertip only while the player looks down at it, the head at least 36° under the horizon (it sleeps again above 33°)
-and within 45° of straight ahead (`MemoryGame.StripWake/StripSleep/StripYaw`, `LooksAtStrip`). The strip is about 60°
-under the eyes, the orb about 27° (its lowest ring 33°), so looking at the orb never wakes it. Asleep, its buttons dim
-and a finger doesn't light them (`MemoryButton.Awake`); the device log says `refused=not looking at the strip`. A hand
-that held the orb in the last 0.6 s presses nothing on it either (`OrbCooldown`: letting go, the hand drops onto it).
-The desktop's strip never sleeps.
+fingertip only while the player looks down toward it, the head at least 24° under the horizon (it sleeps again above
+20°) and within 45° of straight ahead (`MemoryGame.StripWake/StripSleep/StripYaw`, `LooksAtStrip`). The strip is about
+60° under the eyes, the orb about 27° (rings 21-33°), the shadows on the walls about 13°. The eyes do much of a look
+that far down: the first gate (36°/33°, under the orb) refused 16 touches on the Quest 2 on 2026-11-17 while the user
+looked at the strip. So looking at the walls keeps it asleep, and looking at the orb may wake it. Asleep, its buttons
+dim and a finger doesn't light them (`MemoryButton.Awake`); the device log says `refused=not looking at the strip (head
+N deg down, wakes at 24)`, and a strip press logs `head N deg down`. A hand that held the orb in the last 0.6 s presses
+nothing on it either (`OrbCooldown`: letting go, the hand drops onto it): that, not the look, keeps the hands on the
+orb off it. The desktop's strip never sleeps.
 
 Why there (2026-11-15 device round): the upright post by the right hand stood in front of the right lamp, and a post on
 either side would, since the lamps sit about 57 cm out, level with the head. Under the orb in view, the strip hides no
@@ -593,7 +610,8 @@ didn't notice it or found it hard to work, so PLAY went back onto the page and a
 
 Silk ribbons come out from between the pages at the book's near edge, up and over the stand's front rail, and hang in
 front of it: Settings (gear) and Begin (book) left of the drawer's knob, the credits (heart) and QUIT (power, ember) right
-of it; no ribbon per chapter (2026-11-15). The rail runs 1.5–4.5 cm in front of the book's near edge and stands
+of it; no ribbon per chapter (2026-11-15). They hang 7 cm apart (3.4 cm of air between neighbours) and 11 cm apart over
+the knob, spread on 2026-11-16 so a pinch picks the one meant. The rail runs 1.5–4.5 cm in front of the book's near edge and stands
 3.6–4.1 cm off the board (raycast on the scene's stand); each ribbon rises to just above its back edge, crosses its top
 and hangs just past its front. Those points are measured from the Book Rest (`MemoryBookmarks.BookHeight` gives the book's
 height on it), so a book of another thickness doesn't push them into the rail (our own book lies 2 cm lower than the
@@ -699,6 +717,7 @@ it to `Logs/Headsets/` from launch. By hand, use the editor's adb (the PATH adb 
 | `SHAPE_OF_MEMORY_PAGE` | A page the player turned landing (the spread), and `next` once a solved memory's page has turned over |
 | `SHAPE_OF_MEMORY_PAGE` | A page the player turned landed on this spread |
 | `SHAPE_OF_MEMORY_RECENTER` | `event` or `jump`: the system recenter that re-placed the table |
+| `SHAPE_OF_MEMORY_LOAD` | A chapter start (one frame): total ms, then each step's (`workshop` = projection + world + input, `cue`, `rings`, `grip+strip`, `intro`, `book`). Projection and intro near 0 mean they were prebuilt |
 | `METAHACKTHONE_PINCH` | Every pinch down / up, with its distance |
 
 ## Build

@@ -44,6 +44,7 @@ MonoBehaviour:
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
+    drawGather: 0
   - label: EGG
     mesh: {fileID: 4300000, guid: 7e4d7e1336457f54bb40d26296fe669a, type: 2}
     materials:
@@ -57,6 +58,7 @@ MonoBehaviour:
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
+    drawGather: 0
   - label: STRAWBERRY
     mesh: {fileID: 4300000, guid: c86e73d0487a805468b1f248b336286e, type: 2}
     materials:
@@ -71,6 +73,7 @@ MonoBehaviour:
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
+    drawGather: 0
   - label: STRAWBERRY (1)
     mesh: {fileID: 4300000, guid: c86e73d0487a805468b1f248b336286e, type: 2}
     materials:
@@ -85,6 +88,7 @@ MonoBehaviour:
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
+    drawGather: 0
   - label: STRAWBERRY (2)
     mesh: {fileID: 4300000, guid: c86e73d0487a805468b1f248b336286e, type: 2}
     materials:
@@ -93,12 +97,13 @@ MonoBehaviour:
     position: {x: -0.0119, y: 0.026600003, z: -0.0411}
     euler: {x: 356.02307, y: 312.81183, z: 297.07123}
     scale: {x: 1.0000002, y: 1.0000001, z: 0.99999994}
-    shadowMesh: {fileID: 4300000, guid: c86e73d0487a805468b1f248b336286e, type: 2}
+    shadowMesh: {fileID: 4300000, guid: 175f2a6b59b2c154aaa93a3c63b62bc8, type: 2}
     visualOnly: 0
     onTable: 0
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
+    drawGather: 0
   - label: CHEESE
     mesh: {fileID: 4300000, guid: f82f2eefa69b81042aaeadfeb7f83e5d, type: 2}
     materials:
@@ -113,6 +118,7 @@ MonoBehaviour:
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
+    drawGather: 0
   - label: SPATULA
     mesh: {fileID: 4300000, guid: e25954116266dd24684acee31447c6e7, type: 2}
     materials:
@@ -127,6 +133,7 @@ MonoBehaviour:
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
+    drawGather: 0
   - label: LADLE
     mesh: {fileID: 4300000, guid: 4c90f4f3bd40ee746abbcaa91c44e59d, type: 2}
     materials:
@@ -140,6 +147,7 @@ MonoBehaviour:
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
+    drawGather: 0
   - label: SALT JAR
     mesh: {fileID: 4300000, guid: 3a8f31a633b1a124ba5086262dcf4508, type: 2}
     materials:
@@ -148,12 +156,13 @@ MonoBehaviour:
     position: {x: -0.03748948, y: -0.112100005, z: 0.10942065}
     euler: {x: 353.88318, y: 2.2423675, z: 194.42256}
     scale: {x: -1.0000001, y: -1.0000004, z: -0.9999998}
-    shadowMesh: {fileID: -2432090755550338912, guid: c78914ad3502edf4b8420feaa1a932d1, type: 3}
+    shadowMesh: {fileID: 4300000, guid: 112b43e3105887e4a938d01890c28884, type: 2}
     visualOnly: 0
     onTable: 0
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
+    drawGather: 0
   - label: SUGAR BOX
     mesh: {fileID: 4300000, guid: f7d72953d14cec742b5d0934ce789d41, type: 2}
     materials:
@@ -167,6 +176,7 @@ MonoBehaviour:
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
+    drawGather: 0
   - label: BREAD ROLLS
     mesh: {fileID: 4300000, guid: 04862cb04477aa74caf6872dfadc23d7, type: 2}
     materials:
@@ -180,6 +190,7 @@ MonoBehaviour:
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
+    drawGather: 0
   - label: BREAD ROLLS (1)
     mesh: {fileID: 4300000, guid: 04862cb04477aa74caf6872dfadc23d7, type: 2}
     materials:
@@ -193,6 +204,7 @@ MonoBehaviour:
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
+    drawGather: 0
   solution: {x: 0, y: 0, z: 0, w: 1}
   start: {x: 0.62999433, y: -0.7152858, z: 0.18069139, w: 0.24253662}
   tolerance: 1

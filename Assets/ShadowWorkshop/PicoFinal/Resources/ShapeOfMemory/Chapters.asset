@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: ShapeOfMemory::ShapeOfMemory.MemoryChapters
   chapters:
   - {fileID: 11400000, guid: 676d5c6b04e6a56469a1c91c26962b3e, type: 2}
+  - {fileID: 11400000, guid: 8941b305ac4a09445950647b7fcbc163, type: 2}
+  - {fileID: 11400000, guid: e346ed812015b05408680dfa1b19fadc, type: 2}
   - {fileID: 11400000, guid: a4b63da7170f8614d919c909c2d56ace, type: 2}
   - {fileID: 11400000, guid: ceaffbbdce24ee9458cec9d6a3a6e429, type: 2}
   - {fileID: 11400000, guid: d22f8a6d4b7af484aa334247669c88cf, type: 2}

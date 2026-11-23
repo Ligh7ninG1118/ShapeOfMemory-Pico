@@ -19,6 +19,9 @@ MonoBehaviour:
   ProductName: Shape of Memory
   ApkName: ShapeOfMemory
   Icon: {fileID: 2800000, guid: 34d65adf3726dcb4aa7b9ec23b31f7e4, type: 3}
+  Version: 1.0.0
+  RemovePermissions:
+  - android.permission.RECORD_AUDIO
   Quest: 1
   Pico: 1
   PicoEyeGaze: 0

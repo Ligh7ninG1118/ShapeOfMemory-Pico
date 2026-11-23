@@ -95,14 +95,71 @@ namespace CloudGarden.ShadowPuzzle
         Vector3 drawnPosition;
 
         // calibrate=false skips the warmth baseline (the gym's live preview rebuilds this on every edit).
-        public Torch2Projection(Torch2Level level,bool calibrate=true)
+        public Torch2Projection(Torch2Level level,bool calibrate=true):this(Read(level),calibrate){}
+
+        // What the constructor needs through Unity's API, read on the main thread: the casting pieces' shadow meshes in
+        // pile space, and whether any turn counts. The rest is arithmetic on plain arrays (and the thread-safe Quaternion
+        // and Mathf helpers), so it can run on a worker thread: Prebuild.
+        public sealed class Source
         {
-            this.level=level;walls=level.lamps;int n=walls.Length,most=0;
+            public Torch2Level level;
+            public bool anyTurn;
+            public Quaternion[] answers;
+            public Vector3[][] local;
+            public int[][] triangles;
+        }
+        public static Source Read(Torch2Level level)
+        {
             var casting=Array.FindAll(level.pieces,p=>!p.visualOnly);int count=casting.Length;
+            var source=new Source{level=level,anyTurn=TurnsCount(level),answers=AnswersFor(level),local=new Vector3[count][],triangles=new int[count][]};
+            for(int i=0;i<count;i++)
+            {
+                var piece=casting[i];var mesh=piece.ShadowMesh;
+                if(!mesh||!mesh.isReadable)throw new InvalidOperationException($"{level.name}: piece {piece.label} needs a readable shadow mesh");
+                var matrix=Matrix4x4.TRS(piece.position,Quaternion.Euler(piece.euler),piece.Scale);var v=mesh.vertices;
+                for(int k=0;k<v.Length;k++)v[k]=matrix.MultiplyPoint3x4(v[k]);
+                source.local[i]=v;source.triangles[i]=mesh.triangles;
+            }
+            return source;
+        }
+
+        // Prebuilt projections. Building one takes tens of milliseconds (a one-lamp level's any-turn targets: 72 tilts;
+        // 126-156 ms of a chapter start's frame on Quest 2 with the rest of MemoryGame.Load, 2026-11-17), so a host that
+        // knows which level comes next asks for it ahead (Prebuild: the mesh read here, the rest on a worker thread) and
+        // Torch2Workshop takes it as it wakes (Take: waits for one still building; builds here if none was asked for).
+        // One per level; each Take uses it up. Main thread only.
+        static readonly Dictionary<Torch2Level,System.Threading.Tasks.Task<Torch2Projection>> prebuilt=new Dictionary<Torch2Level,System.Threading.Tasks.Task<Torch2Projection>>();
+        public static void Prebuild(Torch2Level level)
+        {
+            if(!level||prebuilt.ContainsKey(level))return;
+            Source source;
+            try{source=Read(level);}catch(Exception e){Debug.LogException(e);return;}
+            prebuilt[level]=System.Threading.Tasks.Task.Run(()=>new Torch2Projection(source,true));
+        }
+        public static bool Prebuilt(Torch2Level level)=>level&&prebuilt.ContainsKey(level);
+        public static Torch2Projection Take(Torch2Level level)
+        {
+            if(level&&prebuilt.TryGetValue(level,out var task))
+            {
+                prebuilt.Remove(level);
+                try{return task.Result;}
+                catch(Exception e){Debug.LogWarning($"SHADOW_TORCH2 prebuilt projection for {level.name} failed, building it here: {e.GetBaseException().Message}");}
+            }
+            return new Torch2Projection(level);
+        }
+        // Drops the waiting ones (a level edited in the editor; play mode starting).
+        public static void ClearPrebuilt()=>prebuilt.Clear();
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)] static void ResetOnPlay()=>prebuilt.Clear();
+
+        Torch2Projection(Source source,bool calibrate)
+        {
+            var level=source.level;
+            this.level=level;walls=level.lamps;int n=walls.Length,most=0;
+            int count=source.local.Length;
             shadow=new bool[n][];visible=new bool[n][];target=new bool[n][];current=new bool[n][];brightness=new float[n][];scores=new Torch2Score[n];
             near=new bool[n][];counts=new int[n];trial=new Torch2Score[n];
-            AnyTurn=TurnsCount(level);TurnAxis=AnyTurn?Sight(level.lamps[0]):Vector3.up;TiltSet=AnyTurn?AllTilts:Tilts;
-            Answers=AnswersFor(level);int answers=Answers.Length;
+            AnyTurn=source.anyTurn;TurnAxis=AnyTurn?Sight(level.lamps[0]):Vector3.up;TiltSet=AnyTurn?AllTilts:Tilts;
+            Answers=source.answers;int answers=Answers.Length;
             targets=new bool[answers][][][];halos=new bool[answers][][][];targetArea=new int[answers][][];
             for(int j=0;j<n;j++){shadow[j]=new bool[Width*Height];visible[j]=new bool[Width*Height];brightness[j]=new float[Width*Height];current[j]=new bool[Grid*Grid];near[j]=new bool[Grid*Grid];}
             for(int a=0;a<answers;a++)
@@ -115,15 +172,8 @@ namespace CloudGarden.ShadowPuzzle
                 }
             }
             for(int j=0;j<n;j++)target[j]=targets[0][j][Array.IndexOf(TiltSet,0f)];
-            local=new Vector3[count][];triangles=new int[count][];
-            for(int i=0;i<count;i++)
-            {
-                var piece=casting[i];var mesh=piece.ShadowMesh;
-                if(!mesh||!mesh.isReadable)throw new InvalidOperationException($"{level.name}: piece {piece.label} needs a readable shadow mesh");
-                var matrix=Matrix4x4.TRS(piece.position,Quaternion.Euler(piece.euler),piece.Scale);var v=mesh.vertices;
-                for(int k=0;k<v.Length;k++)v[k]=matrix.MultiplyPoint3x4(v[k]);
-                local[i]=v;triangles[i]=mesh.triangles;most=Mathf.Max(most,v.Length);
-            }
+            local=source.local;triangles=source.triangles;
+            for(int i=0;i<count;i++)most=Mathf.Max(most,local[i].Length);
             world=new Vector3[most];projected=new Vector2[most];valid=new bool[most];
             var offsets=new List<Vector2Int>();int r=Mathf.Max(0,level.tolerance);
             for(int dy=-r;dy<=r;dy++)for(int dx=-r;dx<=r;dx++)if(dx*dx+dy*dy<=r*r+r)offsets.Add(new Vector2Int(dx,dy));

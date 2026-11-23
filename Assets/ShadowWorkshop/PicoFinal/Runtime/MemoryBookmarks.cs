@@ -29,8 +29,10 @@ namespace ShapeOfMemory
     public sealed class MemoryBookmarks : MonoBehaviour
     {
         // Metres: width, pitch, how far the hanging part drops (the open spread's further by Longer); the sway (degrees,
-        // seconds a swing).
-        public const float Width=.036f,Pitch=.05f,Drop=.06f,Longer=.012f,KnobGap=.09f,Sway=3f,SwaySeconds=4.6f;
+        // seconds a swing). Spaced for a pinch (the user, 2026-11-16: further apart): 3.4 cm of air between neighbours (was
+        // 1.4), 11 cm over the knob (was 9); the outer ones hang 14 cm out, their reach (GrabRadius) still 6 cm short of
+        // the pages' turning edges (MemoryBook.ReachIn, 25 cm out).
+        public const float Width=.036f,Pitch=.07f,Drop=.06f,Longer=.012f,KnobGap=.11f,Sway=3f,SwaySeconds=4.6f;
         // Taking: a pinch within GrabRadius (metres) of a ribbon's silk takes it, if it closed at most GrabWindow seconds
         // before (as the book's page edges allow: hands close on the way in). Lifted LiftOn degrees from hanging it turns
         // the book. Taken by a look, IndirectRise metres of the hand's rise lift it all the way (90 degrees). Picked (a

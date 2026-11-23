@@ -6,7 +6,8 @@
     "Unity.ResourceManager",
     "Unity.TextMeshPro",
     "ShadowWorkshop.Runtime",
-    "ShadowWorkshop.Integration"
+    "ShadowWorkshop.Integration",
+    "Oculus.Interaction"
   ],
   "includePlatforms": [
     "Editor"

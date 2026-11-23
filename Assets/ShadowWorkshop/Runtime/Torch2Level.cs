@@ -90,5 +90,9 @@ namespace CloudGarden.ShadowPuzzle
         [Tooltip("How much of one flight the next may share (0 = strictly one at a time).")] [Range(0,.8f)] public float transitOverlap=.3f;
         public Texture2D Slide(int wall)=>wall==0?leftSlide:rightSlide;
         public static Torch2Level Load(string id)=>string.IsNullOrEmpty(id)?null:Resources.Load<Torch2Level>(ResourceFolder+id);
+#if UNITY_EDITOR
+        // An edit makes any projection prebuilt from the old values stale (Torch2Projection.Prebuild).
+        void OnValidate(){Torch2Projection.ClearPrebuilt();Torch2Transit.ClearPrebuilt();}
+#endif
     }
 }

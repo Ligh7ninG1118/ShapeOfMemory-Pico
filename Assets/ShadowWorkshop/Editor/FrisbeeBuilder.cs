@@ -7,7 +7,7 @@ namespace ShadowWorkshopIntegration.Editor
 {
     // A dog's frisbee for mobile VR: 20 cm across and 2.7 cm tall at scale 1, pivot at the bottom centre like the
     // CozyShops plate it was made to replace (same footprint, so it drops into the plate's place). A gently domed top
-    // with a white flight ring, a rolled rim and a hollow underside, 24-sided with smooth normals: about 480 triangles,
+    // with a white flight ring, a rolled rim and a shallow hollow underside, 24-sided with smooth normals: about 480 triangles,
     // two materials. A closed 12-sided twin (72 triangles) casts its shadow (ShadowPiece.shadowProxy in the gym,
     // Torch2Piece.shadowMesh in levels).
     public static class FrisbeeBuilder
@@ -45,7 +45,10 @@ namespace ShadowWorkshopIntegration.Editor
             var b=new PropMesh(2);
             // Out under the top from the centre, down the inside of the rim, round the lip (its lowest point at y 0), up
             // the outside and in over the top to the white ring; then the ring, then the top's middle to the centre.
-            b.Revolve(Plastic,24,new[]{V(0,.0248f),V(.0860f,.0215f),V(.0900f,.0050f),V(.0925f,0),V(.0968f,.0012f),
+            // The hollow underneath is shallow (its roof 12-13.5 mm up, under a 27 mm top): Home_NEW's espresso saucer
+            // sits sunk into the top, down to y 16 mm, and that stays inside the plastic instead of showing through the
+            // roof from below (2026-11-16). Only the inside changed, so the outline, and so the shadow, did not.
+            b.Revolve(Plastic,24,new[]{V(0,.0135f),V(.0860f,.0122f),V(.0900f,.0050f),V(.0925f,0),V(.0968f,.0012f),
                 V(.1000f,.0110f),V(.0995f,.0168f),V(.0945f,.0213f),V(.0860f,.0240f),V(.0730f,.0255f)});
             b.Revolve(Ring,24,new[]{V(.0730f,.0255f),V(.0640f,.0260f)});
             b.Revolve(Plastic,24,new[]{V(.0640f,.0260f),V(0,.0270f)});

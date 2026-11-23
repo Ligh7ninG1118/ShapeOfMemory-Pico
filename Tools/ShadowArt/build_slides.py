@@ -4,7 +4,8 @@ A slide tints the lamp's light (ShadowWorkshop/Projected Slide): blurred and gre
 in colour once the memory is found, and squeezed into 55-100% of the light so the shadow stays the darkest thing on the
 wall. Only the lamp's spot shows: centre UV (0.56, 0.41) on the left wall and (0.44, 0.41) on the right, radius about
 0.37 across and 0.39 up. Each scene is laid out round its chapter's shadow and its found-moment cut-outs
-(MemorySolveCue): Good Morning's window is where the cut-out sun rises, its kettle where the cut-out steam starts.
+(MemorySolveCue): Good Morning's kettle is where the cut-out steam starts (its window held a cut-out sun until the
+chapter became a chef's kitchen, 2026-11-16: stars over the hat now).
 
 Flat storybook shapes, drawn at 2x and reduced. 768 x 720 (the wall's 128:120).
 
@@ -159,7 +160,7 @@ def bon_voyage():
 
 
 # ---- III. Good Morning (left wall): a tiled kitchen. She stands in the middle (u .41-.67); the window behind her right
-# shoulder is where the cut-out sun rises (u .83, v .29 -> .45); the kettle on the counter is where the steam starts.
+# shoulder held the old cut-out sun (u .83, v .29 -> .45); the kettle on the counter is where the steam starts.
 def good_morning():
     s = Slide()
     s.rect(0, 0, 1, 1, hexc(0xEAF1E4))

@@ -232,12 +232,17 @@ namespace ShapeOfMemory
             public void Emit(float dt)
             {
                 if(!motes||!Skin.enabled)return;
+                EmitMotes(motes,look,Joints,ref due,dt);
+            }
+            // Also for the Quest's SDK hands in a look (MemorySdkHandLook). joints: world, in Joints order.
+            public static void EmitMotes(ParticleSystem motes,MemoryHandLook look,IReadOnlyList<Vector3> joints,ref float due,float dt)
+            {
                 due+=look.MoteRate*dt;
                 var p=new ParticleSystem.EmitParams();
                 while(due>=1)
                 {
                     due-=1;
-                    var at=Joints[MoteFrom[Random.Range(0,MoteFrom.Length)]]+Random.insideUnitSphere*.006f;
+                    var at=joints[MoteFrom[Random.Range(0,MoteFrom.Length)]]+Random.insideUnitSphere*.006f;
                     p.position=at;
                     p.velocity=Vector3.up*Random.Range(look.MoteRise.x,look.MoteRise.y)+Random.insideUnitSphere*.006f;
                     p.startSize=Random.Range(look.MoteSize.x,look.MoteSize.y);
@@ -246,7 +251,7 @@ namespace ShapeOfMemory
                     motes.Emit(p,1);
                 }
             }
-            static ParticleSystem Motes(Transform parent,MemoryHandLook look)
+            public static ParticleSystem Motes(Transform parent,MemoryHandLook look)
             {
                 var go=new GameObject("Motes");go.transform.SetParent(parent,false);
                 var ps=go.AddComponent<ParticleSystem>();
@@ -287,11 +292,14 @@ namespace ShapeOfMemory
             return m;
         }
         public static Vector3 Pad(IReadOnlyList<Vector3> j,int tip)=>j[tip]-(j[tip]-j[tip-1]).normalized*TipNear;
-        public static void SetHandSpace(MaterialPropertyBlock block,IReadOnlyList<Vector3> j,bool left,Vector2 wristFade)
+        public static void SetHandSpace(MaterialPropertyBlock block,IReadOnlyList<Vector3> j,bool left,Vector2 wristFade)=>
+            SetHandSpace(block,j,left,wristFade,Pad(j,IndexTip),Pad(j,ThumbTip));
+        // With the pads given: a mesh whose tip joint isn't at its fingertip (Meta's: MemorySdkHandLook).
+        public static void SetHandSpace(MaterialPropertyBlock block,IReadOnlyList<Vector3> j,bool left,Vector2 wristFade,Vector3 indexPad,Vector3 thumbPad)
         {
             block.SetVector(FadeId,new Vector4(wristFade.x,wristFade.y,0,0));
             block.SetMatrix(HandToLocalId,HandToLocal(j,left));
-            block.SetVector(IndexPadId,Pad(j,IndexTip));block.SetVector(ThumbPadId,Pad(j,ThumbTip));
+            block.SetVector(IndexPadId,indexPad);block.SetVector(ThumbPadId,thumbPad);
             block.SetVector(WristId,j[Wrist]);block.SetVector(ForwardId,(j[MiddleProximal]-j[Wrist]).normalized);
         }
 
@@ -335,8 +343,9 @@ namespace ShapeOfMemory
         {
             for(int h=0;h<2;h++)
             {
+                // Seen, not just tracked: the rig holds a lost hand at its last pose (MetaShadowPlayer.Seen).
                 var view=hands[h];var hand=player?player.TrackedHand(h==0):null;
-                bool shown=hand&&Read(hand,view.Joints);
+                bool shown=hand&&player.Seen(h==0)&&Read(hand,view.Joints);
                 if(!shown){view.Show(false);ghosted[h]=false;Ghost?.Lost(h);ShowGhost(h,null,0);continue;}
                 if(Ghost!=null)Settle(h,view.Joints);
                 view.Show(!ghosted[h]);if(ghosted[h])continue;
@@ -372,11 +381,11 @@ namespace ShapeOfMemory
             ghost.Pose(at);ghost.Show(true);
         }
         void OnDestroy(){foreach(var m in ghostMaterials)if(m)Destroy(m);}
-        // The tracked joints (world) of one hand, in Joints order; false while that hand isn't tracked.
+        // The tracked joints (world) of one hand, in Joints order; false while that hand isn't in view (MetaShadowPlayer.Seen).
         public static bool ReadJoints(MetaShadowPlayer player,bool left,Vector3[] joints)
         {
             var hand=player?player.TrackedHand(left):null;
-            return hand&&Read(hand,joints);
+            return hand&&player.Seen(left)&&Read(hand,joints);
         }
         static bool Read(Hand hand,Vector3[] joints)
         {

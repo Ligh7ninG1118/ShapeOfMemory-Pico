@@ -139,8 +139,58 @@ MonoBehaviour:
     m_Localized: Art & Assets
     m_Metadata:
       m_Items: []
-  - m_Id: 61476683783
-    m_Localized: Tools
+  - m_Id: 1819050543833088
+    m_Localized: SUMMERTIME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1819050589970432
+    m_Localized: 'On land I''m a lump that goes flop in the sun,
+
+      but in water
+      I''m swift, and the little fish run.
+
+      I''ve whiskers and flippers; I
+      clap and I bark,
+
+      and I''ll balance your ball on my nose till it''s dark.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1819050589970433
+    m_Localized: 'A seal seen side-on: a round, whiskered head and a plump body tapering
+      to its flippers.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1819050589970434
+    m_Localized: 'SEAL OF APPROVAL
+
+      Just five more minutes in the sun!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1842325437177856
+    m_Localized: SADDLE UP
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1842325474926592
+    m_Localized: 'Pointed of toe and high of heel,
+
+      I wear a star that spins
+      like a wheel.
+
+      I''ve walked the trail from dusk to dawn;
+
+      grab
+      both my loops and pull me on.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1842325474926593
+    m_Localized: A cowboy boot seen side-on, toe to the right, with a star spur on
+      its heel.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1842325474926594
+    m_Localized: 'YEEHAW
+
+      Saddle up, partner.'
     m_Metadata:
       m_Items: []
   references:

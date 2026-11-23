@@ -1,4 +1,4 @@
-"""The found moment's paper cut-outs (MemorySolveCue.Art), one 4x4 atlas for Assets/ShadowWorkshop/PicoFinal/Art/Cues.
+"""The found moment's paper cut-outs (MemorySolveCue.Art), one 5x5 atlas for Assets/ShadowWorkshop/PicoFinal/Art/Cues.
 
 Cut-outs are white paper with an ink outline and a soft shadow on the page below them, so a layer's tint colours the
 paper and leaves the ink dark. Light things (flame, sparkle, steam, puff, dash) are soft white glows with no outline.
@@ -9,13 +9,13 @@ Cells run row by row from the top left in the order of MemorySolveCue.Art. Drawn
 import math, sys
 from PIL import Image, ImageDraw, ImageFilter, ImageChops
 
-CELL, SS, COLS = 256, 4, 4
+CELL, SS, COLS = 256, 4, 5
 C = CELL * SS                      # a cell at drawing size
 INK = (43, 30, 34)                 # MemoryPalette.Sepia
 OUTLINE = 7 * SS                   # ink width
 SHADOW = (5 * SS, -6 * SS)         # drop shadow offset (right, down in image space is +y; see shadow())
 ART = ["CloudA", "CloudB", "CloudSmall", "Bird", "Confetti", "Streamer", "Balloon", "Flame",
-       "Puff", "Sparkle", "Heart", "Steam", "Sun", "Dash", "Shard", "Bang"]
+       "Puff", "Sparkle", "Heart", "Steam", "Sun", "Dash", "Shard", "Bang", "Star"]
 
 
 def mask():
@@ -209,6 +209,20 @@ def sun():
     return cutout(m, shade=False)
 
 
+def star():
+    # A five-pointed star (Good Morning's chef: COMPLIMENTS TO THE CHEF, five stars), its tips a little rounded. Cell 16,
+    # after the original sixteen (2026-11-17): cue assets store the index, and Summer and Wild West use the sun at 12.
+    m = mask(); d = ImageDraw.Draw(m)
+    pts = []
+    for i in range(10):
+        a = -math.pi / 2 + i * math.pi / 5
+        r = .37 if i % 2 == 0 else .16
+        pts.append(((.5 + math.cos(a) * r) * C, (.535 + math.sin(a) * r) * C))
+    d.polygon(pts, fill=255)
+    m = m.filter(ImageFilter.GaussianBlur(3 * SS)).point(lambda v: 255 if v > 140 else 0)
+    return cutout(m)
+
+
 def dash():
     m = mask(); d = ImageDraw.Draw(m)
     d.rounded_rectangle([.18 * C, .44 * C, .82 * C, .56 * C], radius=.06 * C, fill=255)
@@ -228,7 +242,7 @@ def bang():
     return cutout(m, shade=False)
 
 
-DRAW = [cloud_a, cloud_b, cloud_small, bird, confetti, streamer, balloon, flame, puff, sparkle, heart, steam, sun, dash, shard, bang]
+DRAW = [cloud_a, cloud_b, cloud_small, bird, confetti, streamer, balloon, flame, puff, sparkle, heart, steam, sun, dash, shard, bang, star]
 
 
 def main():
@@ -254,12 +268,13 @@ def main():
         bg = Image.new("RGBA", atlas.size, (238, 222, 190, 255))
         tints = [(255, 255, 255), (250, 250, 255), (235, 240, 255), (255, 255, 255), (247, 185, 202), (169, 201, 246),
                  (205, 185, 243), (255, 214, 140), (255, 255, 255), (255, 227, 166), (247, 150, 170), (255, 255, 255),
-                 (242, 196, 109), (255, 255, 255), (214, 130, 90), (246, 195, 160)]
+                 (242, 196, 109), (255, 255, 255), (214, 130, 90), (246, 195, 160), (242, 196, 109)]
         tinted = atlas.copy(); tp = tinted.load()
         for y in range(atlas.height):
             for x in range(atlas.width):
                 r, g, b, a = tp[x, y]
-                t = tints[(y // CELL) * COLS + x // CELL]
+                i = (y // CELL) * COLS + x // CELL
+                t = tints[i] if i < len(tints) else (255, 255, 255)
                 tp[x, y] = (r * t[0] // 255, g * t[1] // 255, b * t[2] // 255, a)
         Image.alpha_composite(bg, tinted).save(sheet_path)
         print("wrote", sheet_path)

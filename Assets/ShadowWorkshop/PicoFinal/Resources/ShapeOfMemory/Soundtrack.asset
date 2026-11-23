@@ -18,6 +18,8 @@ MonoBehaviour:
     volume: 0.4
     trimStart: 1.2
     trimEnd: 2.5
-  duringPlay: 0
+  duringPlay: 0.55
+  playCutoff: 1200
+  warmDuck: 0.7
   fadeIn: 2.5
   fadeOut: 1.2

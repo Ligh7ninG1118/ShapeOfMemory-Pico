@@ -25,14 +25,14 @@ namespace ShapeOfMemory
             Gold=Hex(0xF2C46D),GoldBright=Hex(0xFFE3A6),GoldDeep=Hex(0x82560F),
             Ember=Hex(0xFF8C6E);
 
-        // Chapter accents in the order chapters take them, starting again after five: Rose, Cornflower, Lilac, Peach,
-        // Sage. The game has four chapters and the last takes Peach, so Sage is fifth. Each Light sits at about the same
-        // lightness as the others, and so does each Deep.
-        static readonly Color[] lights={Hex(0xF7B9CA),Hex(0xA9C9F6),Hex(0xCDB9F3),Hex(0xF6C3A0),Hex(0xC2DBA8)};
-        static readonly Color[] deeps={Hex(0x8C3553),Hex(0x2F4C7E),Hex(0x57408E),Hex(0x8A4528),Hex(0x46652F)};
+        // Chapter accents in the order chapters take them, starting again after six: Rose, Cornflower, Lilac, Peach,
+        // Sage, Heather (the sixth chapter's, 2026-11-17, in the hue gap between Lilac and Rose: yellow is Gold's, cyan
+        // is Aqua's). Each Light sits at about the same lightness as the others, and so does each Deep.
+        static readonly Color[] lights={Hex(0xF7B9CA),Hex(0xA9C9F6),Hex(0xCDB9F3),Hex(0xF6C3A0),Hex(0xC2DBA8),Hex(0xE4B5E2)};
+        static readonly Color[] deeps={Hex(0x8C3553),Hex(0x2F4C7E),Hex(0x57408E),Hex(0x8A4528),Hex(0x46652F),Hex(0x7A3B78)};
         public static Color Light(int chapter)=>lights[Wrap(chapter)];
         public static Color Deep(int chapter)=>deeps[Wrap(chapter)];
-        // A level's chapter: its place among the game's four, or the first (a designer's level played as a book of one).
+        // A level's chapter: its place among the game's chapters, or the first (a designer's level played as a book of one).
         public static int ChapterOf(Torch2Level level)=>level?Mathf.Max(0,Array.IndexOf(MemoryProgress.Levels,level.name)):0;
         static int Wrap(int chapter)=>(chapter%lights.Length+lights.Length)%lights.Length;
 

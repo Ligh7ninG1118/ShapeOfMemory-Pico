@@ -44,6 +44,7 @@ MonoBehaviour:
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
+    drawGather: 0
   - label: BIG PRESENT
     mesh: {fileID: 4300000, guid: ee9fccbc16bc7c946acd708282bbc6d8, type: 2}
     materials:
@@ -58,6 +59,7 @@ MonoBehaviour:
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
+    drawGather: 0
   - label: SMALL PRESENT
     mesh: {fileID: 4300000, guid: b805b7f1880618b4f8bada0c11a59635, type: 2}
     materials:
@@ -72,6 +74,7 @@ MonoBehaviour:
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
+    drawGather: 0
   - label: CANDLE
     mesh: {fileID: 4300000, guid: a05204131c0b61f4da29ba415d5f01db, type: 2}
     materials:
@@ -86,6 +89,7 @@ MonoBehaviour:
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
+    drawGather: 0
   - label: CANDLE
     mesh: {fileID: 4300000, guid: a05204131c0b61f4da29ba415d5f01db, type: 2}
     materials:
@@ -100,6 +104,7 @@ MonoBehaviour:
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
+    drawGather: 0
   - label: CANDLE
     mesh: {fileID: 4300000, guid: a05204131c0b61f4da29ba415d5f01db, type: 2}
     materials:
@@ -114,6 +119,7 @@ MonoBehaviour:
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
+    drawGather: 0
   - label: PARTY HAT
     mesh: {fileID: 4300000, guid: 9e1601c181fb6da46895953604bee4db, type: 2}
     materials:
@@ -128,6 +134,7 @@ MonoBehaviour:
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
+    drawGather: 0
   - label: BALLOON
     mesh: {fileID: 4300000, guid: 9c84f5765f412c347ad2b541155d7240, type: 2}
     materials:
@@ -142,12 +149,13 @@ MonoBehaviour:
     tablePosition: {x: 0, y: 0, z: 0}
     tableEuler: {x: 0, y: 0, z: 0}
     tableGroup: 0
+    drawGather: 0
   solution: {x: 0, y: 0, z: 0, w: 1}
   start: {x: 0.14454398, y: -0.9361168, z: -0.081899606, w: 0.3099756}
   tolerance: 1
   coverMin: 0.9
   spillMax: 0.1
-  iouMin: 0.62
+  iouMin: 0.74
   bothFaces: 0
   flips: 1
   anyTurn: 1

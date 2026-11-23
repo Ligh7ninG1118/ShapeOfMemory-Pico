@@ -17,7 +17,7 @@ namespace ShapeOfMemory.Editor
     {
         public const string AssetPath=ShapeOfMemoryBuilder.Root+"/Resources/"+MemoryChapters.ResourcePath+".asset";
         // What a missing list is made with: the first book.
-        static readonly string[] FirstBook={"Birthday","BonVoyage","GoodMorning","Home"};
+        static readonly string[] FirstBook={"Birthday_NEW","Summer","WildWest","BonVoyage_NEW","GoodMorning_NEW","Home_NEW"};
 
         [MenuItem("MetaHackthone/Pico Final/Chapters")]
         public static void Select(){var book=FindOrCreate();Selection.activeObject=book;EditorGUIUtility.PingObject(book);}
@@ -57,7 +57,7 @@ namespace ShapeOfMemory.Editor
         }
     }
 
-    // A build of the game stops on a chapter error (an empty or repeated slot, not four, a level without pieces);
+    // A build of the game stops on a chapter error (an empty or repeated slot, not MemoryChapters.Count, a level without pieces);
     // warnings (placeholder or missing words) are logged and the build goes on.
     sealed class MemoryChaptersBuildCheck:IProcessSceneWithReport
     {

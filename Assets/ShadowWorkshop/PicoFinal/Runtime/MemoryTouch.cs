@@ -37,7 +37,8 @@ namespace ShapeOfMemory
         void Update()
         {
             if(!xr||!xr.Active)return;
-            for(int hand=0;hand<2;hand++){bool tracked=xr.ReadHand(hand==0,out _,out var tip,out _);Step(hand,tracked,tip);}
+            // Only a hand in view presses: one the rig holds frozen where it was lost (MetaShadowPlayer.Seen) lets go.
+            for(int hand=0;hand<2;hand++){bool tracked=xr.ReadHand(hand==0,out _,out var tip,out _)&&xr.Seen(hand==0);Step(hand,tracked,tip);}
         }
         // One hand's fingertip this frame (tests drive it directly).
         public void Step(int hand,bool tracked,Vector3 tip)

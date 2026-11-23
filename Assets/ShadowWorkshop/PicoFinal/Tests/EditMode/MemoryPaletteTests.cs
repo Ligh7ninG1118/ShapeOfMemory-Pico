@@ -42,14 +42,14 @@ namespace ShapeOfMemory.Tests
         // on paper and on the empty plate.
         [Test] public void EveryChapterAccentReads()
         {
-            for(int chapter=0;chapter<5;chapter++)
+            for(int chapter=0;chapter<6;chapter++)
             {
                 Assert.GreaterOrEqual(Contrast(MemoryPalette.Light(chapter),MemoryPalette.Ink700),Large,"Light on the walls, chapter "+chapter);
                 Assert.GreaterOrEqual(Contrast(MemoryPalette.Light(chapter),MemoryPalette.LeatherDeep),Large,"Light on the banner, chapter "+chapter);
                 Assert.GreaterOrEqual(Contrast(MemoryPalette.Deep(chapter),MemoryPalette.Paper),Large,"Deep on paper, chapter "+chapter);
                 Assert.GreaterOrEqual(Contrast(MemoryPalette.Deep(chapter),MemoryPalette.PaperShade),Large,"Deep on the empty plate, chapter "+chapter);
             }
-            Assert.AreEqual(MemoryPalette.Light(0),MemoryPalette.Light(5),"the sixth chapter starts again");
+            Assert.AreEqual(MemoryPalette.Light(0),MemoryPalette.Light(6),"the seventh chapter starts again");
         }
         [Test] public void TokensAreTheHandoffHex()
         {

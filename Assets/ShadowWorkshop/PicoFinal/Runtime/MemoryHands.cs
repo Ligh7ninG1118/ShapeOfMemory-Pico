@@ -77,7 +77,7 @@ namespace ShapeOfMemory
             for(int h=0;h<2;h++)
             {
                 var view=views[h];var hand=player?player.TrackedHand(h==0):null;
-                bool shown=hand&&Read(hand);view.root.gameObject.SetActive(shown);if(!shown)continue;
+                bool shown=hand&&player.Seen(h==0)&&Read(hand);view.root.gameObject.SetActive(shown);if(!shown)continue;
                 foreach(var pair in view.joints)pair.Value.position=at[pair.Key];
                 foreach(var (from,to,bone) in view.bones)
                 {

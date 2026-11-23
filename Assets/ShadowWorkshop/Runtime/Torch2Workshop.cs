@@ -91,11 +91,17 @@ namespace CloudGarden.ShadowPuzzle
         Quaternion snapFrom,snapTo,rightFrom,lockFrom,stillFrom=Quaternion.identity;
         Vector3 stillAt;
         bool solveOnLanding;
+        // What Awake cost, in milliseconds: the projection (taken prebuilt where a host asked for it, Torch2Projection.Prebuild),
+        // the world, and the input with the first score. A host logs them (MemoryGame's SHAPE_OF_MEMORY_LOAD).
+        public float ProjectionMs{get;private set;}
+        public float WorldMs{get;private set;}
+        public float InputMs{get;private set;}
         void Awake()
         {
-            Projection=new Torch2Projection(level);SetPose(Torch2Projection.Home,Projection.Start);
-            world=gameObject.AddComponent<Torch2World>();world.game=this;world.Build();
-            input=gameObject.AddComponent<Torch2Input>();input.game=this;Refresh();
+            var clock=System.Diagnostics.Stopwatch.StartNew();
+            Projection=Torch2Projection.Take(level);SetPose(Torch2Projection.Home,Projection.Start);ProjectionMs=(float)clock.Elapsed.TotalMilliseconds;
+            world=gameObject.AddComponent<Torch2World>();world.game=this;world.Build();WorldMs=(float)clock.Elapsed.TotalMilliseconds-ProjectionMs;
+            input=gameObject.AddComponent<Torch2Input>();input.game=this;Refresh();InputMs=(float)clock.Elapsed.TotalMilliseconds-ProjectionMs-WorldMs;
         }
         void Update()
         {

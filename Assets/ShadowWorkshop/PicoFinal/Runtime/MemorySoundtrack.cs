@@ -9,9 +9,12 @@ namespace ShapeOfMemory
     // it from the moment the book first lies open. The songs play in list order. A song that loops plays again and again,
     // so the songs after it never come. A song that doesn't loop hands over to the next with a clip, and after the last the
     // list starts over.
-    // The music belongs to the book. It fades out as the book rises onto the walls for a memory, because there the closeness
+    // The music belongs to the book. It steps back as the book rises onto the walls for a memory, because there the closeness
     // cue (Torch2Cue, its own layered music, the only feedback) has to be heard. It comes back as the book comes down,
-    // picking up where it left off. duringPlay keeps some of it under the cue instead.
+    // picking up where it left off. duringPlay keeps some of it under the cue (playtest 2026-11-16: silence there felt
+    // empty): quieter, muffled through a low-pass (playCutoff) so it sits below the cue's layers rather than beside them,
+    // and giving way further as the cue warms (warmDuck), so near the answer and at the solve the cue has the room alone.
+    // duringPlay 0 is the old silence.
     // Songs go in Audio/Music. Import them with Load Type Streaming: a few minutes decoded into memory would be tens of MB.
     [CreateAssetMenu(menuName="Shape of Memory/Soundtrack")]
     public sealed class MemorySoundtrack : ScriptableObject
@@ -35,8 +38,19 @@ namespace ShapeOfMemory
         }
 
         public Song[] songs=Array.Empty<Song>();
-        [Tooltip("How much of the music stays while a memory is out on the walls, as a share of each song's volume. 0: none, and the closeness cue is the level's music.")]
-        [Range(0,1)] public float duringPlay=0;
+        // MemoryMusic plays at the song's volume times its fade squared, so on the walls the song is heard at duringPlay
+        // squared: .55 is 30% of the stand's level, -10 dB (2026-11-16, the user: a bit stronger; .4 was 16%, -16 dB).
+        [Tooltip("How much of the music stays while a memory is out on the walls (the fade's level; the volume is this squared: .55 = 30%, -10 dB). 0: none, and the closeness cue is the level's music.")]
+        [Range(0,1)] public float duringPlay=.55f;
+        [Tooltip("While a memory is out on the walls the music is heard through a low-pass at this frequency (Hz), so it sits under the closeness cue. 22000: not muffled.")]
+        [Range(200,22000)] public float playCutoff=1200;
+        [Tooltip("How much more the music gives way as the closeness cue warms, up to passing: there it is at duringPlay times (1 - this).")]
+        [Range(0,1)] public float warmDuck=.7f;
+        // The share of the music heard: 1 on the stand, on the walls duringPlay, less as the cue warms (0 cold, 1 passing).
+        public float Share(float up,float warm)=>Mathf.Lerp(1,duringPlay*(1-warmDuck*Mathf.Clamp01(warm)),Mathf.Clamp01(up));
+        // The low-pass cutoff (Hz): open on the stand, playCutoff on the walls, moving in octaves.
+        public const float Open=22000;
+        public float Cutoff(float up)=>Open*Mathf.Pow(Mathf.Clamp(playCutoff,10,Open)/Open,Mathf.Clamp01(up));
         [Tooltip("Seconds for the music to come up: the first time (with the sky fading in) and as the book comes down.")]
         [Min(.05f)] public float fadeIn=2.5f;
         [Tooltip("The fastest it goes down, in seconds from full to none, as the book rises.")]

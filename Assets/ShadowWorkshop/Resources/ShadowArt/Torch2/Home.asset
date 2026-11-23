@@ -127,5 +127,7 @@ MonoBehaviour:
   snapWarmth: 0.9
   snapAngle: 20
   heldSnapAngle: 8
+  drawGather: 1
+  drawGatherFrom: 0.12
   transitFly: 0.8
   transitOverlap: 0.3

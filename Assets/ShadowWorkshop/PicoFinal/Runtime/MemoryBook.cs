@@ -244,49 +244,68 @@ namespace ShapeOfMemory
             for(int i=0;i<pixels.Length;i++){float c=.88f+(float)random.NextDouble()*.12f;pixels[i]=new Color(c,c,c,1);}
             t.SetPixels32(pixels);t.Apply(true,true);return t;
         }
-        // The front cover, 512 square: leather (Burgundy, darker toward the edges, mottled and grained) and gilt tooling.
+        // The front cover: leather (Burgundy, darker toward the edges, mottled and grained) and gilt tooling, laid out on a
+        // 512 grid (D) and printed Up times as fine, 1024 square (2026-11-17: at 512 the tooling read as pixel art up close;
+        // 2048 took 21 MB for detail the headset shows only from closer than about 20 cm, where at reading distance the
+        // cover spans about 1000 pixels). The rules, the key and the corner squares fill whole grid cells, so they print
+        // sharp; the corner pieces' curves are smoothed over one texel. About 5 MB with its mipmaps.
         Texture2D CoverArt()
         {
             // C: a key cell; I: the border's inset; B: its depth (5 cells, about 5% of the cover as on the artist's); P: one
-            // key (6 cells). The run between the corner squares, N - 2 (I + B) = 420, is a whole 14 keys.
-            const int N=512,C=5,I=21,B=5*C,P=6*C;
-            var t=new Texture2D(N,N,TextureFormat.RGBA32,true){name="Book cover",wrapMode=TextureWrapMode.Clamp,filterMode=FilterMode.Trilinear,anisoLevel=4};kit.Owned.Add(t);
-            var gilt=new bool[N*N];
-            void Fill(int x0,int y0,int w,int h){for(int y=Mathf.Max(0,y0);y<Mathf.Min(N,y0+h);y++)for(int x=Mathf.Max(0,x0);x<Mathf.Min(N,x0+w);x++)gilt[y*N+x]=true;}
-            void Frame(int inset,int thick){Fill(inset,inset,N-2*inset,thick);Fill(inset,N-inset-thick,N-2*inset,thick);Fill(inset,inset,thick,N-2*inset);Fill(N-inset-thick,inset,thick,N-2*inset);}
+            // key (6 cells). The run between the corner squares, D - 2 (I + B) = 420, is a whole 14 keys. All in grid units.
+            const int D=512,Up=2,N=D*Up,C=5,I=21,B=5*C,P=6*C;
+            var t=new Texture2D(N,N,TextureFormat.RGBA32,true){name="Book cover",wrapMode=TextureWrapMode.Clamp,filterMode=FilterMode.Trilinear,anisoLevel=8};kit.Owned.Add(t);
+            var gilt=new bool[D*D];
+            void Fill(int x0,int y0,int w,int h){for(int y=Mathf.Max(0,y0);y<Mathf.Min(D,y0+h);y++)for(int x=Mathf.Max(0,x0);x<Mathf.Min(D,x0+w);x++)gilt[y*D+x]=true;}
+            void Frame(int inset,int thick){Fill(inset,inset,D-2*inset,thick);Fill(inset,D-inset-thick,D-2*inset,thick);Fill(inset,inset,thick,D-2*inset);Fill(D-inset-thick,inset,thick,D-2*inset);}
             Frame(I-8,3);Frame(I+B+6,3);Frame(I+B+12,1);
             // The key: a hooked spiral every P along each side, its base line on the outside.
             bool[,] key={{true,true,true,true,true,true},{true,false,false,false,false,false},{true,false,true,true,true,false},{true,false,false,false,true,false},{true,true,true,true,true,false}};
-            int run0=I+B,run1=N-I-B;
+            int run0=I+B,run1=D-I-B;
             for(int r=run0;r<run1;r++)for(int d=0;d<B;d++)
             {
                 int cx=((r-run0)/C)%(P/C),cy=d/C;if(!key[cy,cx])continue;
-                gilt[(I+d)*N+r]=true;gilt[(N-1-I-d)*N+(N-1-r)]=true;gilt[(N-1-r)*N+(I+d)]=true;gilt[r*N+(N-1-I-d)]=true;
+                gilt[(I+d)*D+r]=true;gilt[(D-1-I-d)*D+(D-1-r)]=true;gilt[(D-1-r)*D+(I+d)]=true;gilt[r*D+(D-1-I-d)]=true;
             }
             // The border's corners: a square one cell thick with a dot in its middle.
-            foreach(var (x0,y0) in new[]{(I,I),(N-I-B,I),(I,N-I-B),(N-I-B,N-I-B)})
+            foreach(var (x0,y0) in new[]{(I,I),(D-I-B,I),(I,D-I-B),(D-I-B,D-I-B)})
             {Fill(x0,y0,B,C);Fill(x0,y0+B-C,B,C);Fill(x0,y0,C,B);Fill(x0+B-C,y0,C,B);Fill(x0+2*C,y0+2*C,C,C);}
-            // In each inner corner, a gilt corner piece: a triangle with a concave edge and a tooled line along it.
-            int o=I+B+16;
-            foreach(var (sx,sy) in new[]{(1,1),(-1,1),(1,-1),(-1,-1)})
+            // In each inner corner, a gilt corner piece: a triangle 40 cells a side with a concave edge (34 from the far
+            // corner) and a tooled line along it (37..39). How much of a texel it covers, from how far inside the shape the
+            // texel's centre is (grid units, measured from the corner, mirrored into the other three).
+            const int o=I+B+16;
+            float Piece(float gx,float gy)
             {
-                int ox=sx>0?o:N-1-o,oy=sy>0?o:N-1-o;
-                for(int y=0;y<40;y++)for(int x=0;x<40;x++)
-                {
-                    float hollow=Mathf.Sqrt((x-40f)*(x-40f)+(y-40f)*(y-40f));
-                    if(hollow>34&&x+y<46&&!(hollow>37&&hollow<39))gilt[(oy+sy*y)*N+(ox+sx*x)]=true;
-                }
+                float x=(gx<D*.5f?gx-o:D-o-gx)-.5f,y=(gy<D*.5f?gy-o:D-o-gy)-.5f;
+                if(x<-1||y<-1||x>41||y>41)return 0;
+                float hollow=Mathf.Sqrt((x-40)*(x-40)+(y-40)*(y-40));
+                float inside=Mathf.Min(Mathf.Min(Mathf.Min(x,y)+.5f,39.5f-Mathf.Max(x,y)),Mathf.Min(Mathf.Min(hollow-34,(46-x-y)*.7071f),Mathf.Abs(hollow-38)-1));
+                return Mathf.Clamp01(inside*Up+.5f);
             }
             Color leather=Burgundy,deep=BurgundyDeep,gold=Gilt;
-            var pixels=new Color32[N*N];var random=new System.Random(41);
-            for(int y=0;y<N;y++)for(int x=0;x<N;x++)
+            var pixels=new Color32[N*N];
+            // The mottle's inner waves, once per column.
+            var wave=new float[N];for(int x=0;x<N;x++)wave[x]=Mathf.Sin((x+.5f)/N*13)*2;
+            // One row of texels; plain maths only (no engine calls), so any thread can print it. Each texel's grain is a
+            // hash of where it is (not a running random), so the rows go in any order and come out the same every time.
+            void Row(int y)
             {
-                float u=(x+.5f)/N,v=(y+.5f)/N,edge=Mathf.Min(Mathf.Min(u,1-u),Mathf.Min(v,1-v));
-                float mottle=1+.05f*Mathf.Sin(u*23+Mathf.Sin(v*17)*2)*Mathf.Sin(v*19+Mathf.Sin(u*13)*2),grain=1+((float)random.NextDouble()-.5f)*.07f;
-                var c=Color.Lerp(deep,leather,Mathf.SmoothStep(0,1,edge*9))*mottle*grain;
-                if(gilt[y*N+x])c=gold*(.86f+.24f*v)*(1+((float)random.NextDouble()-.5f)*.1f);
-                c.a=1;pixels[y*N+x]=c;
+                float v=(y+.5f)/N,ey=Mathf.Min(v,1-v),across=Mathf.Sin(v*17)*2,v19=v*19,shine=.86f+.24f*v;int row=(y/Up)*D;
+                for(int x=0;x<N;x++)
+                {
+                    float u=(x+.5f)/N,edge=Mathf.Min(Mathf.Min(u,1-u),ey)*9;
+                    uint h=(uint)x*0x8DA6B343u^(uint)y*0xD8163841u^41u;h^=h>>15;h*=0x2C1B3C6Du;h^=h>>12;h*=0x297A2D39u;h^=h>>15;
+                    float mottle=1+.05f*Mathf.Sin(u*23+across)*Mathf.Sin(v19+wave[x]),grain=1+((h&0xFFFF)/65536f-.5f)*.07f;
+                    var c=Color.Lerp(deep,leather,edge>=1?1:Mathf.SmoothStep(0,1,edge))*(mottle*grain);
+                    float g=gilt[row+x/Up]?1:Piece(u*D,v*D);
+                    if(g>0)c=Color.Lerp(c,gold*(shine*(1+((h>>16)/65536f-.5f)*.1f)),g);
+                    c.a=1;pixels[y*N+x]=c;
+                }
             }
+            // About 1 M texels, the rows spread over every core; should that fail on a device, the rows again on this
+            // thread (slower at the start, but the book still has its cover).
+            try{System.Threading.Tasks.Parallel.For(0,N,Row);}
+            catch(Exception e){Debug.LogWarning("SHAPE_OF_MEMORY_BOOK cover printed on one thread: "+e.Message);for(int y=0;y<N;y++)Row(y);}
             t.SetPixels32(pixels);t.Apply(true,true);return t;
         }
         // Cream paper with a faint grain, a thin margin rule and the gutter's shade on the spine side.

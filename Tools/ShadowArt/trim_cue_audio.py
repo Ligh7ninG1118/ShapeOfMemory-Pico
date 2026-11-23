@@ -19,6 +19,10 @@ CUTS = [
     ("GoodMorning_Sizzle", "424700-FryingPanSizzle1.wav", 0.0, 4.0, 1, False, .3, 1.4),
     ("Home_PotBreak", "493132-BRLFX-TFV1-0316-Breaking_a_terracotta_pot_1.wav", 0.0, 1.2, 2, False, .002, .35),
     ("Home_PuppyBark", "1143705.audio-Anml_Dog_Puppy_02.wav", .38, 1.0, 1, False, .005, .12),
+    # WildWest (Pixabay, 2026-11-16): four hoof beats that ride off, and the harmonica's first phrase (up to its breath).
+    # Cut in Unity the same way (no ffmpeg on that machine): gallop volume 1.00, harmonica 0.51.
+    ("WildWest_Gallop", "dragon-studio-horse-galloping-339737.mp3", 1.05, 3.05, 2, False, .02, .6),
+    ("WildWest_Harmonica", "samuel_copier_country-wild-west-harmonica-267552.mp3", .30, 3.45, 1, False, .01, .6),
 ]
 
 

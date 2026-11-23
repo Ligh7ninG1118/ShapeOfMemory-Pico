@@ -64,10 +64,74 @@ namespace CloudGarden.ShadowPuzzle
         // gather; null = its own place).
         public Torch2Transit(Torch2Level level,Quaternion pileRotation,Vector3 pilePosition,Func<Torch2Piece,Vector3> drawn=null):this(level,pileRotation,pilePosition,level.transitFly,level.transitOverlap,drawn){}
         // fly: seconds per mover; overlap: how much of one flight the next may share (0 = strictly one at a time).
-        public Torch2Transit(Torch2Level level,Quaternion pileRotation,Vector3 pilePosition,float fly,float overlap,Func<Torch2Piece,Vector3> drawn=null)
+        public Torch2Transit(Torch2Level level,Quaternion pileRotation,Vector3 pilePosition,float fly,float overlap,Func<Torch2Piece,Vector3> drawn=null):this(Read(level,pileRotation,pilePosition,fly,overlap,drawn)){}
+
+        // What planning reads through Unity's API (the pieces' mesh boxes, the level's name for its scatter seed), the host's
+        // keep-outs and the inputs, read once on the main thread. The rest is arithmetic (and the thread-safe Quaternion and
+        // Vector3 helpers), so it can run on a worker thread: Prebuild. (The boxes used to be read per scatter try, through
+        // Mesh.bounds: tens of thousands of native calls a plan.)
+        public sealed class Source
         {
-            int n=level.pieces.Length;hub=pilePosition;table=TablePoses(level,out var groups);slot=new Pose[n];moverOf=new int[n];
-            for(int i=0;i<n;i++){var at=drawn!=null?drawn(level.pieces[i]):level.pieces[i].position;slot[i]=new Pose(pilePosition+pileRotation*at,pileRotation*Quaternion.Euler(level.pieces[i].euler));}
+            public Torch2Level level;
+            public Bounds[] bounds;
+            public Vector3[] drawn;
+            public int seed;
+            public Rect[] keepOut;
+            public Rect? hostArea;
+            public Quaternion rotation;
+            public Vector3 position;
+            public float fly,overlap;
+            // Whether a plan from this source is the plan for that one.
+            public bool Same(Source o)
+            {
+                if(o==null||level!=o.level||seed!=o.seed||hostArea!=o.hostArea||fly!=o.fly||overlap!=o.overlap||rotation!=o.rotation||position!=o.position)return false;
+                if(bounds.Length!=o.bounds.Length||drawn.Length!=o.drawn.Length||keepOut.Length!=o.keepOut.Length)return false;
+                for(int i=0;i<bounds.Length;i++)if(bounds[i]!=o.bounds[i]||drawn[i]!=o.drawn[i])return false;
+                for(int i=0;i<keepOut.Length;i++)if(keepOut[i]!=o.keepOut[i])return false;
+                return true;
+            }
+        }
+        public static Source Read(Torch2Level level,Quaternion pileRotation,Vector3 pilePosition,float fly,float overlap,Func<Torch2Piece,Vector3> drawn=null)
+        {
+            int n=level.pieces.Length;
+            var s=new Source{level=level,bounds=new Bounds[n],drawn=new Vector3[n],seed=Seed(level.name),keepOut=(Rect[])KeepOut.Clone(),hostArea=HostArea,rotation=pileRotation,position=pilePosition,fly=fly,overlap=overlap};
+            for(int i=0;i<n;i++){var p=level.pieces[i];s.bounds[i]=Bounds(p);s.drawn[i]=drawn!=null?drawn(p):p.position;}
+            return s;
+        }
+
+        // Prebuilt plans (Prebuild/Take), as Torch2Projection's: planning a level's flights takes tens of milliseconds
+        // (50-250 ms in the editor), so a host that knows which level comes next plans it on a worker thread, and the intro
+        // takes it if nothing it was planned from has changed since (else it plans here). One per level; each Take uses it
+        // up. Main thread only.
+        static readonly Dictionary<Torch2Level,(Source source,System.Threading.Tasks.Task<Torch2Transit> plan)> prebuilt=new Dictionary<Torch2Level,(Source,System.Threading.Tasks.Task<Torch2Transit>)>();
+        public static void Prebuild(Torch2Level level,Quaternion pileRotation,Vector3 pilePosition,Func<Torch2Piece,Vector3> drawn=null)
+        {
+            if(!level||prebuilt.ContainsKey(level))return;
+            Source source;
+            try{source=Read(level,pileRotation,pilePosition,level.transitFly,level.transitOverlap,drawn);}catch(Exception e){Debug.LogException(e);return;}
+            prebuilt[level]=(source,System.Threading.Tasks.Task.Run(()=>new Torch2Transit(source)));
+        }
+        public static bool Prebuilt(Torch2Level level)=>level&&prebuilt.ContainsKey(level);
+        public static Torch2Transit Take(Torch2Level level,Quaternion pileRotation,Vector3 pilePosition,Func<Torch2Piece,Vector3> drawn=null)
+        {
+            var now=Read(level,pileRotation,pilePosition,level.transitFly,level.transitOverlap,drawn);
+            if(prebuilt.TryGetValue(level,out var made))
+            {
+                prebuilt.Remove(level);
+                if(!made.source.Same(now))Debug.Log($"SHADOW_TORCH2 transit for {level.name}: planned from other inputs, planning here");
+                else try{return made.plan.Result;}
+                catch(Exception e){Debug.LogWarning($"SHADOW_TORCH2 prebuilt transit for {level.name} failed, planning here: {e.GetBaseException().Message}");}
+            }
+            return new Torch2Transit(now);
+        }
+        public static void ClearPrebuilt()=>prebuilt.Clear();
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)] static void ResetOnPlay()=>prebuilt.Clear();
+
+        public Torch2Transit(Source source)
+        {
+            var level=source.level;var pileRotation=source.rotation;var pilePosition=source.position;float fly=source.fly,overlap=source.overlap;
+            int n=level.pieces.Length;hub=pilePosition;table=TablePoses(source,out var groups);slot=new Pose[n];moverOf=new int[n];
+            for(int i=0;i<n;i++){var at=source.drawn[i];slot[i]=new Pose(pilePosition+pileRotation*at,pileRotation*Quaternion.Euler(level.pieces[i].euler));}
             // One mover per group, framed on its first member.
             var byGroup=new SortedDictionary<int,List<int>>();for(int i=0;i<n;i++){if(!byGroup.TryGetValue(groups[i],out var list))byGroup[groups[i]]=list=new List<int>();list.Add(i);}
             var all=new List<Mover>();
@@ -79,7 +143,7 @@ namespace CloudGarden.ShadowPuzzle
                 for(int k=0;k<m.members.Length;k++)
                 {
                     int i=m.members[k];m.fromOffsets[k]=Mul(Inverse(fromFrame),table[i]);m.toOffsets[k]=Mul(Inverse(toFrame),slot[i]);
-                    var piece=level.pieces[i];var bounds=Bounds(piece);
+                    var piece=level.pieces[i];var bounds=source.bounds[i];
                     for(int c=0;c<8;c++)
                     {
                         var corner=m.fromOffsets[k].position+m.fromOffsets[k].rotation*Vector3.Scale(Corner(bounds,c),piece.Scale);
@@ -247,34 +311,36 @@ namespace CloudGarden.ShadowPuzzle
         // ---- Table
         // Where each piece lies on the table: the level's table layout when every piece has one, otherwise a scatter.
         // groups: pieces sharing a value move as one.
-        public static Pose[] TablePoses(Torch2Level level,out int[] groups)
+        public static Pose[] TablePoses(Torch2Level level,out int[] groups)=>TablePoses(Read(level,Quaternion.identity,Vector3.zero,0,0),out groups);
+        static Pose[] TablePoses(Source s,out int[] groups)
         {
-            int n=level.pieces.Length;groups=new int[n];var poses=new Pose[n];
+            var level=s.level;int n=level.pieces.Length;groups=new int[n];var poses=new Pose[n];
             if(HasTable(level)){for(int i=0;i<n;i++){var p=level.pieces[i];poses[i]=new Pose(p.tablePosition,Quaternion.Euler(p.tableEuler));groups[i]=p.tableGroup;}return poses;}
-            for(int i=0;i<n;i++)groups[i]=i;return Scatter(level);
+            for(int i=0;i<n;i++)groups[i]=i;return Scatter(s);
         }
         public static bool HasTable(Torch2Level level)=>level.pieces.Length>0&&Array.TrueForAll(level.pieces,p=>p.onTable);
         // Rest pose of each piece on the table (level space): lying on its thinnest side, turned close to a right angle so
         // its footprint box stays tight, the largest placed first, each where its box overlaps the others' least (seeded
         // per level, so a level always scatters the same way).
-        public static Pose[] Scatter(Torch2Level level)
+        public static Pose[] Scatter(Torch2Level level)=>Scatter(Read(level,Quaternion.identity,Vector3.zero,0,0));
+        static Pose[] Scatter(Source s)
         {
             // Where a host keeps places clear, a layout that still overlaps is laid again from another seed (up to Relays
             // times; the least overlapping wins): placing the largest first can leave a later thing nowhere clear.
-            var best=ScatterOnce(level,0,out float least);
-            for(int salt=1;salt<Relays&&least>0&&KeepOut.Length>0;salt++){var poses=ScatterOnce(level,salt,out float left);if(left<least){least=left;best=poses;}}
+            var best=ScatterOnce(s,0,out float least);
+            for(int salt=1;salt<Relays&&least>0&&s.keepOut.Length>0;salt++){var poses=ScatterOnce(s,salt,out float left);if(left<least){least=left;best=poses;}}
             return best;
         }
         const int Relays=8;
-        static Pose[] ScatterOnce(Torch2Level level,int salt,out float penalty)
+        static Pose[] ScatterOnce(Source s,int salt,out float penalty)
         {
-            int n=level.pieces.Length;var poses=new Pose[n];var boxes=new Rect[n];var flats=new Quaternion[n];var areas=new float[n];penalty=0;
-            var random=new System.Random(Seed(level.name)+salt*7919);
+            var level=s.level;int n=level.pieces.Length;var poses=new Pose[n];var boxes=new Rect[n];var flats=new Quaternion[n];var areas=new float[n];penalty=0;
+            var random=new System.Random(s.seed+salt*7919);
             for(int i=0;i<n;i++)
             {
-                var piece=level.pieces[i];var size=Vector3.Scale(Bounds(piece).size,piece.Scale);
+                var piece=level.pieces[i];var size=Vector3.Scale(s.bounds[i].size,piece.Scale);
                 flats[i]=size.y<=size.x&&size.y<=size.z?Quaternion.identity:size.x<=size.z?Quaternion.Euler(0,0,90):Quaternion.Euler(90,0,0);
-                Footprint(piece,flats[i],out var min,out var max);areas[i]=(max.x-min.x)*(max.z-min.z);
+                Footprint(s.bounds[i],piece,flats[i],out var min,out var max);areas[i]=(max.x-min.x)*(max.z-min.z);
             }
             var order=new int[n];for(int i=0;i<n;i++)order[i]=i;Array.Sort(order,(a,b)=>areas[b].CompareTo(areas[a]));
             var placed=new List<int>();
@@ -282,18 +348,18 @@ namespace CloudGarden.ShadowPuzzle
             {
                 var piece=level.pieces[i];float bestOverlap=float.PositiveInfinity;
                 // More tries where a host keeps places clear (the room left is smaller and oddly shaped).
-                int attempts=KeepOut.Length>0?900:300;
+                int attempts=s.keepOut.Length>0?900:300;
                 for(int attempt=0;attempt<attempts&&bestOverlap>0;attempt++)
                 {
                     var rotation=Quaternion.Euler(0,90*random.Next(4)+((float)random.NextDouble()*2-1)*12,0)*flats[i];
-                    Footprint(piece,rotation,out var min,out var max);
-                    var area=HostArea??Area;
+                    Footprint(s.bounds[i],piece,rotation,out var min,out var max);
+                    var area=s.hostArea??Area;
                     float w=Mathf.Min(max.x-min.x,area.width),d=Mathf.Min(max.z-min.z,area.height);
                     var c=new Vector2(Mathf.Lerp(area.xMin+w*.5f,area.xMax-w*.5f,(float)random.NextDouble()),Mathf.Lerp(area.yMin+d*.5f,area.yMax-d*.5f,(float)random.NextDouble()));
                     var box=new Rect(c.x-(max.x-min.x)*.5f,c.y-(max.z-min.z)*.5f,max.x-min.x,max.z-min.z);
                     float overlap=0;foreach(int j in placed)overlap+=Overlap(box,boxes[j],Gap);
                     // The walls weigh most: through a page is worse than on the stand's footprint.
-                    foreach(var k in KeepOut)overlap+=Overlap(box,k,0)*4;
+                    foreach(var k in s.keepOut)overlap+=Overlap(box,k,0)*4;
                     overlap+=Behind(box)*16;
                     if(overlap>=bestOverlap)continue;
                     bestOverlap=overlap;boxes[i]=box;
@@ -307,10 +373,10 @@ namespace CloudGarden.ShadowPuzzle
         const float Gap=.012f;
         public static Bounds Bounds(Torch2Piece piece)=>piece.mesh?piece.mesh.bounds:new Bounds(Vector3.zero,Vector3.one*.05f);
         static Vector3 Corner(Bounds b,int c)=>b.center+Vector3.Scale(b.extents,new Vector3((c&1)==0?-1:1,(c&2)==0?-1:1,(c&4)==0?-1:1));
-        // The piece's box at this rotation, about its pivot (scale applied).
-        static void Footprint(Torch2Piece piece,Quaternion rotation,out Vector3 min,out Vector3 max)
+        // The piece's box (its mesh's bounds) at this rotation, about its pivot (scale applied).
+        static void Footprint(Bounds bounds,Torch2Piece piece,Quaternion rotation,out Vector3 min,out Vector3 max)
         {
-            var bounds=Bounds(piece);min=Vector3.positiveInfinity;max=Vector3.negativeInfinity;
+            min=Vector3.positiveInfinity;max=Vector3.negativeInfinity;
             for(int c=0;c<8;c++){var p=rotation*Vector3.Scale(Corner(bounds,c),piece.Scale);min=Vector3.Min(min,p);max=Vector3.Max(max,p);}
         }
         // How far a footprint (x, z) reaches behind either wall's WallClear line, times its size (so it weighs as an area).

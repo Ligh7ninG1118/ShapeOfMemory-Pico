@@ -9,14 +9,14 @@ namespace ShapeOfMemory
     // The book's chapters in play order: Resources/ShapeOfMemory/Chapters.asset (MetaHackthone > Pico Final > Chapters).
     // Swap a level or reorder them there; nothing else names them. Check() says what is wrong before a build does
     // (Check chapters; a build with errors stops). What goes with the slot, not the level: the chapter's number and
-    // colour (MemoryPalette, by order), the teaching (chapter I only) and the ending's 2x2 plates (so four).
+    // colour (MemoryPalette, by order), the teaching (chapter I only) and the ending's plates (a grid sized to the count).
     // Progress is saved per level id (the asset's name): a level swapped in starts unfound, and renaming one loses its saves.
     [CreateAssetMenu(menuName="Shape of Memory/Chapters")]
     public sealed class MemoryChapters : ScriptableObject
     {
-        public const int Count=4;
+        public const int Count=6;
         public const string ResourcePath="ShapeOfMemory/Chapters";
-        [Tooltip("Torch2Level assets in play order (Resources/ShadowArt/Torch2, made by the Shadow Gym's Export). Exactly four.")]
+        [Tooltip("Torch2Level assets in play order (Resources/ShadowArt/Torch2, made by the Shadow Gym's Export). Exactly Count (six).")]
         public Torch2Level[] chapters=Array.Empty<Torch2Level>();
 
         public readonly struct Problem
@@ -43,7 +43,7 @@ namespace ShapeOfMemory
             var problems=new List<Problem>();
             void Error(string text)=>problems.Add(new Problem(true,text));
             void Warn(string text)=>problems.Add(new Problem(false,text));
-            if(chapters.Length!=Count)Error($"The book has {Count} chapters (four chapter colours, the ending's 2x2 plates); this list has {chapters.Length}.");
+            if(chapters.Length!=Count)Error($"The book has {Count} chapters (six chapter colours, the ending's 3x2 plates); this list has {chapters.Length}.");
             for(int i=0;i<chapters.Length;i++)
             {
                 var level=chapters[i];string at="Chapter "+Numeral(i);
